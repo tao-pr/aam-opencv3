@@ -10,14 +10,16 @@
 class Appearance
 {
 protected:
-  Point2D pos;
+  Point2D64f pos;
   Mat a; // [a] is usually a normalised (PCA) matrix from training image
 public:
   Appearance();
-  Appearance(const Point2D& p, const Mat& i);
+  Appearance(const Point2D64f& p, const Mat& i);
   virtual ~Appearance();
   void setImage(const Mat& i);
-  void setPos(const Point2D& p);
+  void setPos(const Point2D64f& p);
+  // NOTE: The summation operator only averages the position
+  // but will blend the appearance images altogether naively
   Appearance operator +(const Appearance& that);
   Appearance operator *(const double scale);
   
