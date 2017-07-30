@@ -6,6 +6,7 @@
 #define GENERIC_AAM
 
 #include "master.h"
+#include "Shape.h"
 #include "FaceLocaliser.h"
 
 class AAM
@@ -13,14 +14,15 @@ class AAM
 private:
 protected:
   FaceLocaliser faceFinder;
+  Shape shape;
 public:
-  AAM();
-  AAM(const string& modelFileName);
-  virtual ~AAM();
+  AAM(){};
+  virtual ~AAM() {};
 
-  void fit(Mat im);
-  void saveToFile(const string& modelFileName) const;
-  void loadFromFile(const string& modelFileName);
+  size_t size() const { return this->shape.size(); };
+  virtual void fit(Mat im) = 0;
+  virtual void saveToFile(const string& modelFileName) const = 0;
+  virtual void loadFromFile(const string& modelFileName) = 0;
 };
 
 #endif

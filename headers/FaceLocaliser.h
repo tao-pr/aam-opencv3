@@ -11,8 +11,15 @@ class FaceLocaliser
 {
 private:
 public:
-  virtual ~FaceLocaliser();
-  Rect find(Mat im) const = 0;
+  virtual ~FaceLocaliser() {};
+  virtual vector<Rect> find(Mat im) const = 0;
+};
+
+class HaarBasedFaceLocaliser : public FaceLocaliser
+{
+public:
+  virtual ~FaceLocaliser() {};
+  virtual vector<Rect> find(Mat im) const;
 };
 
 
