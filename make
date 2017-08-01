@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # Makefile builder script
-mkdir build 
+mkdir -p build 
+mkdir -p bin
+mkdir -p lib
 cd build
 
 echo "================"
