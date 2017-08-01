@@ -2,13 +2,13 @@
 
 Shape::Shape(const vector<Appearance>& apps)
 {
-  swap(this->a, apps);
+  this->a = apps;
 }
 
-Shape Shape::operator +(const Shape& that)
+Shape Shape::operator +(const Shape& that) const
 {
   vector<Appearance> aOut;
-  auto bi = that.a->begin();
+  auto bi = that.a.begin();
   for (auto ai : this->a)
   {
     aOut.push_back(ai + *bi);
@@ -17,9 +17,14 @@ Shape Shape::operator +(const Shape& that)
   return Shape(aOut);
 }
 
-Shape Shape::operator *(const double scale)
+Shape Shape::operator *(const double scale) const
 {
-
+  vector<Appearance> aOut;
+  for (auto ai : this->a)
+  {
+    aOut.push_back(ai * scale);
+  }
+  return Shape(aOut);
 }
 
 Shape Shape::createFromLinearCombination(Shape baseShape, vector<Shape> shapes, vector<double> params)

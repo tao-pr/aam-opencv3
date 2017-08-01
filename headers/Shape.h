@@ -16,10 +16,10 @@ public:
   Shape(){};
   Shape(const vector<Appearance>& apps);
   virtual ~Shape(){};
-  size_t size() const { return s.size() };
+  size_t size() const { return a.size(); };
 
-  Shape operator +(const Shape& that);
-  Shape operator *(const double scale);
+  Shape operator +(const Shape& that) const;
+  Shape operator *(const double scale) const;
 
   static Shape createFromLinearCombination(Shape baseShape, vector<Shape> shapes, vector<double> params);
 };

@@ -1,29 +1,29 @@
 #include "Appearance.h"
 
-Appearace::Appearance(const Point2D64f& p, const Mat& i)
+Appearance::Appearance(const Point2d& p, const Mat& i)
 {
   this->setImage(i);
   this->setPos(p);
 }
 
-void Apppearance::setImage(const Mat& i)
+void Appearance::setImage(const Mat& i)
 {
   i.copyTo(this->a);
 }
 
-void Appearance::setPos(const Point2D64f& p)
+void Appearance::setPos(const Point2d& p)
 {
   this->pos = p;
 }
 
-Appearance Appearance::operator +(Appearance& that)
+Appearance Appearance::operator +(const Appearance& that) const
 {
   return Appearance(
-    0.5*this->pos + 0.5*that.pos, 
+    this->pos, 
     this->a * that.a);
 }
 
-Appearance Appearance::operator *(const double scale)
+Appearance Appearance::operator *(const double scale) const
 {
   return Appearance(this->pos, this->a * scale);
 }
