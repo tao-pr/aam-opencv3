@@ -6,6 +6,7 @@
 #define SHAPE_MODEL
 
 #include "master.h"
+#include "aux.h"
 #include "Appearance.h"
 
 class Shape
@@ -20,6 +21,8 @@ public:
 
   Shape operator +(const Shape& that) const;
   Shape operator *(const double scale) const;
+
+  void display(const Rect& bound, const string& wndName, double scaleFactor = 1.0) const;
 
   static Shape createFromLinearCombination(Shape baseShape, vector<Shape> shapes, vector<double> params);
 };

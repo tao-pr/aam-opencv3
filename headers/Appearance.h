@@ -6,6 +6,7 @@
 #define APP_MODEL
 
 #include "master.h"
+#include "aux.h"
 
 class Appearance
 {
@@ -18,6 +19,7 @@ public:
   virtual ~Appearance(){};
   void setImage(const Mat& i);
   void setPos(const Point2d& p);
+  void scale(const double s);
   // NOTE: The summation operator only averages the position
   // but will blend the appearance images altogether naively
   Appearance operator +(const Appearance& that) const;

@@ -1,6 +1,6 @@
 # Active Appearance Model
 
-> Implementation made specifically for OpenCV3
+Active Appearance Model for OpenCV3. No other dependencies required.
 
 ---
 >  :warning: :warning: The project is in progress  :warning: :warning:

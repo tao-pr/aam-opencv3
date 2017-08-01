@@ -8,6 +8,7 @@
 
 #include <string>
 #include <vector>
+#include <math.h>
 #include <assert.h>
 
 #include <opencv2/opencv.hpp>

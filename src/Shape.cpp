@@ -27,6 +27,17 @@ Shape Shape::operator *(const double scale) const
   return Shape(aOut);
 }
 
+void Shape::display(const Rect& bound, const string& wndName, double scaleFactor) const
+{
+  Mat canvas = Mat::zeros(bound.height, bound.width);
+  for (auto app : this->a)
+  {
+    // TAOTODO:
+  }
+
+  imshow(canvas, wndName);
+}
+
 Shape Shape::createFromLinearCombination(Shape baseShape, vector<Shape> shapes, vector<double> params)
 {
   int i = 0;

@@ -28,6 +28,13 @@ Appearance Appearance::operator *(const double scale) const
   return Appearance(this->pos, this->a * scale);
 }
 
+void Appearance::scale(const double s)
+{
+  this->pos.x *= s;
+  this->pos.y *= s;
+  this->a  = Aux::scaler(this->a, s);
+}
+
 Appearance Appearance::createFromLinearCombination(Appearance baseApp, vector<Appearance> apps, vector<double> params)
 {
   auto product = baseApp;
