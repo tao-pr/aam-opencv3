@@ -7,16 +7,19 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/headers")
 link_directories(/usr/local/lib)
 link_directories("$ENV{OPENCV_DIR}/lib")
 
-set(CMAKE_BUILD_TYPE Release)
-project(aam-opencv3 CXX C)
+set(TARGET "aam_opencv3")
+project(${TARGET} CXX C)
 
 # Source files
 file(GLOB SOURCES src/*.cpp)
+set(LIB_SRC src/Appearance.cpp)
 
-# Libraries
-set(LIB_SRC src/Appearance.cpp src/Shape.cpp)
+# Targets
+add_library(${TARGET} SHARED ${LIB_SRC})
+set_target_properties(${TARGET} PROPERTIES OUTPUT_NAME "aam_opencv3")
 
-target_link_libraries(
+
+target_link_libraries( ${TARGET}
   opencv_core 
   opencv_imgproc 
   opencv_video
@@ -29,5 +32,4 @@ target_link_libraries(
   opencv_xfeatures2d
 )
 
-# Targets
-add_library(aam-opencv3 SHARED ${LIB_SRC})
+message(STATUS "Target project : ${LIB_SRC}")
