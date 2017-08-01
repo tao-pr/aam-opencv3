@@ -3,16 +3,26 @@
 > Implementation made specifically for OpenCV3
 
 ---
+>  :warning: :warning: The project is in progress  :warning: :warning:
+---
 
 ## Prerequisites
 
 - [x] OpenCV 3
+- [x] CMake 3.8+
 
 ---
 
 ## Making
 
-TBA
+All you need is executing the script:
+
+```bash
+$ ./make
+```
+
+Wait for the compilation to finish, you will have the final output 
+of the library stored inside `/lib` directory.
 
 ---
 
