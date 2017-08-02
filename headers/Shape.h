@@ -13,6 +13,7 @@ class Shape
 protected:
   Rect constraint;
   vector<Point2d> vertices; // Triangulated mesh vertices
+  Mat app; // Appearance image
   Subdiv2D subdiv;
 
 public:
@@ -29,8 +30,11 @@ public:
   // Scaling of Appearance Model
   Shape operator *(const double scale) const;
 
+  void setAppearance(const Mat& src);
   void resize(const Rect& newSize);
   void normalise();
+  void applyParameters(const vector<double>& params);
+  vector<Point> convexHull() const;
 
   void display(const string& wndName, double scaleFactor = 1.0) const;
 };

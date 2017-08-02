@@ -42,6 +42,9 @@ Shape Shape::operator +(const Shape& that) const
 
 Shape Shape::operator *(const double scale) const
 {
+  Rect newSize(
+    (int)ceil(this->constraint.width * scale), 
+    (int)ceil(this->constraint.height * scale));
   vector<Appearance> aOut;
   for (auto ai : this->a)
   {
@@ -52,17 +55,35 @@ Shape Shape::operator *(const double scale) const
 
 void Shape::display(const string& wndName, double scaleFactor) const
 {
-  Size scaledBound = Size(
+  // TAOTOREVIEW: Utilise OpenGL
+  Rect scaledBound = Rect(
+    (int)ceil(scaleFactor * this->constraint.x),
+    (int)ceil(scaleFactor * this->constraint.y),
     (int)ceil(scaleFactor * this->constraint.width),
     (int)ceil(scaleFactor * this->constraint.height)
   );
-  Mat canvas = Mat::zeros(scaledBound.height, scaledBound.width);
-  for (auto app : this->a)
-  {
-    // TAOTODO: 
-  }
+  vector<Vec6f> triangles;
+  this->subdiv.getTriangleList(triangles);
+  Mat canvas = Mat::zeros(scaledBound.height, scaledBound.width, CV_32FC3);
+  for (int y=scaledBound.y; y<scaledBound.y + scaledBound.height; y++)
+    for (int x=scaledBound.x; x<scaledBound.x + scaledBound.width; x++)
+    {
+      // TAOTODO:
+    }
 
   imshow(canvas, wndName);
+}
+
+vector<Point> Shape::convexHull() const
+{
+  vector<Point> hull;
+  cv::convexHull(Mat(this->vertices), hull, false);
+  return hull;
+}
+
+void Shape::applyParameters(const vector<double>& params)
+{
+  // TAOTODO:
 }
 
 void Shape::resize(const Rect& newSize)
@@ -81,8 +102,15 @@ void Shape::resize(const Rect& newSize)
   }
   this->subdiv = newsubdiv;
 
-  // TAOTODO: Scale the appearance image here
+  // Scale the appearance image
+  Mat newApp(newSize, this->app.type());
+  resize(this->app, newApp, newSize);
+  newApp.copyTo(this->app);
+}
 
+void Shape::setAppearance(const Mat& src)
+{
+  this->app.copyFrom(src);
 }
 
 void Shape::normalise()
