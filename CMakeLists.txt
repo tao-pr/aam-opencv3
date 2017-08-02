@@ -12,7 +12,7 @@ project(${TARGET_LIB} CXX C)
 
 # Source files
 file(GLOB SOURCES src/*.cpp)
-set(LIB_SRC src/Appearance.cpp)
+set(LIB_SRC src/AAM.cpp)
 
 # Targets to build
 add_library(${TARGET_LIB} SHARED ${LIB_SRC})

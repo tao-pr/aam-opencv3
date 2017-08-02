@@ -1,8 +1,31 @@
 #include "Shape.h"
 
-Shape::Shape(const vector<Appearance>& apps)
+Shape::Shape(const Rect& size)
 {
-  this->a = apps;
+  this->constraint = size;
+  this->subdiv     = Subdiv2D(size);
+}
+
+Shape::Shape(const Rect& size, const vector<Point2d>& vs)
+{
+  this->constraint = size;
+  this->vertices   = vs;
+  this->subdiv     = Subdiv2D(size);
+  for (auto const v : this->vertices)
+  {
+    this->subdiv.insert(v);
+  }
+}
+
+Shape::Shape(const Shape& original)
+{
+  this->constraint = original.constraint;
+  this->vertices   = original.vertices;
+  this->subdiv     = Subdiv2D(size);
+  for (auto const v : this->vertices)
+  {
+    this->subdiv.insert(v);
+  }
 }
 
 Shape Shape::operator +(const Shape& that) const
@@ -27,25 +50,37 @@ Shape Shape::operator *(const double scale) const
   return Shape(aOut);
 }
 
-void Shape::display(const Rect& bound, const string& wndName, double scaleFactor) const
+void Shape::display(const string& wndName, double scaleFactor) const
 {
-  Mat canvas = Mat::zeros(bound.height, bound.width);
+  Size scaledBound = Size(
+    (int)ceil(scaleFactor * this->constraint.width),
+    (int)ceil(scaleFactor * this->constraint.height)
+  );
+  Mat canvas = Mat::zeros(scaledBound.height, scaledBound.width);
   for (auto app : this->a)
   {
-    // TAOTODO:
+    // TAOTODO: 
   }
 
   imshow(canvas, wndName);
 }
 
-Shape Shape::createFromLinearCombination(Shape baseShape, vector<Shape> shapes, vector<double> params)
+void Shape::resize(const Rect& newSize)
 {
-  int i = 0;
-  auto product = baseShape;
-  for (auto s : shapes) 
+  double wScale = (double)newSize.width / this->constraint.width;
+  double hScale = (double)newSize.height / this->constraint.height;
+  this->constraint = newSize;
+
+  // Regenerate the subdivision
+  Subdiv2D newsubdiv(newSize);
+  for (auto v : this->vertices)
   {
-    product = product + s * params[i];
-    ++i;
+    v.x *= wScale;
+    v.y *= hScale;
+    this->subdiv.insert(v);
   }
-  return product;
+  this->subdiv = newsubdiv;
+
+  // TAOTODO: Scale the appearance image here
+
 }
