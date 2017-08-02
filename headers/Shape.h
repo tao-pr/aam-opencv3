@@ -29,7 +29,8 @@ public:
   // Scaling of Appearance Model
   Shape operator *(const double scale) const;
 
-  Shape resize(const Rect& newSize);
+  void resize(const Rect& newSize);
+  void normalise();
 
   void display(const string& wndName, double scaleFactor = 1.0) const;
 };

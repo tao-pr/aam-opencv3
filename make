@@ -10,7 +10,7 @@ echo "================"
 echo "Preparing recipe"
 echo "================"
 cmake -DCMAKE_CXX_COMPILER=$(which g++) \
-      -DCMAKE_CXX_FLAGS="-std=c++11 -Wl" -LAH ..
+      -DCMAKE_CXX_FLAGS="-std=c++11 -Wall" -LAH ..
 
 echo "================"
 echo "Building..."

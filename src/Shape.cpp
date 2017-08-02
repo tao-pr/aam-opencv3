@@ -84,3 +84,8 @@ void Shape::resize(const Rect& newSize)
   // TAOTODO: Scale the appearance image here
 
 }
+
+void Shape::normalise()
+{
+  this->resize(Rect(1.0, 1.0));
+}
