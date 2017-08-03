@@ -28,6 +28,8 @@ Shape::Shape(const Shape& original)
   }
 }
 
+// TAOTODO: Add optional argument (background)
+// and option to draw only mesh without mapping appearance
 void Shape::render(IO::GenericIO io, double scaleFactor) const
 {
   // TAOTOREVIEW: Utilise OpenGL
@@ -39,6 +41,7 @@ void Shape::render(IO::GenericIO io, double scaleFactor) const
   );
   vector<Vec6f> triangles;
   this->subdiv.getTriangleList(triangles);
+  vector<Point2d> hull = this->convexHull();
   Mat canvas = Mat::zeros(scaledBound.height, scaledBound.width, CV_32FC3);
   for (int y=scaledBound.y; y<scaledBound.y + scaledBound.height; y++)
     for (int x=scaledBound.x; x<scaledBound.x + scaledBound.width; x++)
@@ -46,12 +49,19 @@ void Shape::render(IO::GenericIO io, double scaleFactor) const
       // TAOTODO:
     }
 
+  Point2d v0 = hull.front();
+  for (auto v : hull)
+  {
+    line(canvas, v0, v, Scalar(0,0,200), 1, CV_AA);
+    v0 = v;
+  }
+
   io.render(canvas);
 }
 
-vector<Point> Shape::convexHull() const
+vector<Point2d> Shape::convexHull() const
 {
-  vector<Point> hull;
+  vector<Point2d> hull;
   cv::convexHull(Mat(this->vertices), hull, false);
   return hull;
 }

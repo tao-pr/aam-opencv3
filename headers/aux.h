@@ -38,6 +38,7 @@ namespace Aux
       {
         ++numIntersection;
       }
+      v0 = v;
     }
     return numIntersection % 2 == 1;
   }

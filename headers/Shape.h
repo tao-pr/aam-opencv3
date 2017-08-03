@@ -30,7 +30,7 @@ public:
   void resize(const Rect& newSize);
   void normalise();
   void applyParameters(const vector<double>& params);
-  vector<Point> convexHull() const;
+  vector<Point2d> convexHull() const;
 
   void render(IO::GenericIO io, double scaleFactor = 1.0) const;
 };
