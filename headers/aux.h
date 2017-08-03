@@ -16,6 +16,31 @@ namespace Aux
       return out;
     }
   }
+
+  /**
+   * Check whether the point [c]
+   * is located inside the shape which has [vertices]
+   */
+  bool inline isInsideShape(const vector<Point2d>& vertices, Point2d c)
+  {
+    if (vertices.empty() || vertices.size()<=2)
+      return false;
+    auto v0 = vertices.front();
+    int numIntersection = 0;
+    for (auto v : vertices)
+    {
+      // Horizontal line test
+
+      // Check if an edge intersects with the horizontal line starting from [c]
+      if ((v0.x > c.x || v.x > c.x) && 
+        (min(v0.y, v.y) <= c.y) &&
+        (max(v0.y, v.y) >= c.y))
+      {
+        ++numIntersection;
+      }
+    }
+    return numIntersection % 2 == 1;
+  }
 }
 
 #endif
