@@ -10,6 +10,7 @@ Active Appearance Model for OpenCV3. No other dependencies required.
 
 - [x] OpenCV 3
 - [x] CMake 3.8+
+- [x] [Fmt](http://fmtlib.net/latest/usage.html#building-the-library)
 
 ---
 

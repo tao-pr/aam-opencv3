@@ -10,6 +10,7 @@
 #include <vector>
 #include <math.h>
 #include <assert.h>
+#include <fmt/format.h>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>

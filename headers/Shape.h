@@ -32,7 +32,7 @@ public:
   void applyParameters(const vector<double>& params);
   vector<Point2d> convexHull() const;
 
-  void render(IO::GenericIO io, double scaleFactor = 1.0) const;
+  void render(IO::GenericIO io, Mat background, double scaleFactor = 1.0) const;
 };
 
 

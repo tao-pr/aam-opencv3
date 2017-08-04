@@ -10,18 +10,47 @@ namespace IO
   private:
   public:
     virtual ~GenericIO(){}
-    virtual void render(const Mat& im) const = 0;
+    virtual void render(const Mat& im) = 0;
   };
 
   class FileOutputIO : GenericIO
   {
-  private:
+  protected:
     string fileName;
   public:
     FileOutputIO(const string fileName){ this->fileName = fileName; }
-    void render(const Mat& im) const 
+    virtual void render(const Mat& im) 
     {
       // TAOTODO:
+    }
+  };
+
+  class FileOutputWithRunningNameIO : FileOutputIO
+  {
+  private:
+    string baseFileName;
+    long long n;
+  protected:
+    void runFileName()
+    {
+      this->n++;
+      this->fileName = fmt::format(
+        "{0}-{1:4d}.jpg", 
+        this->baseFileName, this->n);
+    }
+  public:
+    FileOutputWithRunningNameIO(const string baseFileName)
+    : FileOutputIO(baseFileName)
+    {
+      this->baseFileName = baseFileName;
+      this->n            = -1;
+      this->runFileName();
+    }
+
+    virtual void render(const Mat& im)
+    {
+      FileOutputIO::render(im);
+      this->runFileName();
     }
   };
 
@@ -31,7 +60,7 @@ namespace IO
     string wndName;
   public:
     WindowIO(const string wndName){ this->wndName = wndName; }
-    void render(const Mat& im) const 
+    virtual void render(const Mat& im)
     {
       imshow(this->wndName, im);
     }
