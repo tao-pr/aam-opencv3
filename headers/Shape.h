@@ -32,6 +32,8 @@ public:
   void applyParameters(const vector<double>& params);
   vector<Point2d> convexHull() const;
 
+  // Render the shape onto a background image
+  // into an IO object.
   void render(IO::GenericIO io, Mat background, double scaleFactor = 1.0) const;
 };
 
