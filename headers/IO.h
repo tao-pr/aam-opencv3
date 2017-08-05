@@ -21,7 +21,7 @@ namespace IO
     FileOutputIO(const string fileName){ this->fileName = fileName; }
     virtual void render(const Mat& im) 
     {
-      imwrite(filename, im);
+      imwrite(fileName, im);
     }
   };
 
