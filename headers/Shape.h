@@ -27,7 +27,7 @@ public:
   Rect size() const { return constraint; }
 
   void setAppearance(const Mat& src);
-  void resize(const Rect& newSize);
+  void resize(const Size& newSize);
   void normalise();
   void applyParameters(const vector<double>& params);
   vector<Point2d> convexHull() const;

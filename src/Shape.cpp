@@ -70,7 +70,7 @@ void Shape::applyParameters(const vector<double>& params)
   // TAOTODO:
 }
 
-void Shape::resize(const Rect& newSize)
+void Shape::resize(const Size& newSize)
 {
   double wScale = (double)newSize.width / this->constraint.width;
   double hScale = (double)newSize.height / this->constraint.height;

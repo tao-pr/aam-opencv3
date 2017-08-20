@@ -42,6 +42,36 @@ namespace Aux
     }
     return numIntersection % 2 == 1;
   }
+
+  const Point2d inline centroid(const vector<Point2d>& vertices)
+  {
+    Point2d sum;
+    for (auto v : vertices)
+    {
+      sum += v;
+    }
+    sum.x /= (double)vertices.size();
+    sum.y /= (double)vertices.size();
+    return sum;
+  }
+
+  /**
+   * Normalise a set of vertices so they are zero-sum and 
+   * the total size is set to the target magnitude.
+   */
+  const vector<Point2d> inline normalise(const vector<Point2d>& vertices, double size)
+  {
+    vector<Point2d> output;
+    Point2d cent = centroid(vertices);
+    for (auto v : vertices)
+    {
+      Point2d v_ = Point2d(
+        v.x - cent.x,
+        v.y - cent.y);
+      output.push_back(v_);
+    }
+    return output;
+  }
 }
 
 #endif
