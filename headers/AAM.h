@@ -20,7 +20,6 @@ public:
   virtual ~GenericAAM() {};
 
   size_t length() const { return this->shape.length(); };
-  Rect size() const { return this->shape.size(); }
   virtual void fit(Mat im) = 0;
   virtual void saveToFile(const string& modelFileName) const = 0;
   virtual void loadFromFile(const string& modelFileName) = 0;

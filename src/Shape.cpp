@@ -1,25 +1,13 @@
 #include "Shape.h"
 
-Shape::Shape(const Rect& size)
-{
-  this->constraint = size;
-  this->subdiv     = Subdiv2D(size);
-}
 
-Shape::Shape(const Rect& size, const vector<Point2d>& vs)
+Shape::Shape(const vector<Point2d>& vs)
 {
-  this->constraint = size;
-  this->vertices   = vs;
-  this->subdiv     = Subdiv2D(size);
-  for (auto const v : this->vertices)
-  {
-    this->subdiv.insert(v);
-  }
+  this->vertices = vs;
 }
 
 Shape::Shape(const Shape& original)
 {
-  this->constraint = original.constraint;
   this->vertices   = original.vertices;
   this->subdiv     = Subdiv2D(size);
   for (auto const v : this->vertices)
@@ -28,46 +16,48 @@ Shape::Shape(const Shape& original)
   }
 }
 
-void Shape::render(IO::GenericIO io, Mat background, double scaleFactor) const
+const Point2d& Shape::meanPos() const
 {
-  // TAOTOREVIEW: Utilise OpenGL
-  Rect scaledBound = Rect(
-    (int)ceil(scaleFactor * this->constraint.x),
-    (int)ceil(scaleFactor * this->constraint.y),
-    (int)ceil(scaleFactor * this->constraint.width),
-    (int)ceil(scaleFactor * this->constraint.height)
-  );
-  vector<Vec6f> triangles;
-  this->subdiv.getTriangleList(triangles);
-  vector<Point2d> hull = this->convexHull();
-  Mat canvas = Mat(scaledBound.height, scaledBound.width, CV_32FC3);
-  canvas.copyFrom(background);
-  // for (int y=scaledBound.y; y<scaledBound.y + scaledBound.height; y++)
-  //   for (int x=scaledBound.x; x<scaledBound.x + scaledBound.width; x++)
-  //   {
-
-  //   }
-
-  Point2d v0 = hull.front();
-  for (auto v : hull)
+  double x = 0;
+  double y = 0;
+  double n = (double)this->vertices.size();
+  for (auto p : this->vertices)
   {
-    line(canvas, v0, v, Scalar(0,0,200), 1, CV_AA);
-    v0 = v;
+    x += p.x;
+    y += p.y;
   }
-
-  io.render(canvas);
+  return Point2d(x/n, y/n);
 }
+
+// void Shape::render(IO::GenericIO io, Mat background) const
+// {
+//   // TAOTOREVIEW: Utilise OpenGL
+//   vector<Vec6f> triangles;
+//   this->subdiv.getTriangleList(triangles);
+//   vector<Point2d> hull = this->convexHull();
+//   Mat canvas = Mat(scaledBound.height, scaledBound.width, CV_32FC3);
+//   canvas.copyFrom(background);
+//   // for (int y=scaledBound.y; y<scaledBound.y + scaledBound.height; y++)
+//   //   for (int x=scaledBound.x; x<scaledBound.x + scaledBound.width; x++)
+//   //   {
+
+//   //   }
+
+//   Point2d v0 = hull.front();
+//   for (auto v : hull)
+//   {
+//     line(canvas, v0, v, Scalar(0,0,200), 1, CV_AA);
+//     v0 = v;
+//   }
+
+//   io.render(canvas);
+// }
 
 vector<Point2d> Shape::convexHull() const
 {
   vector<Point2d> hull;
   cv::convexHull(Mat(this->vertices), hull, false);
   return hull;
-}
-
-void Shape::applyParameters(const vector<double>& params)
-{
-  // TAOTODO:
 }
 
 void Shape::resize(const Size& newSize)
@@ -97,7 +87,19 @@ void Shape::setAppearance(const Mat& src)
   this->app.copyFrom(src);
 }
 
-void Shape::normalise()
-{
-  this->resize(Rect(1.0, 1.0));
-}
+// Shape& Shape::fromAnnotation(const vector<Point2d>& ps, Mat img)
+// {
+//   // Apply PCA on annotated points
+//   Mat rawPoints = Mat(ps.size(), 2, CV_64FC1);
+//   for (int i=0; i<ps.size(); ++i)
+//   {
+//     rawPoints.at(i, 0) = ps[i].x;
+//     rawPoints.at(i, 1) = ps[i].y;
+//   }
+
+//   int nComponents = min(MAX_SHAPE_COMPONENTS, ps.size()/2);
+//   PCA pca(rawPoints, Mat(), PCA::DATA_AS_COLUMN, nComponents);
+//   Mat pcaPoints = Mat(nComponents, 2, CV_64FC1);
+
+//   // TAOTODO:
+// }

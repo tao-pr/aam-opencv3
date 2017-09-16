@@ -11,30 +11,33 @@
 
 class Shape
 {
+private:
+  const int MAX_SHAPE_COMPONENTS = 16;
+
 protected:
-  Rect constraint;
   vector<Point2d> vertices; // Triangulated mesh vertices
   Mat app; // Appearance image
-  Subdiv2D subdiv;
 
 public:
   Shape(){};
-  Shape(const Rect& size);
-  Shape(const Rect& size, const vector<Point2d>& vs);
+  Shape(vector<Point2d>& vs);
   Shape(const Shape& original);
   virtual ~Shape(){};
+
   size_t length() const { return this->vertices.size(); };
-  Rect size() const { return constraint; }
+  const Point2d& meanXY() const;
+
+  void save(const string path) const;
+  void load(const string path);
 
   void setAppearance(const Mat& src);
+  void setShapePCA(const Mat& src);
   void resize(const Size& newSize);
-  void normalise();
-  void applyParameters(const vector<double>& params);
   vector<Point2d> convexHull() const;
 
   // Render the shape onto a background image
   // into an IO object.
-  void render(IO::GenericIO io, Mat background, double scaleFactor = 1.0) const;
+  // void render(IO::GenericIO io, Mat background, double scaleFactor = 1.0) const;
 };
 
 

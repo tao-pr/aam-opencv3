@@ -56,10 +56,9 @@ namespace Aux
   }
 
   /**
-   * Normalise a set of vertices so they are zero-sum and 
-   * the total size is set to the target magnitude.
+   * Normalise a set of vertices so they are zero-sum.
    */
-  const vector<Point2d> inline normalise(const vector<Point2d>& vertices, double size)
+  const vector<Point2d> inline normalise(const vector<Point2d>& vertices)
   {
     vector<Point2d> output;
     Point2d cent = centroid(vertices);
@@ -72,6 +71,7 @@ namespace Aux
     }
     return output;
   }
+
 }
 
 #endif
