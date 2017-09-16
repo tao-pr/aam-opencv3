@@ -14,12 +14,16 @@ class MeshShape : public Shape
 private:
 protected:
   Subdiv2D subdiv;
-  
+
 public:
   MeshShape();
   MeshShape(vector<Point2d>& vs);
   MeshShape(const MeshShape& original);
   virtual ~MeshShape();
+
+  //------ I/O --------------
+  void render(IO::GenericIO io, Mat background, double scaleFactor = 1.0) const;
+
 };
 
 #endif
