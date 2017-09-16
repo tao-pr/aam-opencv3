@@ -10,20 +10,34 @@ MeshShape::MeshShape(vector<Point2d>& vs)
   }
 }
 
+MeshShape::MeshShape(const MeshShape& original)
+{
+  MeshShape(original->vertices);
+}
+
 void MeshShape::render(IO::GenericIO io, Mat background) const
 {
-  // TAOTOREVIEW: Utilise OpenGL
+  // TAOREVIEW: Utilise OpenGL
   vector<Vec6f> triangles;
   this->subdiv.getTriangleList(triangles);
   vector<Point2d> hull = this->convexHull();
   Mat canvas = Mat(scaledBound.height, scaledBound.width, CV_32FC3);
   canvas.copyFrom(background);
 
+  // Render edges
+  for (auto tr : triangles)
+  {
+    auto a = Point2d(tr[0], tr[1]);
+    auto b = Point2d(tr[2], tr[3]);
+    auto c = Point2d(tr[4], tr[5]);
+    drawTriangle(canvas, a,b,c, Scalar(0,0,200), 1, CV_AA);
+  }
+
   // Render boundary
   Point2d v0 = hull.front();
   for (auto v : hull)
   {
-    line(canvas, v0, v, Scalar(0,0,200), 1, CV_AA);
+    line(canvas, v0, v, Scalar(0,0,200), 3, CV_AA);
     v0 = v;
   }
 
