@@ -43,9 +43,30 @@ namespace Aux
     return numIntersection % 2 == 1;
   }
 
+  // Fast square root
+  // [href] : http://www.codeproject.com/Articles/69941/Best-Square-Root-Method-Algorithm-Function-Precisi
+  inline double _sqrt(double n)
+  {
+    union
+    {
+      int i;
+      double x;
+    } u;
+    u.x = n;
+    u.i = (1<<29) + (u.i >> 1) - (1<<22); 
+
+    // Two Babylonian Steps (simplified from:)
+    // u.x = 0.5f * (u.x + n/u.x);
+    // u.x = 0.5f * (u.x + n/u.x);
+    u.x =       u.x + n/u.x;
+    u.x = 0.25f*u.x + n/u.x;
+
+    return u.x;
+  }
+
   const Point2d inline centroid(const vector<Point2d>& vertices)
   {
-    Point2d sum;
+    Point2d sum = Point2d(0,0);
     for (auto v : vertices)
     {
       sum += v;
@@ -55,30 +76,48 @@ namespace Aux
     return sum;
   }
 
+  const double inline l2(const vector<Point2d>& vertices)
+  {
+    double sum = 0;
+    for (auto v : vertices)
+    {
+      sum += v.x * v.x + v.y * v.y;
+    }
+    return _sqrt(sum);
+  }
+
   /**
-   * Normalise a set of vertices so they are zero-sum.
+   * Normalise a group of vertices,
+   * so it results in a unit shape and translation removed.
    */
   const vector<Point2d> inline normalise(const vector<Point2d>& vertices)
   {
+    Point2d mean;
     vector<Point2d> output;
-    Point2d cent = centroid(vertices);
+    double norm = l2(vertices);
+    Point2d v0  = vertices[0];
+
     for (auto v : vertices)
     {
       Point2d v_ = Point2d(
-        v.x - cent.x,
-        v.y - cent.y);
+        (v.x - v0.x)/norm,
+        (v.y - v0.y)/norm
+      );
       output.push_back(v_);
     }
     return output;
   }
 
+}
+
+namespace Draw
+{
   void drawTriangle(Mat canvas, Point2d a, Point2d b, Point2d c, Scalar color, int thickness=1, int mode=0)
   {
     line(canvas, a, b, color, thickness, mode);
     line(canvas, c, b, color, thickness, mode);
     line(canvas, a, c, color, thickness, mode);
   }
-
 }
 
 #endif

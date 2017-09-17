@@ -30,7 +30,7 @@ void MeshShape::render(IO::GenericIO io, Mat background) const
     auto a = Point2d(tr[0], tr[1]);
     auto b = Point2d(tr[2], tr[3]);
     auto c = Point2d(tr[4], tr[5]);
-    drawTriangle(canvas, a,b,c, Scalar(0,0,200), 1, CV_AA);
+    Draw::drawTriangle(canvas, a,b,c, Scalar(0,0,200), 1, CV_AA);
   }
 
   // Render boundary

@@ -58,5 +58,11 @@ void Shape::resize(const Size& newSize)
   newApp.copyTo(this->app);
 }
 
+Shape Shape::normalise() const
+{
+  auto normalisedVertices = Aux::normalise(this->vertices);
+  return new Shape(normalisedVertices);
+}
+
 
 

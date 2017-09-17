@@ -35,6 +35,7 @@ public:
   //------ Operators -------
   void resize(const Size& newSize);
   Shape operator*(double scale) const; 
+  Shape normalise() const;
   
 };
 
