@@ -18,6 +18,7 @@ public:
   PCAShape(){};
   PCAShape(unsigned int maxNumComponents) : maxComponents(maxNumComponents) {};
   PCAShape(const PCAShape& original);
+  PCAShape(vector<Point2d>& vs);
   virtual ~PCAShape();
 };
 
