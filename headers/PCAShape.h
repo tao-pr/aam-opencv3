@@ -7,17 +7,18 @@
 
 #include "IO.h"
 #include "aux.h"
-#include "Shape.h"
+#include "MeshShape.h"
 
 class PCAShape : public MeshShape 
 {
-private:
 protected:
+  unsigned int maxComponents;
   PCA pca;
 public:
-  PCAShape();
+  PCAShape(){};
+  PCAShape(unsigned int maxNumComponents) : maxComponents(maxNumComponents) {};
   PCAShape(const PCAShape& original);
-  ~PCAShape();
+  virtual ~PCAShape();
 };
 
 #endif

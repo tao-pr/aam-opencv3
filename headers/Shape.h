@@ -12,8 +12,6 @@
 class Shape
 {
 private:
-  const int MAX_SHAPE_COMPONENTS = 16;
-
 protected:
   vector<Point2d> vertices; // Triangulated mesh vertices
 

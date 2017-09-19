@@ -16,7 +16,7 @@ protected:
   Subdiv2D subdiv;
 
 public:
-  MeshShape();
+  MeshShape() : Shape(){};
   MeshShape(vector<Point2d>& vs);
   MeshShape(const MeshShape& original);
   MeshShape(const Shape& shape);

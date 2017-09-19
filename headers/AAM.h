@@ -6,7 +6,7 @@
 #define GENERIC_AAM
 
 #include "master.h"
-#include "MeshShape.h"
+#include "PCAShape.h"
 #include "FaceLocaliser.h"
 
 class GenericAAM
@@ -14,7 +14,7 @@ class GenericAAM
 private:
 protected:
   FaceLocaliser* faceFinder;
-  MeshShape shape;
+  PCAShape shape;
 public:
   GenericAAM(FaceLocaliser* faceDetector) { this->faceFinder = faceDetector; }
   virtual ~GenericAAM() {};
