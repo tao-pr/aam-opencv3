@@ -1,7 +1,7 @@
 #ifndef AUX_UTIL
 #define AUX_UTIL
 
-#include "master.h"
+#include "master.h" 
 
 namespace Aux
 {

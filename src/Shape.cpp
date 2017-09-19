@@ -58,6 +58,26 @@ void Shape::resize(const Size& newSize)
   newApp.copyTo(this->app);
 }
 
+Shape operator*(double scale) const
+{
+  vector<Point2d> scaledVertices;
+  for (auto v : this->vertices)
+  {
+    scaledVertices.push_back(Point2d(v.x*scale, v.y*scale));
+  }
+  return new Shape(scaledVertices);
+}
+
+Shape operator>>(Point2d shift) const
+{
+  vector<Point2d> shiftedVertices;
+  for (auto v : this->vertices)
+  {
+    shiftedVertices.push_back(Point2d(v.x+shift.x, v.y+shift.y));
+  }
+  return new Shape(shiftedVertices);
+}
+
 Shape Shape::normalise() const
 {
   auto normalisedVertices = Aux::normalise(this->vertices);

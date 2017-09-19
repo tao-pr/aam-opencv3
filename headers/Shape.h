@@ -29,12 +29,13 @@ public:
   vector<Point2d> convexHull() const;
 
   //------ I/O ------
-  void save(const string path) const;
-  void load(const string path);
+  virtual void save(const string path) const;
+  virtual void load(const string path);
 
   //------ Operators -------
   void resize(const Size& newSize);
-  Shape operator*(double scale) const; 
+  Shape operator*(double scale) const;
+  Shape operator>>(Point2d shift) const; 
   Shape normalise() const;
   
 };
