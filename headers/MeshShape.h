@@ -19,6 +19,7 @@ public:
   MeshShape();
   MeshShape(vector<Point2d>& vs);
   MeshShape(const MeshShape& original);
+  MeshShape(const Shape& shape);
   virtual ~MeshShape();
 
   //------ I/O --------------

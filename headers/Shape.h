@@ -33,9 +33,8 @@ public:
   virtual void load(const string path);
 
   //------ Operators -------
-  void resize(const Size& newSize);
-  Shape operator*(double scale) const;
-  Shape operator>>(Point2d shift) const; 
+  Shape operator*(double scale) const; // Scaling
+  Shape operator>>(Point2d shift) const;  // Translating
   Shape normalise() const;
   
 };

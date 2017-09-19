@@ -36,28 +36,6 @@ vector<Point2d> Shape::convexHull() const
   return hull;
 }
 
-void Shape::resize(const Size& newSize)
-{
-  double wScale = (double)newSize.width / this->constraint.width;
-  double hScale = (double)newSize.height / this->constraint.height;
-  this->constraint = newSize;
-
-  // Regenerate the subdivision
-  Subdiv2D newsubdiv(newSize);
-  for (auto v : this->vertices)
-  {
-    v.x *= wScale;
-    v.y *= hScale;
-    this->subdiv.insert(v);
-  }
-  this->subdiv = newsubdiv;
-
-  // Scale the appearance image
-  Mat newApp(newSize, this->app.type());
-  resize(this->app, newApp, newSize);
-  newApp.copyTo(this->app);
-}
-
 Shape operator*(double scale) const
 {
   vector<Point2d> scaledVertices;

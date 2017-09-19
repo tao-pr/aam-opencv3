@@ -1,8 +1,7 @@
 #include "MeshShape.h"
 
-MeshShape::MeshShape(vector<Point2d>& vs)
+MeshShape::MeshShape(vector<Point2d>& vs) : Shape(vs)
 {
-  Shape(vs);
   this->subdiv = Subdiv2D(size);
   for (auto const v : this->vertices)
   {
@@ -13,6 +12,11 @@ MeshShape::MeshShape(vector<Point2d>& vs)
 MeshShape::MeshShape(const MeshShape& original)
 {
   MeshShape(original->vertices);
+}
+
+MeshShape::MeshShape(const Shape& shape)
+{
+  MeshShape(shape->vertices);
 }
 
 void MeshShape::render(IO::GenericIO io, Mat background) const
