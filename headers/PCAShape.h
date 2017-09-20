@@ -14,6 +14,7 @@ class PCAShape : public MeshShape
 protected:
   unsigned int maxComponents;
   PCA pca;
+  Mat pcaShape;
 public:
   PCAShape(){};
   PCAShape(unsigned int maxNumComponents) : maxComponents(maxNumComponents) {};
