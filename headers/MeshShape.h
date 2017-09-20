@@ -18,6 +18,7 @@ protected:
 public:
   MeshShape() : Shape(){};
   MeshShape(vector<Point2d>& vs);
+  MeshShape(const Mat& mat);
   MeshShape(const MeshShape& original);
   MeshShape(const Shape& shape);
   virtual ~MeshShape();

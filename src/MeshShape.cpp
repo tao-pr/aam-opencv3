@@ -9,6 +9,15 @@ MeshShape::MeshShape(vector<Point2d>& vs) : Shape(vs)
   }
 }
 
+MeshShape::MeshShape(const Mat& mat) : Shape(mat)
+{
+  this->subdiv = Subdiv2D(size);
+  for (auto const v : this->vertices)
+  {
+    this->subdiv.insert(v);
+  }
+}
+
 MeshShape::MeshShape(const MeshShape& original)
 {
   MeshShape(original->vertices);

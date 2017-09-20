@@ -6,14 +6,36 @@ Shape::Shape(const vector<Point2d>& vs)
   this->vertices = vs;
 }
 
+Shape::Shape(const Mat &mat)
+{
+  for (int j=0; j<mat.rows(); j++)
+  {
+    this->vertices.push_back(mat.at(j,0), mat.at(j,1));
+  }
+}
+
 Shape::Shape(const Shape& original)
 {
-  this->vertices   = original.vertices;
-  this->subdiv     = Subdiv2D(size);
+  this->vertices = original.vertices;
+  this->subdiv   = Subdiv2D(size);
   for (auto const v : this->vertices)
   {
     this->subdiv.insert(v);
   }
+}
+
+Mat Mat::toMat() const
+{
+  // TAOTODO:
+  Mat mat(this->vertices.size(), 2, CV_32FC1);
+  int j = 0;
+  for (auto v : this->vertices)
+  {
+    mat.at(j,0) = v.x;
+    mat.at(j,1) = v.y;
+    j++;
+  }
+
 }
 
 const Point2d& Shape::meanPos() const

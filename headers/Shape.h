@@ -18,6 +18,7 @@ protected:
 public:
   Shape(){};
   Shape(vector<Point2d>& vs);
+  Shape(const Mat &mat);
   Shape(const Shape& original);
   virtual ~Shape(){};
 
@@ -29,6 +30,7 @@ public:
   //------ I/O ------
   virtual void save(const string path) const;
   virtual void load(const string path);
+  Mat toMat() const;
 
   //------ Operators -------
   Shape operator*(double scale) const; // Scaling
