@@ -35,8 +35,8 @@ public:
   //------ Operators -------
   Shape operator*(double scale) const; // Scaling
   Shape operator>>(Point2d shift) const;  // Translating
-  Shape normalise() const;
-  Shape alignTo(const Shape& s) const;
+  virtual Shape normalise() const;
+  virtual Shape alignTo(const Shape& s) const;
   double procrustesDistance(const Shape& another) const;
   
 };
