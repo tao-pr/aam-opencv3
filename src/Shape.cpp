@@ -26,7 +26,6 @@ Shape::Shape(const Shape& original)
 
 Mat Mat::toMat() const
 {
-  // TAOTODO:
   Mat mat(this->vertices.size(), 2, CV_32FC1);
   int j = 0;
   for (auto v : this->vertices)
@@ -35,10 +34,10 @@ Mat Mat::toMat() const
     mat.at(j,1) = v.y;
     j++;
   }
-
+  return mat;
 }
 
-const Point2d& Shape::meanPos() const
+const Point2d& Shape::centroid() const
 {
   double x = 0;
   double y = 0;
@@ -82,6 +81,22 @@ Shape Shape::normalise() const
 {
   auto normalisedVertices = Aux::normalise(this->vertices);
   return new Shape(normalisedVertices);
+}
+
+double Shape::procrustesDistance(const Shape& another) const
+{
+  int size = this->vertices.size();
+  double sumDist = 0;
+  for (int i=0; i<size; i++)
+  {
+    sumDist += _sqrDist(this->vertices[i], another->vertices[i]);
+  }
+  return _sqrt(sumDist);
+}
+
+Shape Shape::alignTo(const Shape& s) const
+{
+  // TAOTODO: How?
 }
 
 

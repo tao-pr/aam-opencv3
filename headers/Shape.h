@@ -24,7 +24,7 @@ public:
 
   //----- General properties ------
   size_t length() const { return this->vertices.size(); };
-  const Point2d& meanXY() const;
+  const Point2d& centroid() const;
   vector<Point2d> convexHull() const;
 
   //------ I/O ------
@@ -36,6 +36,8 @@ public:
   Shape operator*(double scale) const; // Scaling
   Shape operator>>(Point2d shift) const;  // Translating
   Shape normalise() const;
+  Shape alignTo(const Shape& s) const;
+  double procrustesDistance(const Shape& another) const;
   
 };
 

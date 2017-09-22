@@ -43,6 +43,16 @@ namespace Aux
     return numIntersection % 2 == 1;
   }
 
+  inline double square(double n)
+  {
+    return n*n;
+  }
+
+  inline double _sqrDist(Point2d p1, Point2d p2)
+  {
+    return square(p1.x - p2.x) + square(p1.y - p2.y);
+  };
+
   // Fast square root
   // [href] : http://www.codeproject.com/Articles/69941/Best-Square-Root-Method-Algorithm-Function-Precisi
   inline double _sqrt(double n)

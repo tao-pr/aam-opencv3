@@ -20,7 +20,7 @@ public:
   void add(MeshShape s){ this->items.push_back(s); };
 
   MeshShape mean() const;
-}
+};
 
 
 
