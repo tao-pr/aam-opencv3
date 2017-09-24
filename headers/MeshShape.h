@@ -27,7 +27,6 @@ public:
 
   //------ I/O --------------
   void render(IO::GenericIO io, Mat background, double scaleFactor = 1.0) const;
-  virtual Shape normalise() const;
 };
 
 #endif

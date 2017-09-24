@@ -6,6 +6,7 @@
 #define AAM2D
 
 #include "master.h"
+#include "IO.h"
 #include "GenericAAM.h"
 
 class Trainset2D : public GenericTrainset

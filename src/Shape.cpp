@@ -2,58 +2,53 @@
 
 Shape::Shape(const vector<Point2d>& vs)
 {
-  this->vertices = vs;
+  this->mat = Mat(vs.size(), 2, CV_32FC1);
+  for (int j=0; j<vs.size(); j++)
+  {
+    this->mat.at(j,0) = vs[0].x;
+    this->mat.at(j,1) = vs[0].y;
+  }
 }
 
 Shape::Shape(const Mat &mat)
 {
-  for (int j=0; j<mat.rows(); j++)
-  {
-    this->vertices.push_back(mat.at(j,0), mat.at(j,1));
-  }
+  this->mat.copyFrom(mat);
 }
 
-Mat Mat::toMat() const
+Mat Mat::toPoints() const
 {
-  Mat mat(this->vertices.size(), 2, CV_32FC1);
-  int j = 0;
-  for (auto v : this->vertices)
+  vector<Point2d> vs;
+  int N = this->mat.rows;
+  for (int j=0; j<N; j++)
   {
-    mat.at(j,0) = v.x;
-    mat.at(j,1) = v.y;
-    j++;
+    vs.push_back(Point2d(this->mat.at(j,0), this->mat.at(j,1)));
   }
-  return mat;
+  return vs;
 }
 
 const Point2d& Shape::centroid() const
 {
-  double x = 0;
-  double y = 0;
-  double n = (double)this->vertices.size();
-  for (auto p : this->vertices)
-  {
-    x += p.x;
-    y += p.y;
-  }
-  return Point2d(x/n, y/n);
+  Mat m;
+  reduce(this->mat, m, 0, CV_REDUCE_AVG); // Mean by row
+  return Point2d(m.at(0,0), m.at(0,1));
 }
 
 vector<Point2d> Shape::convexHull() const
 {
   vector<Point2d> hull;
-  cv::convexHull(Mat(this->vertices), hull, false);
+  cv::convexHull(Mat(this->toPoints()), hull, false);
   return hull;
 }
 
-Shape Shape::operator-(const Shape& another) const
+Shape operator-(const Shape& another) const
 {
-  vector<Point2d> residual;
-  for (int i=0; i<this->vertices.size(); i++)
+  this->mat -= another->mat;
+  int N = this->mat.rows;
+  for (int j=0; j<N; j++)
   {
-    residual.push_back(_sqrt(_sqrDist(this->vertices[i], another.vertices[i])));
+    this->mat.at(j,0) = _sqrt(square(this->mat.at(j,0)));
   }
-  return Shape(residual);
+  return Shape(mat_);
 }
 
 Shape Shape::operator+(const Shape& another) const
@@ -68,40 +63,17 @@ Shape Shape::operator+(const Shape& another) const
 
 Shape Shape::operator*(double scale) const
 {
-  vector<Point2d> scaledVertices;
-  for (auto v : this->vertices)
-  {
-    scaledVertices.push_back(Point2d(v.x*scale, v.y*scale));
-  }
-  return new Shape(scaledVertices);
+  this->mat *= scale;
 }
 
 Shape Shape::operator>>(Point2d shift) const
 {
-  vector<Point2d> shiftedVertices;
-  for (auto v : this->vertices)
+  int N = this->mat.rows;
+  for (int j=0; j<N; j++)
   {
-    shiftedVertices.push_back(Point2d(v.x+shift.x, v.y+shift.y));
+    this->mat.at(j,0) += shift.x;
+    this->mat.at(j,1) += shift.y;
   }
-  return new Shape(shiftedVertices);
-}
-
-Shape Shape::normalise() const
-{
-  auto cent = this->centroid();
-  auto centred = this >> cent;
-  return centred * (1/centred.centroidSize(cent));
-}
-
-double Shape::procrustesDistance(const Shape& another) const
-{
-  int size = this->vertices.size();
-  double sumDist = 0;
-  for (int i=0; i<size; i++)
-  {
-    sumDist += _sqrDist(this->vertices[i], another->vertices[i]);
-  }
-  return _sqrt(sumDist);
 }
 
 

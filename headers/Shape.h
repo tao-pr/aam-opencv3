@@ -13,13 +13,13 @@ class Shape
 {
 private:
 protected:
-  vector<Point2d> vertices; // Triangulated mesh vertices
+  Mat mat;
 
 public:
   Shape(){};
   Shape(vector<Point2d>& vs);
   Shape(const Mat &mat);
-  inline Shape(const Shape& original) : vertices(original.vertices){};
+  inline Shape(const Shape& original){ this->mat.copyFrom(original.mat); };
   virtual ~Shape(){};
 
   //----- General properties ------
@@ -30,16 +30,13 @@ public:
   //------ I/O ------
   virtual void save(const string path) const;
   virtual void load(const string path);
-  Mat toMat() const;
+  Mat toPoints() const;
 
   //------ Operators -------
-  Shape operator-(const Shape& another) const; // Shape square distance
+  Shape operator-(const Shape& another) const; // Displacement between two shapes
   Shape operator+(const Shape& another) const; // Addition of two shapes
   Shape operator*(double scale) const; // Scaling
   Shape operator>>(Point2d shift) const;  // Translating
-  virtual Shape normalise() const; // Remove scaling and translation from [Shape]
-  double procrustesDistance(const Shape& another) const;
-  
 };
 
 

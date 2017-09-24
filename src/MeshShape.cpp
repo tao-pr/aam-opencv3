@@ -12,27 +12,23 @@ MeshShape::MeshShape(const Mat& mat) : Shape(mat)
 
 MeshShape::MeshShape(const MeshShape& original)
 {
-  MeshShape(original->vertices);
+  MeshShape(original->mat);
 }
 
 MeshShape::MeshShape(const Shape& shape)
 {
-  MeshShape(shape->vertices);
+  MeshShape(shape->mat);
+  resubdiv();
 }
 
 void MeshShape::resubdiv()
 {
   this->subdiv = Subdiv2D();
-  for (auto const v : this->vertices)
+  int N = this->mat.rows;
+  for (int j=0; j<N; j++)
   {
-    this->subdiv.insert(v);
+    this->subdiv.insert(Point2d(this->mat.at(j,0), this->mat.at(j,1)));
   }
-}
-
-Shape MeshShape::normalise() const
-{
-  Shape::normalise();
-  resubdiv();
 }
 
 void MeshShape::render(IO::GenericIO io, Mat background) const

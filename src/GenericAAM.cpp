@@ -3,5 +3,5 @@
 GenericTrainset::GenericTrainset(const ShapeCollection &annotations, const AppearanceCollection &appearances)
 {
   this->shapeEntries = ShapeCollection(annotations);
-  this->appEntries   = appearances; // TAOTODO:
+  this->appEntries   = AppearanceCollection(appearances);
 }
