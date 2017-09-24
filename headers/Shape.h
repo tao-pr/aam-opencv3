@@ -25,7 +25,6 @@ public:
   //----- General properties ------
   size_t length() const { return this->vertices.size(); };
   const Point2d& centroid() const;
-  const double centroidSize(const Point2d& precalculatedCentroid) const;
   vector<Point2d> convexHull() const;
 
   //------ I/O ------
@@ -34,6 +33,7 @@ public:
   Mat toMat() const;
 
   //------ Operators -------
+  Shape operator-(const Shape& another) const; // Shape distance
   Shape operator*(double scale) const; // Scaling
   Shape operator>>(Point2d shift) const;  // Translating
   virtual Shape normalise() const;

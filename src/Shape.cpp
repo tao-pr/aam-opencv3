@@ -57,7 +57,17 @@ vector<Point2d> Shape::convexHull() const
   return hull;
 }
 
-Shape operator*(double scale) const
+Shape Shape::operator-(const Shape& another) const
+{
+  vector<Point2d> residual;
+  for (int i=0; i<this->vertices.size(); i++)
+  {
+    residual.push_back(_sqrt(_sqrDist(this->vertices[i], another.vertices[i])));
+  }
+  return Shape(residual);
+}
+
+Shape Shape::operator*(double scale) const
 {
   vector<Point2d> scaledVertices;
   for (auto v : this->vertices)
@@ -67,7 +77,7 @@ Shape operator*(double scale) const
   return new Shape(scaledVertices);
 }
 
-Shape operator>>(Point2d shift) const
+Shape Shape::operator>>(Point2d shift) const
 {
   vector<Point2d> shiftedVertices;
   for (auto v : this->vertices)
@@ -75,16 +85,6 @@ Shape operator>>(Point2d shift) const
     shiftedVertices.push_back(Point2d(v.x+shift.x, v.y+shift.y));
   }
   return new Shape(shiftedVertices);
-}
-
-const double Shape::centroidSize(const Point2d& precalculatedCentroid) const
-{
-  double dist = 0;
-  for (auto v : this->vertices)
-  {
-    dist += _sqrDist(v, precalculatedCentroid);
-  }
-  return _sqrt(dist);
 }
 
 Shape Shape::normalise() const
