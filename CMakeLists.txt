@@ -18,7 +18,7 @@ project(${TARGET_LIB} CXX C)
 
 # Source files
 file(GLOB SOURCES src/*.cpp)
-set(LIB_SRC src/GenericAAM.cpp)
+set(LIB_SRC src/AAM2D.cpp)
 set(ANNOTATOR_SRC src/Annotator.cpp)
 
 # Targets to build

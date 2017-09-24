@@ -19,7 +19,7 @@ public:
   Shape(){};
   Shape(vector<Point2d>& vs);
   Shape(const Mat &mat);
-  Shape(const Shape& original);
+  inline Shape(const Shape& original) : vertices(original.vertices){};
   virtual ~Shape(){};
 
   //----- General properties ------
@@ -33,11 +33,11 @@ public:
   Mat toMat() const;
 
   //------ Operators -------
-  Shape operator-(const Shape& another) const; // Shape distance
+  Shape operator-(const Shape& another) const; // Shape square distance
+  Shape operator+(const Shape& another) const; // Addition of two shapes
   Shape operator*(double scale) const; // Scaling
   Shape operator>>(Point2d shift) const;  // Translating
-  virtual Shape normalise() const;
-  virtual Shape alignTo(const Shape& s) const;
+  virtual Shape normalise() const; // Remove scaling and translation from [Shape]
   double procrustesDistance(const Shape& another) const;
   
 };

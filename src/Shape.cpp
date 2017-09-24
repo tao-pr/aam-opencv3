@@ -1,6 +1,5 @@
 #include "Shape.h"
 
-
 Shape::Shape(const vector<Point2d>& vs)
 {
   this->vertices = vs;
@@ -12,11 +11,6 @@ Shape::Shape(const Mat &mat)
   {
     this->vertices.push_back(mat.at(j,0), mat.at(j,1));
   }
-}
-
-Shape::Shape(const Shape& original)
-{
-  this->vertices = original.vertices;
 }
 
 Mat Mat::toMat() const
@@ -62,6 +56,16 @@ Shape Shape::operator-(const Shape& another) const
   return Shape(residual);
 }
 
+Shape Shape::operator+(const Shape& another) const
+{
+  vector<Point2d> sum;
+  for (int i=0; i<this->vertices.size(); i++)
+  {
+    sum.push_back(this->vertices[i] + another.vertices[i]);
+  }
+  return Shape(sum);
+}
+
 Shape Shape::operator*(double scale) const
 {
   vector<Point2d> scaledVertices;
@@ -98,11 +102,6 @@ double Shape::procrustesDistance(const Shape& another) const
     sumDist += _sqrDist(this->vertices[i], another->vertices[i]);
   }
   return _sqrt(sumDist);
-}
-
-Shape Shape::alignTo(const Shape& s) const
-{
-  // TAOTODO: How?
 }
 
 
