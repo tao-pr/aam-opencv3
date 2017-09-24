@@ -25,6 +25,7 @@ public:
   //----- General properties ------
   size_t length() const { return this->vertices.size(); };
   const Point2d& centroid() const;
+  const double centroidSize(const Point2d& precalculatedCentroid) const;
   vector<Point2d> convexHull() const;
 
   //------ I/O ------

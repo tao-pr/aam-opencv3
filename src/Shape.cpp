@@ -77,10 +77,21 @@ Shape operator>>(Point2d shift) const
   return new Shape(shiftedVertices);
 }
 
+const double Shape::centroidSize(const Point2d& precalculatedCentroid) const
+{
+  double dist = 0;
+  for (auto v : this->vertices)
+  {
+    dist += _sqrDist(v, precalculatedCentroid);
+  }
+  return _sqrt(dist);
+}
+
 Shape Shape::normalise() const
 {
-  auto normalisedVertices = Aux::normalise(this->vertices);
-  return new Shape(normalisedVertices);
+  auto cent = this->centroid();
+  auto centred = this >> cent;
+  return centred * (1/centred.centroidSize(cent));
 }
 
 double Shape::procrustesDistance(const Shape& another) const

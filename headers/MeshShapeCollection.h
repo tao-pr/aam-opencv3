@@ -15,7 +15,7 @@ protected:
   vector<MeshShape> items;
 public:
   MeshShapeCollection(){};
-  MeshShapeCollection(vector<MeshShape> shapes);
+  MeshShapeCollection(const vector<MeshShape>& shapes);
 
   void add(MeshShape s){ this->items.push_back(s); };
 
