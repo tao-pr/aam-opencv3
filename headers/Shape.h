@@ -19,11 +19,10 @@ public:
   Shape(){};
   Shape(vector<Point2d>& vs);
   Shape(const Mat &mat);
-  inline Shape(const Shape& original){ this->mat.copyFrom(original.mat); };
+  inline Shape(const Shape& original){ original.mat.copyTo(mat); };
   virtual ~Shape(){};
 
   //----- General properties ------
-  size_t length() const { return this->vertices.size(); };
   const Point2d& centroid() const;
   vector<Point2d> convexHull() const;
 

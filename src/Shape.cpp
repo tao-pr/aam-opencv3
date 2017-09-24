@@ -10,9 +10,9 @@ Shape::Shape(const vector<Point2d>& vs)
   }
 }
 
-Shape::Shape(const Mat &mat)
+Shape::Shape(const Mat &_mat)
 {
-  this->mat.copyFrom(mat);
+  _mat.copyTo(this->mat);
 }
 
 Mat Mat::toPoints() const
