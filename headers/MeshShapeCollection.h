@@ -14,10 +14,10 @@ private:
 protected:
   vector<MeshShape> items;
 public:
-  MeshShapeCollection(){};
+  inline MeshShapeCollection(){};
   MeshShapeCollection(const vector<MeshShape>& shapes);
 
-  void add(MeshShape s){ this->items.push_back(s); };
+  inline void add(MeshShape s){ this->items.push_back(s); };
 
   MeshShape mean() const;
 };

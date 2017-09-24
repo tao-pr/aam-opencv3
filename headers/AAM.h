@@ -10,6 +10,9 @@
 #include "FaceLocaliser.h"
 #include "MeshShapeCollection.h"
 
+/**
+ * Representative of the trained AAM which is ready to use
+ */
 class GenericAAM
 {
 private:
@@ -27,15 +30,18 @@ public:
   virtual void trainFromFileList(const vector<string>& filelist) = 0;
 };
 
+/**
+ * Trainset collection for the AAM
+ */
 class GenericTrainset
 {
 private:
 protected:
-  MeshShapeCollection *shapeEntries;
+  MeshShapeCollection shapeEntries;
 public:
-  GenericTrainset(const vector<MeshShape> &annotations, const vector<Mat> &imgs);
-  virtual ~GenericTrainset();
-  virtual GenericAAM train() const;
+  GenericTrainset(const MeshShapeCollection &annotations, const vector<Mat> &imgs);
+  virtual inline ~GenericTrainset(){};
+  virtual GenericAAM train(bool verbose) const;
 };
 
 

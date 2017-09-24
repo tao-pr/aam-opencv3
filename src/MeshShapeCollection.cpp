@@ -11,7 +11,7 @@ MeshShape MeshShapeCollection::mean() const
   // to find the mean shape without translation, planar rotation
   MeshShape meanShape = this->items[0];
 
-  // Iterate until converges
+  // Iterate until converges, skip the first
   for (auto shapeIter=this->items.begin()+1; shapeIter != this->items.end(); shapeIter++)
   {
     auto unit = ShapeIter->normalise();
