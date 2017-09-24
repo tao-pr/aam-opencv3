@@ -16,8 +16,9 @@ protected:
 public:
   inline ShapeCollection(){};
   ShapeCollection(const vector<Shape>& shapes);
+  ShapeCollection(const ShapeCollection& original);
 
-  inline void add(Shape s){ this->items.push_back(s); };
+  inline void add(const Shape &s){ this->items.push_back(s); };
 
   Shape mean() const;
 };

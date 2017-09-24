@@ -5,6 +5,11 @@ ShapeCollection::ShapeCollection(const vector<Shape>& shapes)
   this->items = shapes;
 }
 
+ShapeCollection::ShapeCollection(const ShapeCollection& original)
+{
+  this->items = original.items;
+}
+
 MeshShape ShapeCollection::mean() const
 {
   // Take the first shape from the collection as initial mean
@@ -21,7 +26,7 @@ MeshShape ShapeCollection::mean() const
   vector<Shape> residualShapes;
   for (auto shape : this->items)
   {
-    residualShapes.push_back();
+    residualShapes.push_back(shape - meanShape);
   }
 
   return meanShape;

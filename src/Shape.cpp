@@ -17,11 +17,6 @@ Shape::Shape(const Mat &mat)
 Shape::Shape(const Shape& original)
 {
   this->vertices = original.vertices;
-  this->subdiv   = Subdiv2D(size);
-  for (auto const v : this->vertices)
-  {
-    this->subdiv.insert(v);
-  }
 }
 
 Mat Mat::toMat() const

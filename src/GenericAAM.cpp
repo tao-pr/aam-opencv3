@@ -5,8 +5,3 @@ GenericTrainset::GenericTrainset(const ShapeCollection &annotations, const vecto
   this->shapeEntries = annotations;
   // TAOTODO: Store MeshAppearanceCollection
 }
-
-GenericAAM GenericTrainset::train(bool verbose) const
-{
-
-}
