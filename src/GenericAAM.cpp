@@ -1,7 +1,7 @@
-#include "AAM.h"
+#include "GenericAAM.h"
 
-GenericTrainset::GenericTrainset(const ShapeCollection &annotations, const vector<Mat> &imgs)
+GenericTrainset::GenericTrainset(const ShapeCollection &annotations, const AppearanceCollection &appearances)
 {
   this->shapeEntries = annotations;
-  // TAOTODO: Store MeshAppearanceCollection
+  this->appEntries   = appearances;
 }

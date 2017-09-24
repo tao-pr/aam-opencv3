@@ -7,9 +7,9 @@
 
 #include "master.h"
 #include "Shape.h"
-#include "MeshShape.h"
 #include "FaceLocaliser.h"
 #include "ShapeCollection.h"
+#include "AppearanceCollection.h"
 
 /**
  * Representative of the trained AAM which is ready to use
@@ -38,8 +38,9 @@ class GenericTrainset
 private:
 protected:
   ShapeCollection shapeEntries;
+  AppearanceCollection appEntries;
 public:
-  GenericTrainset(const ShapeCollection &annotations, const vector<Mat> &imgs);
+  GenericTrainset(const ShapeCollection &annotations, const AppearanceCollection &appearances);
   virtual inline ~GenericTrainset(){};
   virtual GenericAAM train(bool verbose) const = 0;
 };
