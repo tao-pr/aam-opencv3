@@ -18,6 +18,12 @@ namespace Aux
     }
   }
 
+  Mat inline rotateByAngle(const Mat& m, double angle)
+  {
+    Mat R = (Mat_<float>(2,2) << cos(angle), -sin(angle), sin(angle), cos(angle));
+    return R * m;
+  }
+
   /**
    * Check whether the point [c]
    * is located inside the shape which has [vertices]

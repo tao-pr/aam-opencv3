@@ -27,11 +27,10 @@ const ShapeCollection& ShapeCollection::normaliseRotation() const
     auto svd = SVD(xx, FULL_UV);
     u = svd.u;
     v = svt.vt.t();
-    vut = mul(v, u.t()) ;
+    R = v * u.t();
 
-    auto theta = acos(vut.at(0,0));
-
-    // TAOTODO: rotate shape by theta and store in norm<>
+    // rotate shape by theta and store in norm<>
+    norml.push_back(R * xj);
   }
 
   return ShapeCollection(norml);
