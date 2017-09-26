@@ -12,11 +12,12 @@ class ShapeCollection
 {
 private:
 protected:
+  bool verbose;
   vector<Shape> items;
 public:
-  inline ShapeCollection(){};
-  inline ShapeCollection(const vector<Shape>& shapes) : items(shapes){};
-  inline ShapeCollection(const ShapeCollection& original) : items(original.items){};
+  inline ShapeCollection(const bool verbose=false) : verbose(verbose){};
+  inline ShapeCollection(const vector<Shape>& shapes, const bool verbose=false) : verbose(verbose), items(shapes){};
+  inline ShapeCollection(const ShapeCollection& original, const bool verbose=false) : verbose(verbose), items(original.items){};
 
   inline void add(const Shape &s){ this->items.push_back(s); };
 

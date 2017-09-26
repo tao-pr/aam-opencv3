@@ -2,6 +2,7 @@
 #define AUX_UTIL
 
 #include "master.h" 
+#include "math.h"
 
 namespace Aux
 {
