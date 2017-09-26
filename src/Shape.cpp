@@ -40,7 +40,21 @@ vector<Point2d> Shape::convexHull() const
   return hull;
 }
 
-Shape operator-(const Shape& another) const
+const double Shape::sumSquareDistanceToPoint(const Point2d& p) const
+{
+  // Procrustes distance
+  double d = 0;
+  int N = this->mat.rows;
+  for (int j=0; j<N; j++)
+  {
+    double x = this->mat.at(j,0);
+    double y = this->mat.at(j,1);
+    d += square(y - p.y) + square(x - p.x);
+  }
+  return d;
+}
+
+Shape Shape::operator-(const Shape& another) const
 {
   this->mat -= another->mat;
   int N = this->mat.rows;

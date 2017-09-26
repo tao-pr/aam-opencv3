@@ -20,7 +20,7 @@ public:
 
   inline void add(const Shape &s){ this->items.push_back(s); };
 
-  Shape mean() const;
+  Shape procrustes() const;
 };
 
 

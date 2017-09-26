@@ -25,6 +25,7 @@ public:
   //----- General properties ------
   const Point2d& centroid() const;
   vector<Point2d> convexHull() const;
+  const double sumSquareDistanceToPoint(const Point2d& p) const;
 
   //------ I/O ------
   virtual void save(const string path) const;
