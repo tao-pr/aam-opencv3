@@ -1,6 +1,6 @@
 #include "ShapeCollection.h"
 
-MeshShape ShapeCollection::procrustes() const
+const ShapeCollection& ShapeCollection::normaliseScalingTranslation() const
 {
   // Rescale each shape so the centroid size = 1
   // and translate to the centroid
@@ -11,9 +11,13 @@ MeshShape ShapeCollection::procrustes() const
     auto cdist    = shape.sumSquareDistanceToPoint(centroid);
     scaled.push_back((shape * (1.0/cdist)) >> centroid);
   }
+  return ShapeCollection(scaled);
+}
 
+const ShapeCollection& ShapeCollection::normaliseRotation() const
+{
+  vector<Shape> norml;
   // TAOTODO:
 
-
-  return meanShape;
+  return ShapeCollection(norml);
 }

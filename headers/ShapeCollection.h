@@ -20,7 +20,8 @@ public:
 
   inline void add(const Shape &s){ this->items.push_back(s); };
 
-  Shape procrustes() const;
+  const ShapeCollection& normaliseScalingTranslation() const;
+  const ShapeCollection& normaliseRotation() const;
 };
 
 
