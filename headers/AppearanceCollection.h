@@ -18,5 +18,4 @@ public:
   AppearanceCollection(const AppearanceCollection& original);
 };
 
-
 #endif
