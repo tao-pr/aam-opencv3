@@ -129,7 +129,7 @@ namespace Aux
 
 namespace Draw
 {
-  void drawTriangle(Mat canvas, Point2d a, Point2d b, Point2d c, Scalar color, int thickness=1, int mode=0)
+  inline void drawTriangle(Mat canvas, Point2d a, Point2d b, Point2d c, Scalar color, int thickness=1, int mode=0)
   {
     line(canvas, a, b, color, thickness, mode);
     line(canvas, c, b, color, thickness, mode);

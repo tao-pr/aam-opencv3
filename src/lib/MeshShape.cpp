@@ -31,7 +31,7 @@ void MeshShape::resubdiv()
   }
 }
 
-void MeshShape::render(const Size &size, IO::GenericIO io, Mat background) const
+void MeshShape::render(const Size &size, IO::GenericIO* io, Mat background) const
 {
   // TAOREVIEW: Utilise OpenGL
   vector<Vec6f> triangles;
@@ -57,5 +57,5 @@ void MeshShape::render(const Size &size, IO::GenericIO io, Mat background) const
     v0 = v;
   }
 
-  io.render(canvas);
+  io->render(canvas);
 }
