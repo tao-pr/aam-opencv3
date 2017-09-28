@@ -5,6 +5,7 @@
 #ifndef SHAPE_COLLECTION
 #define SHAPE_COLLECTION
 
+#include "IO.h"
 #include "master.h"
 #include "Shape.h"
 
@@ -21,8 +22,13 @@ public:
 
   inline void add(const Shape &s){ this->items.push_back(s); };
 
+  // ---------- Transformations ---------------
   const ShapeCollection& normaliseScalingTranslation() const;
   const ShapeCollection& normaliseRotation() const;
+
+  // ---------- I/O ------------------
+  void renderShapeVariation(IO::GenericIO io) const;
+
 };
 
 

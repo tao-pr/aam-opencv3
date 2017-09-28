@@ -35,3 +35,8 @@ const ShapeCollection& ShapeCollection::normaliseRotation() const
 
   return ShapeCollection(norml);
 }
+
+void ShapeCollection::renderShapeVariation(IO::GenericIO io) const
+{
+  // TAOTODO:
+}
