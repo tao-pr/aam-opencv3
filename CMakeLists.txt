@@ -58,7 +58,7 @@ set_target_properties(${TARGET_TEST} PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 
 # Build recipe
-# target_link_libraries( ${TARGET_LIB} ${BUILD_DEPENDENCIES})
+target_link_libraries( ${TARGET_LIB} ${BUILD_DEPENDENCIES})
 target_link_libraries( ${TARGET_ANNOTATOR} ${BUILD_DEPENDENCIES} ${TARGET_LIB})
 target_link_libraries( ${TARGET_TEST} ${BUILD_DEPENDENCIES} ${TARGET_LIB})
 
