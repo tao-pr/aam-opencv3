@@ -23,7 +23,7 @@ public:
   MeshShape(const Mat& mat);
   MeshShape(const MeshShape& original);
   MeshShape(const Shape& shape);
-  virtual ~MeshShape();
+  virtual inline ~MeshShape(){};
 
   //------ I/O --------------
   void render(const Size &size, IO::GenericIO io, Mat background) const;
