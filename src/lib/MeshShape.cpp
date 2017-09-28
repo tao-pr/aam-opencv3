@@ -12,12 +12,12 @@ MeshShape::MeshShape(const Mat& mat) : Shape(mat)
 
 MeshShape::MeshShape(const MeshShape& original)
 {
-  MeshShape(original->mat);
+  MeshShape(original.mat);
 }
 
 MeshShape::MeshShape(const Shape& shape)
 {
-  MeshShape(shape->mat);
+  MeshShape(shape.mat);
   resubdiv();
 }
 
@@ -27,18 +27,18 @@ void MeshShape::resubdiv()
   int N = this->mat.rows;
   for (int j=0; j<N; j++)
   {
-    this->subdiv.insert(Point2d(this->mat.at(j,0), this->mat.at(j,1)));
+    this->subdiv.insert(Point2d(this->mat.at<float>(j,0), this->mat.at<float>(j,1)));
   }
 }
 
-void MeshShape::render(IO::GenericIO io, Mat background) const
+void MeshShape::render(const Size &size, IO::GenericIO io, Mat background) const
 {
   // TAOREVIEW: Utilise OpenGL
   vector<Vec6f> triangles;
   this->subdiv.getTriangleList(triangles);
   vector<Point2d> hull = this->convexHull();
-  Mat canvas = Mat(scaledBound.height, scaledBound.width, CV_32FC3);
-  canvas.copyFrom(background);
+  Mat canvas = Mat(size.height, size.width, CV_32FC3);
+  background.copyTo(canvas);
 
   // Render edges
   for (auto tr : triangles)

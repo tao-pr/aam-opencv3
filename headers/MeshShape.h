@@ -26,7 +26,7 @@ public:
   virtual ~MeshShape();
 
   //------ I/O --------------
-  void render(IO::GenericIO io, Mat background, double scaleFactor = 1.0) const;
+  void render(const Size &size, IO::GenericIO io, Mat background) const;
 };
 
 #endif

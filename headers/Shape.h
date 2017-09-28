@@ -12,10 +12,9 @@
 class Shape
 {
 private:
-protected:
-  Mat mat;
-
 public:
+  Mat mat;
+  
   inline Shape(){};
   Shape(const vector<Point2d>& vs);
   Shape(const Mat &mat);
@@ -30,7 +29,7 @@ public:
   //------ I/O ------
   virtual void save(const string path) const;
   virtual void load(const string path);
-  Mat toPoints() const;
+  vector<Point2d> toPoints() const;
 
   //------ Operators -------
   Shape operator-(const Shape& another) const; // Displacement between two shapes

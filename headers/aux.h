@@ -62,7 +62,7 @@ namespace Aux
 
   // Fast square root
   // [href] : http://www.codeproject.com/Articles/69941/Best-Square-Root-Method-Algorithm-Function-Precisi
-  inline double _sqrt(double n)
+  inline double sqrt(double n)
   {
     union
     {
@@ -100,7 +100,7 @@ namespace Aux
     {
       sum += v.x * v.x + v.y * v.y;
     }
-    return _sqrt(sum);
+    return Aux::sqrt(sum);
   }
 
   /**
