@@ -80,7 +80,7 @@ Shape Shape::operator*(double scale) const
   this->mat *= scale;
 }
 
-Shape Shape::operator>>(Point2d shift) const
+Shape Shape::operator >>(Point2d shift) const
 {
   int N = this->mat.rows;
   for (int j=0; j<N; j++)
@@ -88,6 +88,16 @@ Shape Shape::operator>>(Point2d shift) const
     this->mat.at(j,0) += shift.x;
     this->mat.at(j,1) += shift.y;
   }
+}
+
+void Shape::save(const string path) const
+{
+
+}
+
+void Shape::load(const string path)
+{
+  
 }
 
 

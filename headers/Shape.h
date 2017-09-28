@@ -16,11 +16,11 @@ protected:
   Mat mat;
 
 public:
-  Shape(){};
-  Shape(vector<Point2d>& vs);
+  inline Shape(){};
+  Shape(const vector<Point2d>& vs);
   Shape(const Mat &mat);
   inline Shape(const Shape& original){ original.mat.copyTo(mat); };
-  virtual ~Shape(){};
+  inline virtual ~Shape(){};
 
   //----- General properties ------
   const Point2d& centroid() const;
@@ -36,9 +36,7 @@ public:
   Shape operator-(const Shape& another) const; // Displacement between two shapes
   Shape operator+(const Shape& another) const; // Addition of two shapes
   Shape operator*(double scale) const; // Scaling
-  Shape operator>>(Point2d shift) const;  // Translating
+  Shape operator >>(Point2d shift) const;  // Translating
 };
-
-
 
 #endif

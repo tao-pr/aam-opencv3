@@ -19,6 +19,7 @@ public:
   inline ShapeCollection(const bool verbose=false) : verbose(verbose){};
   inline ShapeCollection(const vector<Shape>& shapes, const bool verbose=false) : verbose(verbose), items(shapes){};
   inline ShapeCollection(const ShapeCollection& original, const bool verbose=false) : verbose(verbose), items(original.items){};
+  inline ~ShapeCollection(){};
 
   inline void add(const Shape &s){ this->items.push_back(s); };
 
