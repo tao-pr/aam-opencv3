@@ -27,7 +27,7 @@ void MeshShape::resubdiv()
   int N = this->mat.rows;
   for (int j=0; j<N; j++)
   {
-    this->subdiv.insert(Point2d(this->mat.at<float>(j,0), this->mat.at<float>(j,1)));
+    this->subdiv.insert(Point2d(this->mat.at<double>(j,0), this->mat.at<double>(j,1)));
   }
 }
 
@@ -37,7 +37,7 @@ void MeshShape::render(const Size &size, IO::GenericIO io, Mat background) const
   vector<Vec6f> triangles;
   this->subdiv.getTriangleList(triangles);
   vector<Point2d> hull = this->convexHull();
-  Mat canvas = Mat(size.height, size.width, CV_32FC3);
+  Mat canvas = Mat(size.height, size.width, CV_64FC3);
   background.copyTo(canvas);
 
   // Render edges

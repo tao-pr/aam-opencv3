@@ -15,11 +15,11 @@ inline const ShapeCollection& initialShapeCollection(int num, int shapeSize)
   vector<Shape> trainset;
   for (int i=0; i<num; i++)
   {
-    Mat m(shapeSize, 2, CV_32FC1);
+    Mat m(shapeSize, 2, CV_64FC1);
     for (int n=0; n<shapeSize; n++)
     {
-      m.at<float>(n, 0) = (float)(rand()*CANVAS_SIZE);
-      m.at<float>(n, 1) = (float)(rand()*CANVAS_SIZE);
+      m.at<double>(n, 0) = (float)(rand()*CANVAS_SIZE);
+      m.at<double>(n, 1) = (float)(rand()*CANVAS_SIZE);
     }
     trainset.push_back(Shape(m));
   }

@@ -2,11 +2,11 @@
 
 Shape::Shape(const vector<Point2d>& vs)
 {
-  this->mat = Mat(vs.size(), 2, CV_32FC1);
+  this->mat = Mat(vs.size(), 2, CV_64FC1);
   for (int j=0; j<vs.size(); j++)
   {
-    this->mat.at<float>(j,0) = vs[0].x;
-    this->mat.at<float>(j,1) = vs[0].y;
+    this->mat.at<double>(j,0) = vs[0].x;
+    this->mat.at<double>(j,1) = vs[0].y;
   }
 }
 
@@ -21,7 +21,7 @@ vector<Point2d> Shape::toPoints() const
   int N = this->mat.rows;
   for (int j=0; j<N; j++)
   {
-    vs.push_back(Point2d(this->mat.at<float>(j,0), this->mat.at<float>(j,1)));
+    vs.push_back(Point2d(this->mat.at<double>(j,0), this->mat.at<double>(j,1)));
   }
   return vs;
 }
@@ -30,7 +30,7 @@ const Point2d& Shape::centroid() const
 {
   Mat m;
   reduce(this->mat, m, 0, CV_REDUCE_AVG); // Mean by row
-  return Point2d(m.at<float>(0,0), m.at<float>(0,1));
+  return Point2d(m.at<double>(0,0), m.at<double>(0,1));
 }
 
 vector<Point2d> Shape::convexHull() const
@@ -47,8 +47,8 @@ const double Shape::sumSquareDistanceToPoint(const Point2d& p) const
   int N = this->mat.rows;
   for (int j=0; j<N; j++)
   {
-    double x = this->mat.at<float>(j,0);
-    double y = this->mat.at<float>(j,1);
+    double x = this->mat.at<double>(j,0);
+    double y = this->mat.at<double>(j,1);
     d += Aux::square(y - p.y) + Aux::square(x - p.x);
   }
   return d;
@@ -56,26 +56,14 @@ const double Shape::sumSquareDistanceToPoint(const Point2d& p) const
 
 Shape Shape::operator-(const Shape& another) const
 {
+  // Square distance of the two shape (element-wise)
   this->mat -= another.mat;
-  int N = this->mat.rows;
-  for (int j=0; j<N; j++)
-  {
-    auto x = this->mat.at<float>(j,0);
-    auto y = this->mat.at<float>(j,1);
-    this->mat.at<float>(j,0) = Aux::sqrt(Aux::square(x));
-    this->mat.at<float>(j,1) = Aux::sqrt(Aux::square(y));
-  }
-  return Shape(mat_);
+  return Shape(this->mat.mul(this->mat));
 }
 
 Shape Shape::operator+(const Shape& another) const
 {
-  vector<Point2d> sum;
-  for (int i=0; i<this->vertices.size(); i++)
-  {
-    sum.push_back(this->vertices[i] + another.vertices[i]);
-  }
-  return Shape(sum);
+  return Shape(this->mat + another.mat);
 }
 
 Shape Shape::operator*(double scale) const
@@ -88,8 +76,8 @@ Shape Shape::operator >>(Point2d shift) const
   int N = this->mat.rows;
   for (int j=0; j<N; j++)
   {
-    this->mat.at<float>(j,0) += shift.x;
-    this->mat.at<float>(j,1) += shift.y;
+    this->mat.at<double>(j,0) += shift.x;
+    this->mat.at<double>(j,1) += shift.y;
   }
 }
 
