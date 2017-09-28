@@ -23,14 +23,14 @@ const ShapeCollection& ShapeCollection::normaliseRotation() const
   {
     // Compute SVD on xj•x0
     Mat xj = shapeIter->mat;
-    Mat xx = mul(xj.t(), x0);
-    auto svd = SVD(xx, FULL_UV);
-    u = svd.u;
-    v = svt.vt.t();
-    R = v * u.t();
+    Mat xx = xj.t() * x0;
+    auto svd = SVD(xx, SVD::FULL_UV);
+    auto u = svd.u;
+    auto v = svd.vt.t();
+    auto R = v * u.t();
 
     // rotate shape by theta and store in norm<>
-    norml.push_back(R * xj);
+    norml.push_back(Shape(R * xj));
   }
 
   return ShapeCollection(norml);

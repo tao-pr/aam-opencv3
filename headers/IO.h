@@ -19,7 +19,7 @@ namespace IO
     string fileName;
   public:
     FileOutputIO(const string fileName){ this->fileName = fileName; }
-    virtual void render(const Mat& im) 
+    inline virtual void render(const Mat& im) 
     {
       imwrite(fileName, im);
     }
@@ -31,7 +31,7 @@ namespace IO
     string baseFileName;
     long long n;
   protected:
-    void runFileName()
+    inline void runFileName()
     {
       this->n++;
       this->fileName = fmt::format(
@@ -47,7 +47,7 @@ namespace IO
       this->runFileName();
     }
 
-    virtual void render(const Mat& im)
+    inline virtual void render(const Mat& im)
     {
       FileOutputIO::render(im);
       this->runFileName();
@@ -60,7 +60,7 @@ namespace IO
     string wndName;
   public:
     WindowIO(const string wndName){ this->wndName = wndName; }
-    virtual void render(const Mat& im)
+    inline virtual void render(const Mat& im)
     {
       imshow(this->wndName, im);
     }

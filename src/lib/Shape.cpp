@@ -68,17 +68,19 @@ Shape Shape::operator+(const Shape& another) const
 
 Shape Shape::operator*(double scale) const
 {
-  this->mat *= scale;
+  return Shape(this->mat * scale);
 }
 
 Shape Shape::operator >>(Point2d shift) const
 {
   int N = this->mat.rows;
+  Mat mat_ = this->mat.clone();
   for (int j=0; j<N; j++)
   {
-    this->mat.at<double>(j,0) += shift.x;
-    this->mat.at<double>(j,1) += shift.y;
+    mat_.at<double>(j,0) += shift.x;
+    mat_.at<double>(j,1) += shift.y;
   }
+  return Shape(mat_);
 }
 
 void Shape::save(const string path) const
