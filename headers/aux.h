@@ -135,6 +135,11 @@ namespace Draw
     line(canvas, c, b, color, thickness, mode);
     line(canvas, a, c, color, thickness, mode);
   }
+
+  inline static void drawSpot(Mat& canvas, Point2d p, Scalar color)
+  {
+    circle(canvas, p, 3, color, CV_FILLED, CV_AA);
+  }
 }
 
 #endif

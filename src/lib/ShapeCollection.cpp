@@ -36,7 +36,17 @@ ShapeCollection ShapeCollection::normaliseRotation() const
   return ShapeCollection(norml);
 }
 
-void ShapeCollection::renderShapeVariation(IO::GenericIO io) const
+vector<Shape> ShapeCollection::getItems() const
 {
-  // TAOTODO:
+  return this->items;
+}
+
+void ShapeCollection::renderShapeVariation(IO::GenericIO* io) const
+{
+  Size sz = Size(300, 300);
+  Mat canvas = Mat::zeros(sz, CV_8UC3);
+  for (auto shape : this->items)
+  {
+
+  }
 }

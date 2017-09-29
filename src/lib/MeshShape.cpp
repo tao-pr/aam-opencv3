@@ -31,12 +31,13 @@ void MeshShape::resubdiv()
   }
 }
 
-void MeshShape::render(const Size &size, IO::GenericIO* io, Mat background) const
+Mat MeshShape::render(IO::GenericIO* io, Mat background) const
 {
   // TAOREVIEW: Utilise OpenGL
   vector<Vec6f> triangles;
   this->subdiv.getTriangleList(triangles);
   vector<Point2d> hull = this->convexHull();
+  Size size = background.size;
   Mat canvas = Mat(size.height, size.width, CV_64FC3);
   background.copyTo(canvas);
 
@@ -58,4 +59,5 @@ void MeshShape::render(const Size &size, IO::GenericIO* io, Mat background) cons
   }
 
   io->render(canvas);
+  return canvas;
 }

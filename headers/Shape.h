@@ -30,6 +30,7 @@ public:
   virtual void save(const string path) const;
   virtual void load(const string path);
   vector<Point2d> toPoints() const;
+  virtual Mat render(IO::GenericIO* io, Mat background) const;
 
   //------ Operators -------
   Shape operator-(const Shape& another) const; // Displacement between two shapes

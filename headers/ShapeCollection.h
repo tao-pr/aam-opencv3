@@ -28,7 +28,8 @@ public:
   ShapeCollection normaliseRotation() const;
 
   // ---------- I/O ------------------
-  void renderShapeVariation(IO::GenericIO io) const;
+  void renderShapeVariation(IO::GenericIO* io) const;
+  vector<Shape> getItems() const;
 
 };
 

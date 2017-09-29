@@ -8,6 +8,8 @@
 
 #include <string>
 #include <vector>
+#include <stdlib.h>
+#include <time.h>
 #include <math.h>
 #include <assert.h>
 #include <fmt/format.h>

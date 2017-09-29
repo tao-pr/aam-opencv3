@@ -33,6 +33,21 @@ Point2d Shape::centroid() const
   return Point2d(m.at<double>(0,0), m.at<double>(0,1));
 }
 
+virtual Mat Shape::render(IO::GenericIO* io, Mat background) const
+{
+  // Render shape vertices
+  int N = this->mat.rows;
+  Mat canvas = background.clone();
+  for (int j=0; j<N; j++)
+  {
+    double x = this->mat.at<double>(j,0);
+    double y = this->mat.at<double>(j,1);
+    Draw::drawSpot(canvas, Point2d(x, y), Scalar(230,0,0));
+  }
+
+  return canvas;
+}
+
 vector<Point2d> Shape::convexHull() const
 {
   vector<Point2d> hull;
