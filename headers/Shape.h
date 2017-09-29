@@ -14,7 +14,7 @@ class Shape
 private:
 public:
   Mat mat;
-  
+
   inline Shape(){};
   Shape(const vector<Point2d>& vs);
   Shape(const Mat &mat);
@@ -22,7 +22,7 @@ public:
   inline virtual ~Shape(){};
 
   //----- General properties ------
-  const Point2d& centroid() const;
+  Point2d centroid() const;
   vector<Point2d> convexHull() const;
   const double sumSquareDistanceToPoint(const Point2d& p) const;
 

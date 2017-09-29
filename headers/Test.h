@@ -8,7 +8,7 @@
 
 const float CANVAS_SIZE = 300.0;
 
-inline const ShapeCollection& initialShapeCollection(int num, int shapeSize)
+inline ShapeCollection initialShapeCollection(int num, int shapeSize)
 {
   cout << GREEN << "Generating initial shapes of size " << RESET 
     << num << " x " << shapeSize << endl;

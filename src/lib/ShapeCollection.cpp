@@ -1,6 +1,6 @@
 #include "ShapeCollection.h"
 
-const ShapeCollection& ShapeCollection::normaliseScalingTranslation() const
+ShapeCollection ShapeCollection::normaliseScalingTranslation() const
 {
   // Rescale each shape so the centroid size = 1
   // and translate to the centroid
@@ -14,7 +14,7 @@ const ShapeCollection& ShapeCollection::normaliseScalingTranslation() const
   return ShapeCollection(scaled);
 }
 
-const ShapeCollection& ShapeCollection::normaliseRotation() const
+ShapeCollection ShapeCollection::normaliseRotation() const
 {
   vector<Shape> norml;
   // Use the first shape as base rotation = 0

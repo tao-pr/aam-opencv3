@@ -26,7 +26,7 @@ vector<Point2d> Shape::toPoints() const
   return vs;
 }
 
-const Point2d& Shape::centroid() const
+Point2d Shape::centroid() const
 {
   Mat m;
   reduce(this->mat, m, 0, CV_REDUCE_AVG); // Mean by row

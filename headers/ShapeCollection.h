@@ -24,8 +24,8 @@ public:
   inline void add(const Shape &s){ this->items.push_back(s); };
 
   // ---------- Transformations ---------------
-  const ShapeCollection& normaliseScalingTranslation() const;
-  const ShapeCollection& normaliseRotation() const;
+  ShapeCollection normaliseScalingTranslation() const;
+  ShapeCollection normaliseRotation() const;
 
   // ---------- I/O ------------------
   void renderShapeVariation(IO::GenericIO io) const;
