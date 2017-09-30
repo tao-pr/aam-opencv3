@@ -47,6 +47,7 @@ void ShapeCollection::renderShapeVariation(IO::GenericIO* io) const
   Mat canvas = Mat::zeros(sz, CV_8UC3);
   for (auto shape : this->items)
   {
-
+    canvas = shape.render(io, canvas);
+    waitKey(100);
   }
 }

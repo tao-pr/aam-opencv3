@@ -9,6 +9,6 @@ int main(int argc, char** argv)
   const ShapeCollection trainset = initialShapeCollection(TRAIN_SET_SIZE, SHAPE_SIZE);
 
   // Render each shape onto the same plane
-  auto io = WindowIO("shapes");
+  auto io = IO::WindowIO("shapes");
   trainset.renderShapeVariation(&io);
 }

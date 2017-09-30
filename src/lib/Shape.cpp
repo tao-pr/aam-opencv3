@@ -33,7 +33,7 @@ Point2d Shape::centroid() const
   return Point2d(m.at<double>(0,0), m.at<double>(0,1));
 }
 
-virtual Mat Shape::render(IO::GenericIO* io, Mat background) const
+Mat Shape::render(IO::GenericIO* io, Mat background) const
 {
   // Render shape vertices
   int N = this->mat.rows;

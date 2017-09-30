@@ -13,7 +13,7 @@ namespace IO
     virtual void render(const Mat& im) = 0;
   };
 
-  class FileOutputIO : GenericIO
+  class FileOutputIO : public GenericIO
   {
   protected:
     string fileName;
@@ -25,7 +25,7 @@ namespace IO
     }
   };
 
-  class FileOutputWithRunningNameIO : FileOutputIO
+  class FileOutputWithRunningNameIO : public FileOutputIO
   {
   private:
     string baseFileName;
@@ -54,7 +54,7 @@ namespace IO
     }
   };
 
-  class WindowIO : GenericIO
+  class WindowIO : public GenericIO
   {
   private:
     string wndName;

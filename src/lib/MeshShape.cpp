@@ -37,7 +37,7 @@ Mat MeshShape::render(IO::GenericIO* io, Mat background) const
   vector<Vec6f> triangles;
   this->subdiv.getTriangleList(triangles);
   vector<Point2d> hull = this->convexHull();
-  Size size = background.size;
+  Size size = background.size();
   Mat canvas = Mat(size.height, size.width, CV_64FC3);
   background.copyTo(canvas);
 
