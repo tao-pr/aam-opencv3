@@ -11,4 +11,5 @@ int main(int argc, char** argv)
   // Render each shape onto the same plane
   auto io = IO::WindowIO("shapes");
   trainset.renderShapeVariation(&io);
+  waitKey(0);
 }

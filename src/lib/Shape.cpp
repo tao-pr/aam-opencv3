@@ -43,8 +43,23 @@ Mat Shape::render(IO::GenericIO* io, Mat background) const
     double x = this->mat.at<double>(j,0);
     double y = this->mat.at<double>(j,1);
     Draw::drawSpot(canvas, Point2d(x, y), Scalar(230,0,0));
+    if (j>0)
+    {
+      double x0 = this->mat.at<double>(j-1,0);
+      double y0 = this->mat.at<double>(j-1,1);
+      line(canvas, Point2d(x0, y0), Point2d(x, y), Scalar(200,0,0));
+    }
+    else
+    {
+      double x0 = this->mat.at<double>(N-1,0);
+      double y0 = this->mat.at<double>(N-1,1);
+      line(canvas, Point2d(x0, y0), Point2d(x, y), Scalar(200,0,0));
+    }
   }
+  // TAODEBUG:
+  cout << this->mat << endl;
 
+  io->render(canvas);
   return canvas;
 }
 
