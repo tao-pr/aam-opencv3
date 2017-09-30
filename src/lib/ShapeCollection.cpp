@@ -9,9 +9,19 @@ ShapeCollection ShapeCollection::normaliseScalingTranslation() const
   {
     auto centroid = shape.centroid();
     auto cdist    = shape.sumSquareDistanceToPoint(centroid);
-    scaled.push_back((shape * (1.0/cdist)) >> centroid);
+    scaled.push_back((shape << centroid) * (1.0/cdist));
   }
   return ShapeCollection(scaled);
+}
+
+ShapeCollection ShapeCollection::translateBy(const Point2d &p) const
+{
+  vector<Shape> tr;
+  for (auto shape : this->items)
+  {
+    tr.push_back(shape >> p);
+  }
+  return ShapeCollection(tr);
 }
 
 ShapeCollection ShapeCollection::normaliseRotation() const
@@ -41,13 +51,13 @@ vector<Shape> ShapeCollection::getItems() const
   return this->items;
 }
 
-void ShapeCollection::renderShapeVariation(IO::GenericIO* io) const
+void ShapeCollection::renderShapeVariation(IO::GenericIO* io, Size sz, double scaleFactor) const
 {
-  Size sz = Size(300, 300);
+  // TAOTODO: Find boundary of the shapes
   Mat canvas = Mat::zeros(sz, CV_8UC3);
   for (auto shape : this->items)
   {
-    canvas = shape.render(io, canvas);
+    canvas = shape.render(io, canvas, scaleFactor);
     waitKey(100);
   }
 }

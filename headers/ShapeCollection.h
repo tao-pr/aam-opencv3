@@ -26,9 +26,10 @@ public:
   // ---------- Transformations ---------------
   ShapeCollection normaliseScalingTranslation() const;
   ShapeCollection normaliseRotation() const;
+  ShapeCollection translateBy(const Point2d &p) const;
 
   // ---------- I/O ------------------
-  void renderShapeVariation(IO::GenericIO* io) const;
+  void renderShapeVariation(IO::GenericIO* io, Size sz, double scaleFactor=1.0) const;
   vector<Shape> getItems() const;
 
 };

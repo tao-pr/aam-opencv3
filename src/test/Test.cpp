@@ -10,6 +10,23 @@ int main(int argc, char** argv)
 
   // Render each shape onto the same plane
   auto io = IO::WindowIO("shapes");
-  trainset.renderShapeVariation(&io);
+  trainset.renderShapeVariation(&io, Size(CANVAS_SIZE, CANVAS_SIZE));
+
+  // Generate procrustes analysis on the shape set
+  auto ioNrm = IO::WindowIO("norm-shapes");
+  auto normalisedTrainset = trainset.normaliseScalingTranslation();
+  normalisedTrainset
+    //.translateBy(Point2d(-CANVAS_HALFSIZE, -CANVAS_HALFSIZE))
+    .renderShapeVariation(
+      &ioNrm, 
+      Size(CANVAS_SIZE, CANVAS_SIZE));
+
+  // TAODEBUG:
+  for (auto s : normalisedTrainset.getItems())
+  {
+    cout << YELLOW << "***********************" << RESET << endl;
+    cout << s.mat << endl;
+  }
+  
   waitKey(0);
 }

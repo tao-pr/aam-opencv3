@@ -33,31 +33,29 @@ Point2d Shape::centroid() const
   return Point2d(m.at<double>(0,0), m.at<double>(0,1));
 }
 
-Mat Shape::render(IO::GenericIO* io, Mat background) const
+Mat Shape::render(IO::GenericIO* io, Mat background, double scaleFactor) const
 {
   // Render shape vertices
   int N = this->mat.rows;
   Mat canvas = background.clone();
   for (int j=0; j<N; j++)
   {
-    double x = this->mat.at<double>(j,0);
-    double y = this->mat.at<double>(j,1);
+    double x = this->mat.at<double>(j,0) * scaleFactor;
+    double y = this->mat.at<double>(j,1) * scaleFactor;
     Draw::drawSpot(canvas, Point2d(x, y), Scalar(230,0,0));
     if (j>0)
     {
-      double x0 = this->mat.at<double>(j-1,0);
-      double y0 = this->mat.at<double>(j-1,1);
+      double x0 = this->mat.at<double>(j-1,0) * scaleFactor;
+      double y0 = this->mat.at<double>(j-1,1) * scaleFactor;
       line(canvas, Point2d(x0, y0), Point2d(x, y), Scalar(200,0,0));
     }
     else
     {
-      double x0 = this->mat.at<double>(N-1,0);
-      double y0 = this->mat.at<double>(N-1,1);
+      double x0 = this->mat.at<double>(N-1,0) * scaleFactor;
+      double y0 = this->mat.at<double>(N-1,1) * scaleFactor;
       line(canvas, Point2d(x0, y0), Point2d(x, y), Scalar(200,0,0));
     }
   }
-  // TAODEBUG:
-  cout << this->mat << endl;
 
   io->render(canvas);
   return canvas;
@@ -109,6 +107,18 @@ Shape Shape::operator >>(Point2d shift) const
   {
     mat_.at<double>(j,0) += shift.x;
     mat_.at<double>(j,1) += shift.y;
+  }
+  return Shape(mat_);
+}
+
+Shape Shape::operator <<(Point2d shift) const
+{
+  int N = this->mat.rows;
+  Mat mat_ = this->mat.clone();
+  for (int j=0; j<N; j++)
+  {
+    mat_.at<double>(j,0) -= shift.x;
+    mat_.at<double>(j,1) -= shift.y;
   }
   return Shape(mat_);
 }

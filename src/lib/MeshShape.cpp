@@ -31,7 +31,7 @@ void MeshShape::resubdiv()
   }
 }
 
-Mat MeshShape::render(IO::GenericIO* io, Mat background) const
+Mat MeshShape::render(IO::GenericIO* io, Mat background, double scaleFactor) const
 {
   // TAOREVIEW: Utilise OpenGL
   vector<Vec6f> triangles;
@@ -44,18 +44,20 @@ Mat MeshShape::render(IO::GenericIO* io, Mat background) const
   // Render edges
   for (auto tr : triangles)
   {
-    auto a = Point2d(tr[0], tr[1]);
-    auto b = Point2d(tr[2], tr[3]);
-    auto c = Point2d(tr[4], tr[5]);
+    auto a = Point2d(tr[0]*scaleFactor, tr[1]*scaleFactor);
+    auto b = Point2d(tr[2]*scaleFactor, tr[3]*scaleFactor);
+    auto c = Point2d(tr[4]*scaleFactor, tr[5]*scaleFactor);
     Draw::drawTriangle(canvas, a,b,c, Scalar(0,0,200), 1, CV_AA);
   }
 
   // Render boundary
   Point2d v0 = hull.front();
+  Point2d v0s = Point2d(v0.x * scaleFactor, v0.y * scaleFactor);
   for (auto v : hull)
   {
-    line(canvas, v0, v, Scalar(0,0,200), 3, CV_AA);
-    v0 = v;
+    auto vs = Point2d(v.x * scaleFactor, v.y * scaleFactor);
+    line(canvas, v0s, vs, Scalar(0,0,200), 3, CV_AA);
+    v0s = vs;
   }
 
   io->render(canvas);

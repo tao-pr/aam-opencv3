@@ -30,13 +30,14 @@ public:
   virtual void save(const string path) const;
   virtual void load(const string path);
   vector<Point2d> toPoints() const;
-  virtual Mat render(IO::GenericIO* io, Mat background) const;
+  virtual Mat render(IO::GenericIO* io, Mat background, double scaleFactor=1.0) const;
 
   //------ Operators -------
   Shape operator-(const Shape& another) const; // Displacement between two shapes
   Shape operator+(const Shape& another) const; // Addition of two shapes
   Shape operator*(double scale) const; // Scaling
   Shape operator >>(Point2d shift) const;  // Translating
+  Shape operator <<(Point2d shift) const;  // Translating (negative)
 };
 
 #endif

@@ -26,7 +26,7 @@ public:
   virtual inline ~MeshShape(){};
 
   //------ I/O --------------
-  Mat render(IO::GenericIO* io, Mat background) const;
+  Mat render(IO::GenericIO* io, Mat background, double scaleFactor=1.0) const;
 };
 
 #endif
