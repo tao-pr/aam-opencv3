@@ -51,13 +51,13 @@ vector<Shape> ShapeCollection::getItems() const
   return this->items;
 }
 
-void ShapeCollection::renderShapeVariation(IO::GenericIO* io, Size sz, double scaleFactor) const
+void ShapeCollection::renderShapeVariation(IO::GenericIO* io, Size sz, double scaleFactor, Point2d recentred) const
 {
   // TAOTODO: Find boundary of the shapes
   Mat canvas = Mat::zeros(sz, CV_8UC3);
   for (auto shape : this->items)
   {
-    canvas = shape.render(io, canvas, scaleFactor);
+    canvas = shape.render(io, canvas, scaleFactor, recentred);
     waitKey(100);
   }
 }

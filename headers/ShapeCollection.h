@@ -29,7 +29,7 @@ public:
   ShapeCollection translateBy(const Point2d &p) const;
 
   // ---------- I/O ------------------
-  void renderShapeVariation(IO::GenericIO* io, Size sz, double scaleFactor=1.0) const;
+  void renderShapeVariation(IO::GenericIO* io, Size sz, double scaleFactor=1.0, Point2d recentred=Point2d(0,0)) const;
   vector<Shape> getItems() const;
 
 };

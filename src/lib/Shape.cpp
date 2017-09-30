@@ -33,26 +33,26 @@ Point2d Shape::centroid() const
   return Point2d(m.at<double>(0,0), m.at<double>(0,1));
 }
 
-Mat Shape::render(IO::GenericIO* io, Mat background, double scaleFactor) const
+Mat Shape::render(IO::GenericIO* io, Mat background, double scaleFactor, Point2d recentre) const
 {
   // Render shape vertices
   int N = this->mat.rows;
   Mat canvas = background.clone();
   for (int j=0; j<N; j++)
   {
-    double x = this->mat.at<double>(j,0) * scaleFactor;
-    double y = this->mat.at<double>(j,1) * scaleFactor;
+    double x = this->mat.at<double>(j,0) * scaleFactor + recentre.x;
+    double y = this->mat.at<double>(j,1) * scaleFactor + recentre.y;
     Draw::drawSpot(canvas, Point2d(x, y), Scalar(230,0,0));
     if (j>0)
     {
-      double x0 = this->mat.at<double>(j-1,0) * scaleFactor;
-      double y0 = this->mat.at<double>(j-1,1) * scaleFactor;
+      double x0 = this->mat.at<double>(j-1,0) * scaleFactor + recentre.x;
+      double y0 = this->mat.at<double>(j-1,1) * scaleFactor + recentre.y;
       line(canvas, Point2d(x0, y0), Point2d(x, y), Scalar(200,0,0));
     }
     else
     {
-      double x0 = this->mat.at<double>(N-1,0) * scaleFactor;
-      double y0 = this->mat.at<double>(N-1,1) * scaleFactor;
+      double x0 = this->mat.at<double>(N-1,0) * scaleFactor + recentre.x;
+      double y0 = this->mat.at<double>(N-1,1) * scaleFactor + recentre.y;
       line(canvas, Point2d(x0, y0), Point2d(x, y), Scalar(200,0,0));
     }
   }

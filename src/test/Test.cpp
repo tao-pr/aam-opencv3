@@ -13,15 +13,15 @@ int main(int argc, char** argv)
   trainset.renderShapeVariation(&io, Size(CANVAS_SIZE, CANVAS_SIZE));
 
   // Generate procrustes analysis on the shape set
-  auto ioNrm = IO::WindowIO("norm-shapes");
+  auto ioNrm = IO::WindowIO("norm-shapes (re-scaled)");
   auto normalisedTrainset = trainset.normaliseScalingTranslation();
-  normalisedTrainset
-    //.translateBy(Point2d(-CANVAS_HALFSIZE, -CANVAS_HALFSIZE))
-    .renderShapeVariation(
-      &ioNrm, 
-      Size(CANVAS_SIZE, CANVAS_SIZE));
+  normalisedTrainset.renderShapeVariation(
+    &ioNrm, 
+    Size(CANVAS_SIZE, CANVAS_SIZE),
+    Aux::square(CANVAS_HALFSIZE), // scale the distance
+    Point2d(CANVAS_HALFSIZE, CANVAS_HALFSIZE));
 
-  // TAODEBUG:
+  cout << GREEN << "[Shapes without translation and scaling]" << RESET << endl;
   for (auto s : normalisedTrainset.getItems())
   {
     cout << YELLOW << "***********************" << RESET << endl;
