@@ -11,7 +11,7 @@ ShapeCollection ShapeCollection::normaliseScalingTranslation() const
     auto cdist    = shape.sumSquareDistanceToPoint(centroid);
     scaled.push_back((shape << centroid) * (1.0/cdist));
   }
-  return ShapeCollection(scaled);
+  return ShapeCollection(scaled, verbose);
 }
 
 ShapeCollection ShapeCollection::translateBy(const Point2d &p) const
@@ -21,7 +21,7 @@ ShapeCollection ShapeCollection::translateBy(const Point2d &p) const
   {
     tr.push_back(shape >> p);
   }
-  return ShapeCollection(tr);
+  return ShapeCollection(tr, verbose);
 }
 
 ShapeCollection ShapeCollection::normaliseRotation() const
@@ -37,13 +37,19 @@ ShapeCollection ShapeCollection::normaliseRotation() const
     auto svd = SVD(xx, SVD::FULL_UV);
     auto u = svd.u;
     auto v = svd.vt.t();
-    auto R = v * u.t();
+    Mat R = v * u.t(); // TAOTODO: How to convert <MatExpr> to <Mat> ?
+
+    if (verbose)
+    {
+      double angle = acos(R.at<double>(0,0)) / M_PI;
+      cout << "... Aligning rotation of next shape (angle = " << angle << "π)" << endl;
+    }
 
     // rotate shape by theta and store in norm<>
-    norml.push_back(Shape(R * xj));
+    norml.push_back(Shape(xj * R));
   }
 
-  return ShapeCollection(norml);
+  return ShapeCollection(norml, verbose);
 }
 
 vector<Shape> ShapeCollection::getItems() const

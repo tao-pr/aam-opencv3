@@ -6,10 +6,11 @@
 #include "master.h"
 #include "ShapeCollection.h"
 
-const double CANVAS_SIZE = 300.0;
+const bool   VERBOSE         = true;
+const double CANVAS_SIZE     = 300.0;
 const double CANVAS_HALFSIZE = CANVAS_SIZE / 2.0;
-const double NOISE_T = 10.0;
-const double NOISE_R = 0.133;
+const double NOISE_T         = 10.0;
+const double NOISE_R         = 0.133;
 
 inline ShapeCollection initialShapeCollection(int num, int shapeSize)
 {
@@ -33,5 +34,5 @@ inline ShapeCollection initialShapeCollection(int num, int shapeSize)
     }
     trainset.push_back(Shape(m));
   }
-  return ShapeCollection(trainset);
+  return ShapeCollection(trainset, VERBOSE);
 }
