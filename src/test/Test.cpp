@@ -12,7 +12,7 @@ int main(int argc, char** argv)
   auto io = IO::WindowIO("shapes");
   trainset.renderShapeVariation(&io, Size(CANVAS_SIZE, CANVAS_SIZE));
 
-  // Generate procrustes analysis on the shape set
+  // Remove translations & scalings
   auto ioNrm = IO::WindowIO("norm-shapes (re-scaled)");
   auto normalisedTrainset = trainset.normaliseScalingTranslation();
   normalisedTrainset.renderShapeVariation(
@@ -23,6 +23,17 @@ int main(int argc, char** argv)
 
   cout << GREEN << "[Shapes without translation and scaling]" << RESET << endl;
   for (auto s : normalisedTrainset.getItems())
+  {
+    cout << YELLOW << "***********************" << RESET << endl;
+    cout << s.mat << endl;
+  }
+
+  // Remove rotations
+  auto ioPc = IO::WindowIO("procrustes shapes (re-scaled)");
+  auto procrustesSet = normalisedTrainset.normaliseRotation();
+
+  cout << GREEN << "[Shapes without rotation]" << RESET << endl;
+  for (auto s : procrustesSet.getItems())
   {
     cout << YELLOW << "***********************" << RESET << endl;
     cout << s.mat << endl;
