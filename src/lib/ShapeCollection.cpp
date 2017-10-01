@@ -80,8 +80,8 @@ tuple<Shape, ShapeCollection> ShapeCollection::procrustesMeanShape(double tol, i
   // Pick the first shape from the collection as initial mean
   auto mean        = this->items[0];
   auto alignedSet  = this->clone();
-  double err       = numeric_limits<double>::max();
   double lastError = 0;
+  double tl        = numeric_limits<double>::max();
   int iter         = 0;
 
   auto tolerance = [&](double e, double e0)
@@ -90,17 +90,19 @@ tuple<Shape, ShapeCollection> ShapeCollection::procrustesMeanShape(double tol, i
   };
 
   if (verbose) cout << GREEN << "[Procrustes Mean shape]" << RESET << endl;
-  while (tolerance(err, lastError) > tol && iter < maxIter)
+  while (tl > tol && iter < maxIter)
   {
     if (verbose) cout << CYAN << "... Aligning iter# " << RESET << iter << endl;
     alignedSet = alignedSet.normaliseRotation();
-    err = alignedSet.sumProcrustesDistance(mean);
+    double err = alignedSet.sumProcrustesDistance(mean);
     if (verbose) cout << "... Error so far : " << err << endl;
     if (verbose) cout << "... tol : " << tolerance(err, lastError) << endl;
 
-    maxIter++;
+    iter++;
+    tl = tolerance(err, lastError);
     lastError = err;
   }
+  if (verbose) cout << "... Alignment done" << endl;
 
   return make_tuple(mean, alignedSet);
 }
