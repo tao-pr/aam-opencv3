@@ -15,7 +15,7 @@ int main(int argc, char** argv)
   trainset.renderShapeVariation(&io, Size(CANVAS_SIZE, CANVAS_SIZE));
 
   // Remove translations & scalings
-  auto ioNrm = IO::WindowIO("scaling + translated");
+  auto ioNrm = IO::WindowIO("scaling + translated", Point(CANVAS_SIZE+10, 0));
   auto scaledSet = trainset.normaliseScalingTranslation();
   scaledSet.renderShapeVariation(
     &ioNrm, 
@@ -31,7 +31,7 @@ int main(int argc, char** argv)
   // }
 
   // Remove rotations
-  auto ioPc = IO::WindowIO("rotated");
+  auto ioPc = IO::WindowIO("rotated", Point(CANVAS_SIZE+20, 0));
   auto rotatedSet = scaledSet.normaliseRotation();
   rotatedSet.renderShapeVariation(
     &ioPc,
@@ -48,16 +48,17 @@ int main(int argc, char** argv)
 
   // Find the mean shape by Procrustes Analysis
   // and align all shapes to that mean
-  auto meanAndAligned = rotatedSet.procrustesMeanShape(TOL, MAX_ALIGN_ITER);
+  // NOTE: We don't use the rotated set above
+  auto meanAndAligned = scaledSet.procrustesMeanShape(TOL, MAX_ALIGN_ITER);
   auto meanShape      = get<0>(meanAndAligned);
   auto alignedSet     = get<1>(meanAndAligned);
-  auto ioAl   = IO::WindowIO("Aligned");
-  auto ioMean = IO::WindowIO("mean");
+  auto ioAl   = IO::WindowIO("Aligned", Point(0, CANVAS_SIZE+25));
+  auto ioMean = IO::WindowIO("mean", Point(CANVAS_SIZE+10, CANVAS_SIZE+25));
   
   // Re-scale and re-centre the mean shape before rendering
-  //((meanShape * Aux::square(CANVAS_HALFSIZE)) >> Point2d(CANVAS_HALFSIZE, CANVAS_HALFSIZE))
-  meanShape.recentreAndScale(Point2d(CANVAS_HALFSIZE, CANVAS_HALFSIZE), Aux::square(CANVAS_HALFSIZE))
-    .render(&ioMean, Mat(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3, Scalar(100,40,5)));
+  meanShape
+    .recentreAndScale(Point2d(CANVAS_HALFSIZE, CANVAS_HALFSIZE), Aux::square(CANVAS_HALFSIZE))
+    .render(&ioMean, Mat(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3, Scalar(80,20,5)));
   
   alignedSet.renderShapeVariation(
     &ioAl,

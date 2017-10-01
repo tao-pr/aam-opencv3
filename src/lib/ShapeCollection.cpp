@@ -107,7 +107,6 @@ tuple<Shape, ShapeCollection> ShapeCollection::procrustesMeanShape(double tol, i
 
 void ShapeCollection::renderShapeVariation(IO::GenericIO* io, Size sz, double scaleFactor, Point2d recentred) const
 {
-  // TAOTODO: Find boundary of the shapes
   Mat canvas = Mat::zeros(sz, CV_8UC3);
   for (auto shape : this->items)
   {

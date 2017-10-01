@@ -58,11 +58,13 @@ namespace IO
   {
   private:
     string wndName;
+    Point pos;
   public:
-    WindowIO(const string wndName){ this->wndName = wndName; }
+    WindowIO(const string wndName, const Point p = Point(0,0)){ this->wndName = wndName; this->pos = pos; }
     inline void render(const Mat& im)
     {
       imshow(this->wndName, im);
+      moveWindow(this->wndName, this->pos.x, this->pos.y);
     }
   };
 };
