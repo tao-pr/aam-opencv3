@@ -139,6 +139,11 @@ Shape Shape::operator <<(Point2d shift) const
   return Shape(mat_);
 }
 
+Mat Shape::toRowVector() const
+{
+  return this->mat.reshape(1, 1);
+}
+
 Shape Shape::recentreAndScale(Point2d t, double scaleFactor) const
 {
   return (*this * scaleFactor) >> t;

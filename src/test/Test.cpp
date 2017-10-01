@@ -7,6 +7,7 @@ int main(int argc, char** argv)
   const int SHAPE_SIZE     = 5;
   const double TOL         = 1e-3;
   const int MAX_ALIGN_ITER = 10;
+  const int PCA_MAX_COMP   = 3;
 
   const ShapeCollection trainset = initialShapeCollection(TRAIN_SET_SIZE, SHAPE_SIZE);
 
@@ -77,6 +78,9 @@ int main(int argc, char** argv)
   normalize(covResized, covResized, 255, 0, NORM_L2);
   imshow("cov", covResized);
   moveWindow("cov", (CANVAS_SIZE+10),(CANVAS_SIZE+50));
+
+  // Calculate PCA shape
+  alignedSet.clone(true).pca(meanShape, PCA_MAX_COMP);
 
   waitKey(0);
 }

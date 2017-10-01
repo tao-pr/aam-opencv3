@@ -27,6 +27,7 @@ public:
   tuple<Shape, ShapeCollection> procrustesMeanShape(double tol=1e-3, int maxIter=10) const;
   double sumProcrustesDistance(const Shape& targetShape) const;
   Mat covariance(const Shape& mean) const;
+  tuple<Mat, Mat> pca(const Shape& meanShape, int maxComponents) const;
 
   // ---------- Transformations ---------------
   ShapeCollection clone(bool verbose=false) const;
@@ -37,6 +38,7 @@ public:
   // ---------- I/O ------------------
   void renderShapeVariation(IO::GenericIO* io, Size sz, double scaleFactor=1.0, Point2d recentred=Point2d(0,0)) const;
   vector<Shape> getItems() const;
+  Mat toMat() const;
 
 };
 

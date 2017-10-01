@@ -31,9 +31,10 @@ ShapeCollection ShapeCollection::translateBy(const Point2d &p) const
 
 ShapeCollection ShapeCollection::normaliseRotation() const
 {
-  vector<Shape> norml;
   // Use the first shape as base rotation = 0
   Mat x0 = this->items[0].mat;
+  vector<Shape> norml = {x0};
+  
   for (auto shapeIter=this->items.begin()+1; shapeIter!=this->items.end(); shapeIter++)
   {
     // Compute SVD on xj•x0
@@ -42,7 +43,7 @@ ShapeCollection ShapeCollection::normaliseRotation() const
     auto svd = SVD(xx, SVD::FULL_UV);
     auto u = svd.u;
     auto v = svd.vt.t();
-    Mat R = v * u.t(); // TAOTODO: How to convert <MatExpr> to <Mat> ?
+    Mat R = v * u.t();
 
     if (verbose)
     {
@@ -93,8 +94,9 @@ tuple<Shape, ShapeCollection> ShapeCollection::procrustesMeanShape(double tol, i
   while (tl > tol && iter < maxIter)
   {
     if (verbose) cout << CYAN << "... Aligning iter# " << RESET << iter << endl;
-    alignedSet = alignedSet.normaliseRotation();
+    alignedSet = alignedSet.clone(this->verbose).normaliseRotation();
     double err = alignedSet.sumProcrustesDistance(mean);
+
     if (verbose) cout << "... Error so far : " << err << endl;
     if (verbose) cout << "... tol : " << tolerance(err, lastError) << endl;
 
@@ -119,6 +121,51 @@ Mat ShapeCollection::covariance(const Shape& mean) const
     N += 1.0;
   }
   return cov * (1/N);
+}
+
+/**
+ * Convert the collection to a matrix
+ * where each row represents a distinct shape
+ */
+Mat ShapeCollection::toMat() const
+{
+  int M = this->items[0].mat.rows;
+  int N = this->items.size();
+  Mat m = Mat(N, M*2, CV_64FC1);
+  int j = 0;
+  for (auto shape : this->items)
+  {
+    shape.toRowVector().row(0).copyTo(m.row(j));
+    j++;
+  }
+  return m;
+}
+
+/**
+ * Compute eigenvectors of the covariance matrix of the shapes
+ * returning in a tuple of [Meanshape] and [Eigen matrix]
+ */
+tuple<Mat, Mat> ShapeCollection::pca(const Shape& meanShape, int maxComponents) const
+{
+  if (verbose) cout << GREEN << "[Computing PCA]" << RESET << endl;
+  Mat meanVector = meanShape.toRowVector();
+  Mat data       = this->toMat();
+  if (verbose) 
+  {
+    cout << "... set size        : " << this->items.size() << endl;
+    cout << "... mean shape size : " << meanVector.rows << " x " << meanVector.cols << endl;
+    cout << "... data size       : " << data.rows << " x " << data.cols << endl;
+  }
+  auto pca = PCA(data, meanVector.t(), CV_PCA_DATA_AS_COL, maxComponents);
+
+  // Collect lambdas
+  if (verbose) cout << "... " << pca.eigenvalues.rows << " eigenvalues decomposed" << endl;
+  for (int n=0; n<pca.eigenvalues.rows; n++)
+  {
+    //
+  }
+
+  // TAOTODO:
 }
 
 void ShapeCollection::renderShapeVariation(IO::GenericIO* io, Size sz, double scaleFactor, Point2d recentred) const
