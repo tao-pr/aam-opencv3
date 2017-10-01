@@ -152,11 +152,10 @@ tuple<Mat, Mat> ShapeCollection::pca(const Shape& meanShape, int maxComponents) 
   Mat data       = this->toMat();
   if (verbose) 
   {
-    cout << "... set size        : " << this->items.size() << endl;
     cout << "... mean shape size : " << meanVector.rows << " x " << meanVector.cols << endl;
     cout << "... data size       : " << data.rows << " x " << data.cols << endl;
   }
-  auto pca = PCA(data, meanVector.t(), CV_PCA_DATA_AS_COL, maxComponents);
+  auto pca = PCA(data, meanVector, CV_PCA_DATA_AS_ROW, maxComponents);
 
   // Collect lambdas
   if (verbose) cout << "... " << pca.eigenvalues.rows << " eigenvalues decomposed" << endl;
