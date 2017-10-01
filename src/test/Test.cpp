@@ -22,6 +22,7 @@ int main(int argc, char** argv)
     Size(CANVAS_SIZE, CANVAS_SIZE),
     Aux::square(CANVAS_HALFSIZE), // scale the distance
     Point2d(CANVAS_HALFSIZE, CANVAS_HALFSIZE));
+  moveWindow("scaling + translated", CANVAS_SIZE+10, 0);
 
   // cout << GREEN << "[Shapes without translation and scaling]" << RESET << endl;
   // for (auto s : scaledSet.getItems())
@@ -38,6 +39,7 @@ int main(int argc, char** argv)
     Size(CANVAS_SIZE, CANVAS_SIZE),
     Aux::square(CANVAS_HALFSIZE), // scale the distance
     Point2d(CANVAS_HALFSIZE, CANVAS_HALFSIZE));
+  moveWindow("rotated", (CANVAS_SIZE+10)*2, 0);
 
   // cout << GREEN << "[Shapes without rotation]" << RESET << endl;
   // for (auto s : rotatedSet.getItems())
@@ -52,7 +54,7 @@ int main(int argc, char** argv)
   auto meanAndAligned = scaledSet.procrustesMeanShape(TOL, MAX_ALIGN_ITER);
   auto meanShape      = get<0>(meanAndAligned);
   auto alignedSet     = get<1>(meanAndAligned);
-  auto ioAl   = IO::WindowIO("Aligned", Point(0, CANVAS_SIZE+25));
+  auto ioAl   = IO::WindowIO("aligned", Point(0, CANVAS_SIZE+25));
   auto ioMean = IO::WindowIO("mean", Point(CANVAS_SIZE+10, CANVAS_SIZE+25));
   
   // Re-scale and re-centre the mean shape before rendering
@@ -65,5 +67,7 @@ int main(int argc, char** argv)
     Size(CANVAS_SIZE, CANVAS_SIZE),
     Aux::square(CANVAS_HALFSIZE), // scale the distance
     Point2d(CANVAS_HALFSIZE, CANVAS_HALFSIZE));
+  moveWindow("aligned", (CANVAS_SIZE+10)*3, 0);
+  moveWindow("mean", 0, CANVAS_SIZE+60);
   waitKey(0);
 }
