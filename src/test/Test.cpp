@@ -68,6 +68,15 @@ int main(int argc, char** argv)
     Aux::square(CANVAS_HALFSIZE), // scale the distance
     Point2d(CANVAS_HALFSIZE, CANVAS_HALFSIZE));
   moveWindow("aligned", (CANVAS_SIZE+10)*3, 0);
-  moveWindow("mean", 0, CANVAS_SIZE+60);
+  moveWindow("mean", 0, CANVAS_SIZE+50);
+
+  // Calculate covariance
+  auto cov = alignedSet.covariance(meanShape);
+  Mat covResized;
+  resize(cov, covResized, Size(CANVAS_SIZE, CANVAS_SIZE), INTER_LINEAR);
+  normalize(covResized, covResized, 255, 0, NORM_L2);
+  imshow("cov", covResized);
+  moveWindow("cov", (CANVAS_SIZE+10),(CANVAS_SIZE+50));
+
   waitKey(0);
 }

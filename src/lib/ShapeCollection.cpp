@@ -107,6 +107,20 @@ tuple<Shape, ShapeCollection> ShapeCollection::procrustesMeanShape(double tol, i
   return make_tuple(mean, alignedSet);
 }
 
+Mat ShapeCollection::covariance(const Shape& mean) const
+{
+  int shapeSize = this->items[0].mat.rows;
+  Mat cov = Mat::zeros(shapeSize, shapeSize, CV_64FC1);
+  double N = 0;
+  for (auto shape : this->items)
+  {
+    auto res = shape.mat - mean.mat;
+    cov = cov + res * res.t();
+    N += 1.0;
+  }
+  return cov * (1/N);
+}
+
 void ShapeCollection::renderShapeVariation(IO::GenericIO* io, Size sz, double scaleFactor, Point2d recentred) const
 {
   Mat canvas = Mat::zeros(sz, CV_8UC3);
