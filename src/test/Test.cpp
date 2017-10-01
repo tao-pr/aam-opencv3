@@ -3,8 +3,8 @@
 int main(int argc, char** argv)
 {
   // TAOTODO: Following should be parsed from args
-  const int TRAIN_SET_SIZE = 8;
-  const int SHAPE_SIZE = 3;
+  const int TRAIN_SET_SIZE = 16;
+  const int SHAPE_SIZE = 5;
 
   const ShapeCollection trainset = initialShapeCollection(TRAIN_SET_SIZE, SHAPE_SIZE);
 
@@ -21,12 +21,12 @@ int main(int argc, char** argv)
     Aux::square(CANVAS_HALFSIZE), // scale the distance
     Point2d(CANVAS_HALFSIZE, CANVAS_HALFSIZE));
 
-  cout << GREEN << "[Shapes without translation and scaling]" << RESET << endl;
-  for (auto s : scaledSet.getItems())
-  {
-    cout << YELLOW << "***********************" << RESET << endl;
-    cout << s.mat << endl;
-  }
+  // cout << GREEN << "[Shapes without translation and scaling]" << RESET << endl;
+  // for (auto s : scaledSet.getItems())
+  // {
+  //   cout << YELLOW << "***********************" << RESET << endl;
+  //   cout << s.mat << endl;
+  // }
 
   // Remove rotations
   auto ioPc = IO::WindowIO("rotated");
@@ -37,12 +37,12 @@ int main(int argc, char** argv)
     Aux::square(CANVAS_HALFSIZE), // scale the distance
     Point2d(CANVAS_HALFSIZE, CANVAS_HALFSIZE));
 
-  cout << GREEN << "[Shapes without rotation]" << RESET << endl;
-  for (auto s : rotatedSet.getItems())
-  {
-    cout << YELLOW << "***********************" << RESET << endl;
-    cout << s.mat << endl;
-  }
+  // cout << GREEN << "[Shapes without rotation]" << RESET << endl;
+  // for (auto s : rotatedSet.getItems())
+  // {
+  //   cout << YELLOW << "***********************" << RESET << endl;
+  //   cout << s.mat << endl;
+  // }
   
   waitKey(0);
 }

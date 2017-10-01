@@ -42,11 +42,11 @@ ShapeCollection ShapeCollection::normaliseRotation() const
     if (verbose)
     {
       double angle = acos(R.at<double>(0,0)) / M_PI;
-      cout << "... Aligning rotation of next shape (angle = " << angle << "π)" << endl;
+      cout << "... Compensating rotation of next shape (angle = " << angle << "π)" << endl;
     }
 
     // rotate shape by theta and store in norm<>
-    norml.push_back(Shape(xj * R));
+    norml.push_back(Shape((R * xj.t()).t()));
   }
 
   return ShapeCollection(norml, verbose);

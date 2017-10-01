@@ -9,8 +9,8 @@
 const bool   VERBOSE         = true;
 const double CANVAS_SIZE     = 300.0;
 const double CANVAS_HALFSIZE = CANVAS_SIZE / 2.0;
-const double NOISE_T         = 10.0;
-const double NOISE_R         = 0.133;
+const double NOISE_T         = 15.0;
+const double NOISE_R         = 0.665;
 
 inline ShapeCollection initialShapeCollection(int num, int shapeSize)
 {
@@ -21,9 +21,9 @@ inline ShapeCollection initialShapeCollection(int num, int shapeSize)
   for (int i=0; i<num; i++)
   {
     Mat m(shapeSize, 2, CV_64FC1);
+    double nr = NOISE_R * (rand()%1000)/1000.0;
     for (int n=0; n<shapeSize; n++)
     {
-      double nr = NOISE_R * (rand()%1000)/1000.0;
       double angle = 2 * M_PI * (double)n / (double)shapeSize + nr;
       double x0 = CANVAS_HALFSIZE + (CANVAS_HALFSIZE * cos(angle));
       double y0 = CANVAS_HALFSIZE + (CANVAS_HALFSIZE * sin(angle));
