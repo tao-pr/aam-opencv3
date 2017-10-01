@@ -1,5 +1,10 @@
 #include "ShapeCollection.h"
 
+ShapeCollection ShapeCollection::clone(bool isVerbose) const
+{
+  return ShapeCollection(this->items, isVerbose);
+}
+
 ShapeCollection ShapeCollection::normaliseScalingTranslation() const
 {
   // Rescale each shape so the centroid size = 1
@@ -55,6 +60,49 @@ ShapeCollection ShapeCollection::normaliseRotation() const
 vector<Shape> ShapeCollection::getItems() const
 {
   return this->items;
+}
+
+double ShapeCollection::sumProcrustesDistance(const Shape& targetShape) const
+{
+  double sumDist = 0.0;
+  for (auto shape : this->items)
+  {
+    sumDist += shape.procrustesDistance(targetShape);
+  }
+  return sumDist;
+}
+
+/**
+ * Compute the Procrustes mean shape and the aligned collection onto that mean
+ */
+tuple<Shape, ShapeCollection> ShapeCollection::procrustesMeanShape(double tol, int maxIter) const
+{
+  // Pick the first shape from the collection as initial mean
+  auto mean        = this->items[0];
+  auto alignedSet  = this->clone();
+  double err       = numeric_limits<double>::max();
+  double lastError = 0;
+  int iter         = 0;
+
+  auto tolerance = [&](double e, double e0)
+  {
+    return abs(e-e0)/min(e0,e);
+  };
+
+  if (verbose) cout << GREEN << "[Procrustes Mean shape]" << RESET << endl;
+  while (tolerance(err, lastError) > tol && iter < maxIter)
+  {
+    if (verbose) cout << CYAN << "... Aligning iter# " << RESET << iter << endl;
+    alignedSet = alignedSet.normaliseRotation();
+    err = alignedSet.sumProcrustesDistance(mean);
+    if (verbose) cout << "... Error so far : " << err << endl;
+    if (verbose) cout << "... tol : " << tolerance(err, lastError) << endl;
+
+    maxIter++;
+    lastError = err;
+  }
+
+  return make_tuple(mean, alignedSet);
 }
 
 void ShapeCollection::renderShapeVariation(IO::GenericIO* io, Size sz, double scaleFactor, Point2d recentred) const

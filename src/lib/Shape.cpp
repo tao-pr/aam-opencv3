@@ -33,6 +33,22 @@ Point2d Shape::centroid() const
   return Point2d(m.at<double>(0,0), m.at<double>(0,1));
 }
 
+/**
+ * Compute the sum of square distance to another shape.
+ */
+const double Shape::procrustesDistance(const Shape& that) const
+{
+  double d = 0.0;
+  int N = this->mat.rows;
+  for (int j=0; j<N; j++)
+  {
+    auto pThis = Point2d(this->mat.at<double>(j,0), this->mat.at<double>(j,1));
+    auto pThat = Point2d(that.mat.at<double>(j,0), that.mat.at<double>(j,1));
+    d += Aux::squareDistance(pThis, pThat);
+  }
+  return d;
+}
+
 Mat Shape::render(IO::GenericIO* io, Mat background, double scaleFactor, Point2d recentre) const
 {
   // Render shape vertices
@@ -121,6 +137,11 @@ Shape Shape::operator <<(Point2d shift) const
     mat_.at<double>(j,1) -= shift.y;
   }
   return Shape(mat_);
+}
+
+Shape Shape::recentreAndScale(Point2d t, double scaleFactor) const
+{
+  return (*this * scaleFactor) >> t;
 }
 
 void Shape::save(const string path) const

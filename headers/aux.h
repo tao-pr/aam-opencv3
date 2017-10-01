@@ -55,7 +55,7 @@ namespace Aux
     return n*n;
   }
 
-  inline double _sqrDist(Point2d p1, Point2d p2)
+  inline double squareDistance(Point2d p1, Point2d p2)
   {
     return square(p1.x - p2.x) + square(p1.y - p2.y);
   };

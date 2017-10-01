@@ -8,7 +8,9 @@
 
 #include <string>
 #include <vector>
+#include <tuple>
 #include <stdlib.h>
+#include <limits>
 #include <time.h>
 #include <math.h>
 #include <assert.h>

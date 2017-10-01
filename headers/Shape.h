@@ -25,6 +25,7 @@ public:
   Point2d centroid() const;
   vector<Point2d> convexHull() const;
   const double sumSquareDistanceToPoint(const Point2d& p) const;
+  const double procrustesDistance(const Shape& that) const;
 
   //------ I/O ------
   virtual void save(const string path) const;
@@ -38,6 +39,7 @@ public:
   Shape operator*(double scale) const; // Scaling
   Shape operator >>(Point2d shift) const;  // Translating
   Shape operator <<(Point2d shift) const;  // Translating (negative)
+  Shape recentreAndScale(Point2d t, double scaleFactor) const;
 };
 
 #endif
