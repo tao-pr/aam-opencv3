@@ -7,7 +7,6 @@ int main(int argc, char** argv)
   const int SHAPE_SIZE     = 5;
   const double TOL         = 1e-3;
   const int MAX_ALIGN_ITER = 10;
-  const int PCA_MAX_COMP   = 3;
 
   const ShapeCollection trainset = initialShapeCollection(TRAIN_SET_SIZE, SHAPE_SIZE);
 
@@ -80,7 +79,12 @@ int main(int argc, char** argv)
   moveWindow("cov", (CANVAS_SIZE+10),(CANVAS_SIZE+50));
 
   // Calculate PCA shape
-  alignedSet.clone(true).pca(meanShape, PCA_MAX_COMP);
+  auto eigenShape = alignedSet.clone(true).pca(meanShape);
+  auto ioEig = IO::WindowIO("eigen");
+  eigenShape
+    .recentreAndScale(Point2d(CANVAS_HALFSIZE, CANVAS_HALFSIZE), Aux::square(CANVAS_HALFSIZE))
+    .render(&ioEig, Mat(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3, Scalar(80,20,5)));
+  moveWindow("eigen", (CANVAS_SIZE+10)*2,(CANVAS_SIZE+50));
 
   waitKey(0);
 }

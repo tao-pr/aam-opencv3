@@ -27,7 +27,7 @@ public:
   tuple<Shape, ShapeCollection> procrustesMeanShape(double tol=1e-3, int maxIter=10) const;
   double sumProcrustesDistance(const Shape& targetShape) const;
   Mat covariance(const Shape& mean) const;
-  tuple<Mat, Mat> pca(const Shape& meanShape, int maxComponents) const;
+  Shape pca(const Shape& meanShape) const;
 
   // ---------- Transformations ---------------
   ShapeCollection clone(bool verbose=false) const;

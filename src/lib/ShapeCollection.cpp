@@ -143,9 +143,8 @@ Mat ShapeCollection::toMat() const
 
 /**
  * Compute eigenvectors of the covariance matrix of the shapes
- * returning in a tuple of [Meanshape] and [Eigen matrix]
  */
-tuple<Mat, Mat> ShapeCollection::pca(const Shape& meanShape, int maxComponents) const
+Shape ShapeCollection::pca(const Shape& meanShape) const
 {
   if (verbose) cout << GREEN << "[Computing PCA]" << RESET << endl;
   Mat meanVector = meanShape.toRowVector();
@@ -155,16 +154,14 @@ tuple<Mat, Mat> ShapeCollection::pca(const Shape& meanShape, int maxComponents) 
     cout << "... mean shape size : " << meanVector.rows << " x " << meanVector.cols << endl;
     cout << "... data size       : " << data.rows << " x " << data.cols << endl;
   }
-  auto pca = PCA(data, meanVector, CV_PCA_DATA_AS_ROW, maxComponents);
+  auto pca = PCA(data, meanVector, CV_PCA_DATA_AS_ROW);
 
   // Collect lambdas
-  if (verbose) cout << "... " << pca.eigenvalues.rows << " eigenvalues decomposed" << endl;
-  for (int n=0; n<pca.eigenvalues.rows; n++)
-  {
-    //
-  }
+  if (verbose) cout << "... decomposed eigenvalues : " << pca.eigenvalues.rows << " x " << pca.eigenvalues.cols << endl;
 
-  // TAOTODO:
+  // Compose a shape param set from eigenvalues
+  Mat eigenPoints = pca.eigenvalues.reshape(1, meanShape.mat.rows);
+  return Shape(eigenPoints);
 }
 
 void ShapeCollection::renderShapeVariation(IO::GenericIO* io, Size sz, double scaleFactor, Point2d recentred) const
