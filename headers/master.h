@@ -8,14 +8,27 @@
 
 #include <string>
 #include <vector>
+#include <tuple>
+#include <stdlib.h>
+#include <limits>
+#include <time.h>
 #include <math.h>
 #include <assert.h>
 #include <fmt/format.h>
+#include <stdio.h>
+#include <dirent.h>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
 using namespace cv;
 using namespace std;
+
+const std::string RED("\033[0;31m");
+const std::string GREEN("\033[1;32m");
+const std::string YELLOW("\033[1;33m");
+const std::string CYAN("\033[0;36m");
+const std::string MAGENTA("\033[0;35m");
+const std::string RESET("\033[0m");
 
 #endif

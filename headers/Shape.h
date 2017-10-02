@@ -11,32 +11,37 @@
 
 class Shape
 {
-protected:
-  Rect constraint;
-  vector<Point2d> vertices; // Triangulated mesh vertices
-  Mat app; // Appearance image
-  Subdiv2D subdiv;
-
+private:
 public:
-  Shape(){};
-  Shape(const Rect& size);
-  Shape(const Rect& size, const vector<Point2d>& vs);
-  Shape(const Shape& original);
-  virtual ~Shape(){};
-  size_t length() const { return this->vertices.size(); };
-  Rect size() const { return constraint; }
+  Mat mat;
 
-  void setAppearance(const Mat& src);
-  void resize(const Rect& newSize);
-  void normalise();
-  void applyParameters(const vector<double>& params);
+  inline Shape(){};
+  Shape(const vector<Point2d>& vs);
+  Shape(const Mat &mat);
+  inline Shape(const Shape& original){ original.mat.copyTo(mat); };
+  inline virtual ~Shape(){};
+
+  //----- General properties ------
+  Mat toRowVector() const;
+  Mat toColVector() const;
+  Point2d centroid() const;
   vector<Point2d> convexHull() const;
+  const double sumSquareDistanceToPoint(const Point2d& p) const;
+  const double procrustesDistance(const Shape& that) const;
 
-  // Render the shape onto a background image
-  // into an IO object.
-  void render(IO::GenericIO io, Mat background, double scaleFactor = 1.0) const;
+  //------ I/O ------
+  virtual void save(const string path) const;
+  virtual void load(const string path);
+  vector<Point2d> toPoints() const;
+  virtual Mat render(IO::GenericIO* io, Mat background, double scaleFactor=1.0, Point2d recentre=Point2d(0,0)) const;
+
+  //------ Operators -------
+  Shape operator-(const Shape& another) const; // Displacement between two shapes
+  Shape operator+(const Shape& another) const; // Addition of two shapes
+  Shape operator*(double scale) const; // Scaling
+  Shape operator >>(Point2d shift) const;  // Translating
+  Shape operator <<(Point2d shift) const;  // Translating (negative)
+  Shape recentreAndScale(Point2d t, double scaleFactor) const;
 };
-
-
 
 #endif

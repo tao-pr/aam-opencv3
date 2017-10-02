@@ -13,25 +13,25 @@ namespace IO
     virtual void render(const Mat& im) = 0;
   };
 
-  class FileOutputIO : GenericIO
+  class FileOutputIO : public GenericIO
   {
   protected:
     string fileName;
   public:
     FileOutputIO(const string fileName){ this->fileName = fileName; }
-    virtual void render(const Mat& im) 
+    inline void render(const Mat& im) 
     {
-      imwrite(filename, im);
+      imwrite(fileName, im);
     }
   };
 
-  class FileOutputWithRunningNameIO : FileOutputIO
+  class FileOutputWithRunningNameIO : public FileOutputIO
   {
   private:
     string baseFileName;
     long long n;
   protected:
-    void runFileName()
+    inline void runFileName()
     {
       this->n++;
       this->fileName = fmt::format(
@@ -47,22 +47,24 @@ namespace IO
       this->runFileName();
     }
 
-    virtual void render(const Mat& im)
+    inline void render(const Mat& im)
     {
       FileOutputIO::render(im);
       this->runFileName();
     }
   };
 
-  class WindowIO : GenericIO
+  class WindowIO : public GenericIO
   {
   private:
     string wndName;
+    Point pos;
   public:
-    WindowIO(const string wndName){ this->wndName = wndName; }
-    virtual void render(const Mat& im)
+    WindowIO(const string wndName, const Point p = Point(0,0)){ this->wndName = wndName; this->pos = pos; }
+    inline void render(const Mat& im)
     {
       imshow(this->wndName, im);
+      moveWindow(this->wndName, this->pos.x, this->pos.y);
     }
   };
 };
