@@ -80,11 +80,6 @@ int main(int argc, char** argv)
 
   // Calculate PCA shape
   auto eigenShape = alignedSet.clone(true).pca(meanShape);
-  auto ioEig = IO::WindowIO("eigen");
-  eigenShape
-    .recentreAndScale(Point2d(CANVAS_HALFSIZE, CANVAS_HALFSIZE), Aux::square(CANVAS_HALFSIZE))
-    .render(&ioEig, Mat(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3, Scalar(80,20,5)));
-  moveWindow("eigen", (CANVAS_SIZE+10)*2,(CANVAS_SIZE+50));
 
   waitKey(0);
 }
