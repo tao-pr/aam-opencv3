@@ -5,6 +5,7 @@
  */
 Shape ShapeEncoder::decode(const ParameterisedShape &s) const
 {
+  // shape = mean + (Eigen•params)
   return Shape(this->mean + (this->eigen * s.getParams()));
 }
 
@@ -13,7 +14,7 @@ Shape ShapeEncoder::decode(const ParameterisedShape &s) const
  */
 Mat ShapeEncoder::encode(const Shape& s) const
 {
-  // (Eigen^-1)•(shape - mean)
+  // params = (Eigen^-1)•(shape - mean)
   return this->eigen_1 * (s.toColVector() - this->mean);
 }
 
