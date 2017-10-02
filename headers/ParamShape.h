@@ -9,7 +9,7 @@ class ParameterisedShape;
 class ShapeEncoder
 {
 protected:
-  Mat mean; // Mean row vector
+  Mat mean; // Mean column vector
   Mat eigen;
   Mat eigen_1; // Invert of eigen matrix (NxN)
 public:
@@ -26,7 +26,7 @@ class ParameterisedShape
 {
 private:
 protected:
-  Mat params;
+  Mat params; // Column vector (Nx1)
 public:
   ParameterisedShape(const Shape& shape, const ShapeEncoder& enc);
   ParameterisedShape(const Mat& params) : params(params) {};

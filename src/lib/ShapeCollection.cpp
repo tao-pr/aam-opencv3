@@ -166,7 +166,7 @@ ShapeEncoder ShapeCollection::pca(const Shape& meanShape) const
   }
 
   // Compose a shape param set from eigenvalues
-  return ShapeEncoder(meanShape.toRowVector(), pca.eigenvectors);
+  return ShapeEncoder(meanShape.toColVector(), pca.eigenvectors);
 }
 
 void ShapeCollection::renderShapeVariation(IO::GenericIO* io, Size sz, double scaleFactor, Point2d recentred) const

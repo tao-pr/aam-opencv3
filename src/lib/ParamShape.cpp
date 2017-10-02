@@ -1,17 +1,20 @@
 #include "ParamShape.h"
 
+/**
+ * Convert a parameter set to a shape
+ */
 Shape ShapeEncoder::decode(const ParameterisedShape &s) const
 {
-  return Shape(this->mean + this->eigen * s.getParams());
+  return Shape(this->mean + (this->eigen * s.getParams()));
 }
 
+/**
+ * Convert a shape to a parameter set
+ */
 Mat ShapeEncoder::encode(const Shape& s) const
 {
-  int N = s.mat.rows;
   // (Eigen^-1)•(shape - mean)
-  Mat residue = (s.toRowVector() - this->mean);
-  Mat shapeMat = this->eigen_1 * residue.t();
-  return shapeMat.reshape(1, N);
+  return this->eigen_1 * (s.toColVector() - this->mean);
 }
 
 ParameterisedShape::ParameterisedShape(const Shape& shape, const ShapeEncoder& enc)

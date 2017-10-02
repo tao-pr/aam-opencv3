@@ -86,7 +86,7 @@ int main(int argc, char** argv)
   cout << GREEN << "[PCA-parameterised shapes]" << RESET << endl;
   for (auto shape : alignedSet.getItems())
   {
-    cout << CYAN << "... Encoding shape #" << RESET << i << endl;
+    cout << CYAN << "... Encoding shape # " << RESET << i << endl;
     auto param = eigenShape.encode(shape);
     cout << "... Decoding shape # " << i << endl;
     auto encodedShape = eigenShape.decode(param);
