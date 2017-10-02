@@ -81,5 +81,18 @@ int main(int argc, char** argv)
   // Calculate PCA shape
   auto eigenShape = alignedSet.clone(true).pca(meanShape);
 
+  // Encode shapes with PCA and measure the estimation errors
+  int i = 0;
+  cout << GREEN << "[PCA-parameterised shapes]" << RESET << endl;
+  for (auto shape : alignedSet.getItems())
+  {
+    cout << "... Encoding shape #" << i << endl;
+    auto param = eigenShape.encode(shape);
+    auto encodedShape = eigenShape.decode(param);
+    double error = shape.procrustesDistance(encodedShape);
+    cout << "... Estimation error : " << error << endl;
+    i++;
+  }
+
   waitKey(0);
 }

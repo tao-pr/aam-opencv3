@@ -29,6 +29,7 @@ protected:
   Mat params;
 public:
   ParameterisedShape(const Shape& shape, const ShapeEncoder& enc);
+  ParameterisedShape(const Mat& params) : params(params) {};
   inline virtual ~ParameterisedShape(){};
 
   Mat getParams() const { return this->params; };

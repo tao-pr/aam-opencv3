@@ -17,5 +17,5 @@ ParameterisedShape::ParameterisedShape(const Shape& shape, const ShapeEncoder& e
 
 Shape ParameterisedShape::toShape(const ShapeEncoder& enc) const
 {
-  // TAOTODO:
+  return enc.decode(*this);
 }
