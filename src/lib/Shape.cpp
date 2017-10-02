@@ -144,6 +144,12 @@ Mat Shape::toRowVector() const
   return this->mat.reshape(1, 1);
 }
 
+Mat Shape::toColVector() const
+{
+  int N = this->mat.rows;
+  return this->mat.reshape(1, N*2);
+}
+
 Shape Shape::recentreAndScale(Point2d t, double scaleFactor) const
 {
   return (*this * scaleFactor) >> t;

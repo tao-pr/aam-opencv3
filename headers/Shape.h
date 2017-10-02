@@ -23,6 +23,7 @@ public:
 
   //----- General properties ------
   Mat toRowVector() const;
+  Mat toColVector() const;
   Point2d centroid() const;
   vector<Point2d> convexHull() const;
   const double sumSquareDistanceToPoint(const Point2d& p) const;

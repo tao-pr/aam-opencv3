@@ -157,12 +157,16 @@ ShapeEncoder ShapeCollection::pca(const Shape& meanShape) const
   auto pca = PCA(data, meanVector, CV_PCA_DATA_AS_ROW);
 
   // Collect lambdas
-  if (verbose) cout << "... decomposed eigenvalues : " << pca.eigenvalues.rows << " x " << pca.eigenvalues.cols << endl;
+  // TAOTODO: Take only highest K lambda where K<N
+  int N = pca.eigenvalues.rows;
+  if (verbose)
+  {
+    cout << "... eigenvalues  : " << N << endl;
+    cout << "... eigenvectors : " << pca.eigenvectors.rows << " x " << pca.eigenvectors.cols << endl;
+  }
 
   // Compose a shape param set from eigenvalues
-  Mat eigen = pca.eigenvalues.reshape(1, meanShape.mat.rows);
-  if (verbose) cout << eigen << endl;
-  return ShapeEncoder(meanShape.mat, eigen);
+  return ShapeEncoder(meanShape.toRowVector(), pca.eigenvectors);
 }
 
 void ShapeCollection::renderShapeVariation(IO::GenericIO* io, Size sz, double scaleFactor, Point2d recentred) const

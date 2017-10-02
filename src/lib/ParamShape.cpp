@@ -7,7 +7,11 @@ Shape ShapeEncoder::decode(const ParameterisedShape &s) const
 
 Mat ShapeEncoder::encode(const Shape& s) const
 {
-  return this->eigen_1 * (s.mat - this->mean);
+  int N = s.mat.rows;
+  // (Eigen^-1)•(shape - mean)
+  Mat residue = (s.toRowVector() - this->mean);
+  Mat shapeMat = this->eigen_1 * residue.t();
+  return shapeMat.reshape(1, N);
 }
 
 ParameterisedShape::ParameterisedShape(const Shape& shape, const ShapeEncoder& enc)

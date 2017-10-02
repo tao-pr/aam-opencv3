@@ -9,9 +9,9 @@ class ParameterisedShape;
 class ShapeEncoder
 {
 protected:
-  Mat mean;
+  Mat mean; // Mean row vector
   Mat eigen;
-  Mat eigen_1; // Invert of eigen
+  Mat eigen_1; // Invert of eigen matrix (NxN)
 public:
   ShapeEncoder(Mat mean, Mat eigen) : mean(mean), eigen(eigen), eigen_1(eigen.inv()) {};
   virtual ~ShapeEncoder(){};

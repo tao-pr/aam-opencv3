@@ -4,7 +4,7 @@ int main(int argc, char** argv)
 {
   // TAOTODO: Following should be parsed from args
   const int TRAIN_SET_SIZE = 16;
-  const int SHAPE_SIZE     = 5;
+  const int SHAPE_SIZE     = 3;
   const double TOL         = 1e-3;
   const int MAX_ALIGN_ITER = 10;
 
@@ -86,8 +86,9 @@ int main(int argc, char** argv)
   cout << GREEN << "[PCA-parameterised shapes]" << RESET << endl;
   for (auto shape : alignedSet.getItems())
   {
-    cout << "... Encoding shape #" << i << endl;
+    cout << CYAN << "... Encoding shape #" << RESET << i << endl;
     auto param = eigenShape.encode(shape);
+    cout << "... Decoding shape # " << i << endl;
     auto encodedShape = eigenShape.decode(param);
     double error = shape.procrustesDistance(encodedShape);
     cout << "... Estimation error : " << error << endl;
