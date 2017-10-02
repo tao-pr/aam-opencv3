@@ -8,6 +8,10 @@ int main(int argc, char** argv)
   const double TOL         = 1e-3;
   const int MAX_ALIGN_ITER = 10;
 
+  cout << MAGENTA << "**********************" << RESET << endl;
+  cout << MAGENTA << " Shape model testing  " << RESET << endl;
+  cout << MAGENTA << "**********************" << RESET << endl;
+
   const ShapeCollection trainset = initialShapeCollection(TRAIN_SET_SIZE, SHAPE_SIZE);
 
   // Render each shape onto the same plane
@@ -95,5 +99,11 @@ int main(int argc, char** argv)
     i++;
   }
 
+  cout << MAGENTA << "***********************************************" << RESET << endl;
+  cout << MAGENTA << " Hit a key to proceed to texture model testing " << RESET << endl;
+  cout << MAGENTA << "***********************************************" << RESET << endl;
+
   waitKey(0);
+
+
 }
