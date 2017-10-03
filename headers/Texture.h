@@ -8,6 +8,7 @@
 #include "master.h"
 #include "IO.h"
 #include "aux.h"
+#include "MeshShape.h"
 
 class Texture
 {
@@ -15,9 +16,11 @@ private:
 protected:
 public:
   Mat img;
+  MeshShape shape;
 
   inline Texture(){};
-  inline Texture(const Mat& a){ a.copyTo(this->img); };
+  inline Texture(const MeshShape& shape) : shape(shape) {};
+  inline Texture(const MeshShape& shape, const Mat& a) : shape(shape) { a.copyTo(this->img); };
   inline Texture(const Texture& original){ original.img.copyTo(this->img); };
   virtual inline ~Texture(){};
 
@@ -32,3 +35,5 @@ public:
   //------ Operators -------
   Texture operator*(double scale) const;
 };
+
+#endif

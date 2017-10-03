@@ -6,16 +6,17 @@
 #define APP_COLLECTION
 
 #include "master.h"
+#include "Texture.h"
 
 class AppearanceCollection 
 {
 private:
 protected:
-  vector<Mat> items;
+  vector<Texture> items;
 public:
   inline AppearanceCollection(){};
-  AppearanceCollection(const vector<Mat>& apps);
-  AppearanceCollection(const AppearanceCollection& original);
+  inline AppearanceCollection(const vector<Texture>& apps) : items(apps) {};
+  inline AppearanceCollection(const AppearanceCollection& original) : items(original.items) {};
 };
 
 #endif
