@@ -67,12 +67,15 @@ double Triangle::maxY() const
   return d;
 }
 
-Point2d* Triangle::toArray() const
+Point2f* Triangle::toFloatArray() const
 {
-  Point2d *arr = new Point2d[3];
+  Point2f *arr = new Point2f[3];
   for (int i=0; i<3; i++)
   {
-    arr[i] = Point2d(vertices.at<double>(i,0), vertices.at<double>(i,1));
+    // Enforce double => float implication
+    float x = vertices.at<double>(i,0);
+    float y = vertices.at<double>(i,1);
+    arr[i] = Point2f(x, y);
   }
   return arr;
 }
@@ -102,9 +105,18 @@ Texture Texture::realignTo(const Triangle &newBound) const
   newBound.boundary(minX, minY, maxX, maxY);
 
   Mat R( 2, 3, CV_64FC1 );
-  Mat W( 2, 3, CV_64FC1 );
+  Mat warped( this->img.rows, this->img.cols, this->img.type() );
+  Point2f* srcTriangle = this->bound.toFloatArray();
+  Point2f* destTriangle = newBound.toFloatArray();
+
+  // Apply affine transformation
+  Mat W = getAffineTransform(srcTriangle, destTriangle);
+  warpAffine(this->img, warped, W, warped.size());
 
   // TAOTODO:
 
-  return Texture(newBound, this->img);
+  delete[] srcTriangle;
+  delete[] destTriangle;
+
+  return Texture(newBound, warped);
 }
