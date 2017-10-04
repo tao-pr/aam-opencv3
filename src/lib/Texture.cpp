@@ -67,9 +67,19 @@ double Triangle::maxY() const
   return d;
 }
 
+Point2d* Triangle::toArray() const
+{
+  Point2d *arr = new Point2d[3];
+  for (int i=0; i<3; i++)
+  {
+    arr[i] = Point2d(vertices.at<double>(i,0), vertices.at<double>(i,1));
+  }
+  return arr;
+}
+
 void Texture::save(const string path) const
 {
-  // TAOTODO:
+
 }
 
 void Texture::load(const string path)
@@ -82,18 +92,19 @@ Mat Texture::render(IO::GenericIO* io, Mat background, double scaleFactor, Point
   // TAOTODO:
 }
 
-Texture Texture::operator*(double scale) const
-{
-  return Texture(this->bound, this->img * scale);
-}
-
+/**
+ * Piece-wise affine transformation.
+ * Warping the texture to a new triangular boundary.
+ */
 Texture Texture::realignTo(const Triangle &newBound) const
 {
   double minX, minY, maxX, maxY;
   newBound.boundary(minX, minY, maxX, maxY);
-  Mat newImg = Mat(Size(maxY-minY, maxX-minX), CV_64FC1);
+
+  Mat R( 2, 3, CV_64FC1 );
+  Mat W( 2, 3, CV_64FC1 );
 
   // TAOTODO:
 
-  return Texture(newBound, newImg);
+  return Texture(newBound, this->img);
 }

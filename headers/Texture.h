@@ -23,6 +23,8 @@ public:
   double maxX() const;
   double maxY() const;
 
+  Point2d* toArray() const;
+
   Triangle operator >>(const Point2d &displacement) const;
   Triangle operator <<(const Point2d &displacement) const;
 };
@@ -35,12 +37,12 @@ class Texture
 private:
 protected:
 public:
-  Mat img;
+  Mat *img;
   Triangle bound;
 
-  inline Texture(const Triangle& bound) : bound(bound) {};
-  inline Texture(const Triangle& bound, const Mat& a) : bound(bound) { a.copyTo(this->img); };
-  inline Texture(const Texture& original) : bound(original.bound) { original.img.copyTo(this->img); };
+  inline Texture(const Triangle& bound) : img(nullptr), bound(bound) {};
+  inline Texture(const Triangle& bound, Mat* a) : img(a), bound(bound) {};
+  inline Texture(const Texture& original) : img(original.img), bound(original.bound) {};
   virtual inline ~Texture(){};
 
   // --------- General properties -------
@@ -52,7 +54,6 @@ public:
   virtual Mat render(IO::GenericIO* io, Mat background, double scaleFactor=1.0, Point2d recentre=Point2d(0,0)) const;
 
   //------ Operators / Transformations -------
-  Texture operator*(double scale) const;
   Texture realignTo(const Triangle &newBound) const;
 };
 
