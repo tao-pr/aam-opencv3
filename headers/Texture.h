@@ -23,7 +23,7 @@ public:
   double maxX() const;
   double maxY() const;
 
-  Point2f* toFloatArray() const;
+  vector<Point2f> toFloatVector() const;
 
   Triangle operator >>(const Point2d &displacement) const;
   Triangle operator <<(const Point2d &displacement) const;
@@ -36,13 +36,12 @@ class Texture
 {
 private:
 protected:
-  inline void cloneImage(const Mat& i){ i.copyTo(this->img); }
 public:
-  Mat img;
+  Mat *img;
   Triangle bound;
 
-  inline Texture(const Triangle& bound, const Mat& a) : bound(bound) { cloneImage(a); };
-  inline Texture(const Texture& original) : bound(original.bound) { cloneImage(original.img); };
+  inline Texture(const Triangle& bound, Mat* a) : bound(bound), img(a) {};
+  inline Texture(const Texture& original) : bound(original.bound), img(original.img) {};
   virtual inline ~Texture(){};
 
   // --------- General properties -------
@@ -54,7 +53,7 @@ public:
   virtual Mat render(IO::GenericIO* io, Mat background, double scaleFactor=1.0, Point2d recentre=Point2d(0,0)) const;
 
   //------ Operators / Transformations -------
-  Texture realignTo(const Triangle &newBound) const;
+  Texture realignTo(const Triangle &newBound, Mat* m) const;
 };
 
 #endif

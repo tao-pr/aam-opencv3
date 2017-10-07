@@ -67,17 +67,17 @@ double Triangle::maxY() const
   return d;
 }
 
-Point2f* Triangle::toFloatArray() const
+vector<Point2f> Triangle::toFloatVector() const
 {
-  Point2f *arr = new Point2f[3];
+  vector<Point2f> v;
   for (int i=0; i<3; i++)
   {
     // Enforce double => float implication
     float x = vertices.at<double>(i,0);
     float y = vertices.at<double>(i,1);
-    arr[i] = Point2f(x, y);
+    v.push_back(Point2f(x, y));
   }
-  return arr;
+  return v;
 }
 
 void Texture::save(const string path) const
@@ -99,24 +99,50 @@ Mat Texture::render(IO::GenericIO* io, Mat background, double scaleFactor, Point
  * Piece-wise affine transformation.
  * Warping the texture to a new triangular boundary.
  */
-Texture Texture::realignTo(const Triangle &newBound) const
+Texture Texture::realignTo(const Triangle &newBound, Mat* dest) const
 {
   double minX, minY, maxX, maxY;
   newBound.boundary(minX, minY, maxX, maxY);
 
   Mat R( 2, 3, CV_64FC1 );
-  Mat warped( this->img.rows, this->img.cols, this->img.type() );
-  Point2f* srcTriangle = this->bound.toFloatArray();
-  Point2f* destTriangle = newBound.toFloatArray();
+  auto srcTriangle  = this->bound.toFloatVector();
+  auto destTriangle = newBound.toFloatVector();
+  Rect srcRect      = boundingRect(srcTriangle);
+  Rect destRect     = boundingRect(destTriangle);
+  Size srcSize      = Size(srcRect.width, srcRect.height);
+  Size destSize     = Size(destRect.width, destRect.height);
 
-  // Apply affine transformation
-  Mat W = getAffineTransform(srcTriangle, destTriangle);
-  warpAffine(this->img, warped, W, warped.size());
+  // Crop the source by the bounding rectangle
+  Mat im = *this->img;
+  Mat imgSrc = Mat(srcSize, this->img->type());
+  Mat imgDest = Mat::zeros(destSize, this->img->type());
+  im(srcRect).copyTo(imgSrc);
 
-  // TAOTODO:
+  // Offset the triangles by left corner
+  vector<Point2f> offsetSrcTriangle;
+  vector<Point2f> offsetDestTriangle;
+  vector<Point> destIntTriangle;
+  for (int i=0; i<3; i++)
+  {
+    auto pSrc  = srcTriangle[i];
+    auto pDest = destTriangle[i];
+    double xDest = pDest.x - destRect.x;
+    double yDest = pDest.y - destRect.y;
+    offsetSrcTriangle.push_back(Point2f(pSrc.x - srcRect.x, pSrc.y - srcRect.y));
+    offsetDestTriangle.push_back(Point2f(xDest, yDest));
+    destIntTriangle.push_back(Point((int)xDest, (int)yDest));
+  }
 
-  delete[] srcTriangle;
-  delete[] destTriangle;
+  // Apply affine transformation on the offset triangles
+  Mat W = getAffineTransform(offsetSrcTriangle, offsetDestTriangle);
+  warpAffine(imgSrc, imgDest, W, imgDest.size(), INTER_LINEAR);
 
-  return Texture(newBound, warped);
+  // Draw a triangular mask (for the target)
+  Mat mask = Mat::zeros(destSize, CV_8UC1);
+  //fillPoly();
+
+  // Copy warped [imgDest] -> [dest] with masking
+
+  
+  return Texture(newBound, dest);
 }
