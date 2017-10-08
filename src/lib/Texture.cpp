@@ -121,7 +121,7 @@ Texture Texture::realignTo(const Triangle &newBound, Mat* dest) const
   // Offset the triangles by left corner
   vector<Point2f> offsetSrcTriangle;
   vector<Point2f> offsetDestTriangle;
-  vector<Point> destIntTriangle;
+  Point* triangle = new Point[3]; // For convex drawing
   for (int i=0; i<3; i++)
   {
     auto pSrc  = srcTriangle[i];
@@ -130,7 +130,7 @@ Texture Texture::realignTo(const Triangle &newBound, Mat* dest) const
     double yDest = pDest.y - destRect.y;
     offsetSrcTriangle.push_back(Point2f(pSrc.x - srcRect.x, pSrc.y - srcRect.y));
     offsetDestTriangle.push_back(Point2f(xDest, yDest));
-    destIntTriangle.push_back(Point((int)xDest, (int)yDest));
+    triangle[i] = Point((int)xDest, (int)yDest);
   }
 
   // Apply affine transformation on the offset triangles
@@ -139,10 +139,12 @@ Texture Texture::realignTo(const Triangle &newBound, Mat* dest) const
 
   // Draw a triangular mask (for the target)
   Mat mask = Mat::zeros(destSize, CV_8UC1);
-  //fillPoly();
+  const int counters[] = {3};
+  const Point* triangles[] = {&triangle[0], &triangle[0]+3};
+  fillPoly(mask, triangles, counters, 1, Scalar(255,255,255), LINE_8);
 
   // Copy warped [imgDest] -> [dest] with masking
 
-  
+  delete[] triangle;
   return Texture(newBound, dest);
 }
