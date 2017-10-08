@@ -24,6 +24,8 @@ public:
   double maxY() const;
 
   vector<Point2f> toFloatVector() const;
+  vector<Point2d> toVector() const;
+  Rect boundingRect() const;
 
   Triangle operator >>(const Point2d &displacement) const;
   Triangle operator <<(const Point2d &displacement) const;
@@ -40,8 +42,8 @@ public:
   Mat *img;
   Triangle bound;
 
-  inline Texture(const Triangle& bound, Mat* a) : bound(bound), img(a) {};
-  inline Texture(const Texture& original) : bound(original.bound), img(original.img) {};
+  inline Texture(const Triangle& bound, Mat* a) : img(a), bound(bound) {};
+  inline Texture(const Texture& original) : img(original.img), bound(original.bound) {};
   virtual inline ~Texture(){};
 
   // --------- General properties -------
@@ -50,7 +52,7 @@ public:
   // --------- I/O ------------
   virtual void save(const string path) const;
   virtual void load(const string path);
-  virtual Mat render(IO::GenericIO* io, Mat background, double scaleFactor=1.0, Point2d recentre=Point2d(0,0)) const;
+  virtual Mat render(IO::GenericIO* io, Mat background, bool withVertices=true, bool withEdges=true, double scaleFactor=1.0, Point2d recentre=Point2d(0,0)) const;
 
   //------ Operators / Transformations -------
   Texture realignTo(const Triangle &newBound, Mat* m) const;

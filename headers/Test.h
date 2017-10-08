@@ -5,6 +5,7 @@
 #include "IO.h"
 #include "master.h"
 #include "ShapeCollection.h"
+#include "Texture.h"
 
 const bool   VERBOSE         = true;
 const double CANVAS_SIZE     = 300.0;

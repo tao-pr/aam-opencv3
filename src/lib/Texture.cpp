@@ -67,6 +67,13 @@ double Triangle::maxY() const
   return d;
 }
 
+Rect Triangle::boundingRect() const
+{
+  double a,b,c,d;
+  boundary(a,b,c,d);
+  return Rect(a,b,c-a,d-b);
+}
+
 vector<Point2f> Triangle::toFloatVector() const
 {
   vector<Point2f> v;
@@ -76,6 +83,18 @@ vector<Point2f> Triangle::toFloatVector() const
     float x = vertices.at<double>(i,0);
     float y = vertices.at<double>(i,1);
     v.push_back(Point2f(x, y));
+  }
+  return v;
+}
+
+vector<Point2d> Triangle::toVector() const
+{
+  vector<Point2d> v;
+  for (int i=0; i<3; i++)
+  {
+    double x = vertices.at<double>(i,0);
+    double y = vertices.at<double>(i,1);
+    v.push_back(Point2d(x, y));
   }
   return v;
 }
@@ -90,9 +109,28 @@ void Texture::load(const string path)
 
 }
 
-Mat Texture::render(IO::GenericIO* io, Mat background, double scaleFactor, Point2d recentre) const
+Mat Texture::render(IO::GenericIO* io, Mat background, bool withVertices, bool withEdges, double scaleFactor, Point2d recentre) const
 {
+  Mat canvas = background.clone();
+  double a,b,c,d;
+  this->bound.boundary(a,b,c,d);
+  const vector<Point2d> vertices = this->bound.toVector();
+
+  for (int i=(int)a; i<(int)c; i++)
+    for (int j=(int)b; j<(int)d; j++)
+    {
+      if (Aux::isInsideShape(vertices, Point2d(i,j)))
+      {
+        canvas.at<Scalar>(j,i) = this->img->at<Scalar>(j,i);
+      }
+    }
+
+  if (withEdges) Draw::drawTriangle(canvas, vertices[0], vertices[1], vertices[2], Scalar(0,235,200));
+  if (withVertices) Draw::drawSpots(canvas, vertices, Scalar(0,255,220));
+
   // TAOTODO:
+  io->render(canvas);
+  return canvas;
 }
 
 /**
@@ -101,6 +139,7 @@ Mat Texture::render(IO::GenericIO* io, Mat background, double scaleFactor, Point
  */
 Texture Texture::realignTo(const Triangle &newBound, Mat* dest) const
 {
+  assert(this->img->type() == dest->type());
   double minX, minY, maxX, maxY;
   newBound.boundary(minX, minY, maxX, maxY);
 
@@ -141,9 +180,17 @@ Texture Texture::realignTo(const Triangle &newBound, Mat* dest) const
   Mat mask = Mat::zeros(destSize, CV_8UC1);
   const int counters[] = {3};
   const Point* triangles[] = {&triangle[0], &triangle[0]+3};
-  fillPoly(mask, triangles, counters, 1, Scalar(255,255,255), LINE_8);
+  fillPoly(mask, triangles, counters, 1, Scalar(255), LINE_8);
 
-  // Copy warped [imgDest] -> [dest] with masking
+  // Clone pixels inside the mask to the output canvas
+  for (int x=0; x<destRect.width; x++)
+    for (int y=0; y<destRect.height; y++)
+    {
+      if (mask.at<int>(y,x) > 0)
+      {
+        dest->at<Scalar>(y+destRect.y, x+destRect.x) = imgDest.at<Scalar>(y,x);
+      }
+    }
 
   delete[] triangle;
   return Texture(newBound, dest);

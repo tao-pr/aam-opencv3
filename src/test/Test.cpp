@@ -97,7 +97,31 @@ void testShape(char** argv)
 
 void testTexture(char** argv)
 {
+  cout << GREEN << "Loading sample image" << RESET << endl;
+  Mat original = imread("media/numbers.jpg", CV_LOAD_IMAGE_COLOR);
+  Rect crop(20, 20, 160, 160);
+  Mat plane = original(crop);
+  Size size = plane.size();
+  
+  // Source & destination triangles
+  vector<Point> verticesA
+  {
+    Point(0, 0),
+    Point(plane.cols-1, 0),
+    Point(0, plane.rows-1),
+  };
+  vector<Point> verticesB
+  {
+    Point(25, 25),
+    Point(50, 5),
+    Point(35, 75)
+  };
 
+  // Source texture to warp
+  IO::WindowIO ioT("source");
+  Texture t(Triangle(Mat(verticesA)), &plane);
+  t.render(&ioT, Mat::zeros(size, CV_8UC3), true, true);
+  // TAOTODO:
 }
 
 void testModel()
@@ -117,8 +141,9 @@ int main(int argc, char** argv)
   cout << MAGENTA << " Hit a key to proceed to texture model testing " << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
   waitKey(0);
+  destroyAllWindows();
 
   testTexture(argv);
 
-
+  waitKey(0);
 }

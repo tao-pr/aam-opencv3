@@ -136,9 +136,17 @@ namespace Draw
     line(canvas, a, c, color, thickness, mode);
   }
 
-  inline static void drawSpot(Mat& canvas, Point2d p, Scalar color)
+  inline static void drawSpot(Mat& canvas, const Point2d p, Scalar color)
   {
     circle(canvas, p, 3, color, CV_FILLED, CV_AA);
+  }
+
+  inline static void drawSpots(Mat& canvas, const vector<Point2d>& ps, Scalar color)
+  {
+    for (auto p : ps)
+    {
+      drawSpot(canvas, p, color);
+    }
   }
 }
 
