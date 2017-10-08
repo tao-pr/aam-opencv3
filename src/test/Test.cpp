@@ -1,17 +1,12 @@
 #include "Test.h"
 
-int main(int argc, char** argv)
+void testShape(char** argv)
 {
   // TAOTODO: Following should be parsed from args
   const int TRAIN_SET_SIZE = 16;
   const int SHAPE_SIZE     = 3;
   const double TOL         = 1e-3;
   const int MAX_ALIGN_ITER = 10;
-
-  cout << MAGENTA << "**********************" << RESET << endl;
-  cout << MAGENTA << " Shape model testing  " << RESET << endl;
-  cout << MAGENTA << "**********************" << RESET << endl;
-
   const ShapeCollection trainset = initialShapeCollection(TRAIN_SET_SIZE, SHAPE_SIZE);
 
   // Render each shape onto the same plane
@@ -79,8 +74,8 @@ int main(int argc, char** argv)
   Mat covResized;
   resize(cov, covResized, Size(CANVAS_SIZE, CANVAS_SIZE), INTER_LINEAR);
   normalize(covResized, covResized, 255, 0, NORM_L2);
-  imshow("cov", covResized);
-  moveWindow("cov", (CANVAS_SIZE+10),(CANVAS_SIZE+50));
+  imshow("covariance", covResized);
+  moveWindow("covariance", (CANVAS_SIZE+10),(CANVAS_SIZE+50));
 
   // Calculate PCA shape
   auto eigenShape = alignedSet.clone(true).pca(meanShape);
@@ -98,12 +93,32 @@ int main(int argc, char** argv)
     cout << "... Estimation error : " << error << endl;
     i++;
   }
+}
+
+void testTexture(char** argv)
+{
+
+}
+
+void testModel()
+{
+
+}
+
+int main(int argc, char** argv)
+{
+  cout << MAGENTA << "**********************" << RESET << endl;
+  cout << MAGENTA << " Shape model testing  " << RESET << endl;
+  cout << MAGENTA << "**********************" << RESET << endl;
+
+  testShape(argv);
 
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to texture model testing " << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
-
   waitKey(0);
+
+  testTexture(argv);
 
 
 }
