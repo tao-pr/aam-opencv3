@@ -220,10 +220,10 @@ Texture Texture::realignTo(const Triangle &newBound, Mat* dest) const
     for (int y=0; y<destSize.height; y++)
     {
       if (mask.at<unsigned char>(y,x) > 0 && 
-        x >= 0 &&
-        x < dest->cols &&
-        y >= 0 &&
-        y < dest->rows)
+        x >= 0 && x < imgDest.cols &&
+        y >= 0 && y < imgDest.rows &&
+        x+destRect.x >= 0 && x+destRect.x < dest->cols &&
+        y+destRect.y >= 0 && y+destRect.y < dest->rows)
       {
         dest->at<Vec3b>(y+destRect.y, x+destRect.x) = imgDest.at<Vec3b>(y,x);
       }
