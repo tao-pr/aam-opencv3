@@ -109,6 +109,15 @@ vector<Point2d> Triangle::toVector() const
   return v;
 }
 
+void Triangle::toIntArray(Point* p) const
+{
+  for (int i=0; i<3; i++)
+  {
+    p[i].x = (int)vertices.at<double>(i,0);
+    p[i].y = (int)vertices.at<double>(i,1);
+  }
+}
+
 void Texture::save(const string path) const
 {
 
@@ -126,19 +135,28 @@ Mat Texture::render(IO::GenericIO* io, Mat background, bool withVertices, bool w
   this->bound.boundary(a,b,c,d);
   const vector<Point2d> vertices = this->bound.toVector();
 
+  // Draw the masking region
+  auto triangle = new Point[3];
+  this->bound.toIntArray(triangle);
+  Mat mask = Mat::zeros(Size(c-a, d-b), CV_8UC1);
+  const int counters[] = {3};
+  const Point* triangles[] = {&triangle[0], &triangle[0]+3};
+  fillPoly(mask, triangles, counters, 1, Scalar(255), LINE_8);
+
   for (int i=(int)a; i<(int)c; i++)
     for (int j=(int)b; j<(int)d; j++)
     {
-      if (Aux::isInsideShape(vertices, Point2d(i,j)))
+      if (mask.at<unsigned char>(j,i) > 0)
       {
-        canvas.at<Scalar>(j,i) = this->img->at<Scalar>(j,i);
+        canvas.at<Vec3b>(j,i) = this->img->at<Vec3b>(j,i);
       }
     }
 
   if (withEdges) Draw::drawTriangle(canvas, vertices[0], vertices[1], vertices[2], Scalar(0,235,200));
   if (withVertices) Draw::drawSpots(canvas, vertices, Scalar(0,255,220));
 
-  // TAOTODO:
+  delete[] triangle;
+
   io->render(canvas);
   return canvas;
 }
@@ -192,15 +210,24 @@ Texture Texture::realignTo(const Triangle &newBound, Mat* dest) const
   const Point* triangles[] = {&triangle[0], &triangle[0]+3};
   fillPoly(mask, triangles, counters, 1, Scalar(255), LINE_8);
 
+  // TAODEBUG:
+  imshow("imgSrc", imgSrc);
+  imshow("imgDest", imgDest);
+  imshow("mask", mask);
+
   // Clone pixels inside the mask to the output canvas
-  for (int x=0; x<destRect.width; x++)
-    for (int y=0; y<destRect.height; y++)
-    {
-      if (mask.at<int>(y,x) > 0)
-      {
-        dest->at<Scalar>(y+destRect.y, x+destRect.x) = imgDest.at<Scalar>(y,x);
-      }
-    }
+  // for (int x=0; x<destSize.width; x++)
+  //   for (int y=0; y<destSize.height; y++)
+  //   {
+  //     if (mask.at<unsigned char>(y,x) > 0 && 
+  //       x >= 0 &&
+  //       x < dest->cols &&
+  //       y >= 0 &&
+  //       y < dest->rows)
+  //     {
+  //       dest->at<Vec3b>(y+destRect.y, x+destRect.x) = Vec3b(255,255,255);//imgDest.at<Vec3b>(y,x)[c];
+  //     }
+  //   }
 
   delete[] triangle;
   return Texture(newBound, dest);

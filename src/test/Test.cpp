@@ -112,9 +112,9 @@ void testTexture(char** argv)
   };
   vector<Point2d> verticesB
   {
-    Point2d(25, 25),
-    Point2d(50, 5),
-    Point2d(35, 75)
+    Point2d(50, 100),
+    Point2d(200, 25),
+    Point2d(0, 250)
   };
 
   // Source texture to warp
@@ -123,10 +123,15 @@ void testTexture(char** argv)
   t.render(&ioT, plane, true, true);
   
   // Re-align to the new triangle & render
-  Mat plane_ = Mat::zeros(size, CV_8UC3);
+  Size sizeAligned(500, 400);
+  Mat canvas = Mat(sizeAligned, CV_8UC3, Scalar(0,255,125));
+
   IO::WindowIO ioAligned("aligned");
-  auto t_ = t.realignTo(verticesB, &plane_);
-  t_.render(&ioAligned, Mat::zeros(size, CV_8UC3), true, true);
+  auto t_ = t.realignTo(verticesB, &canvas);
+  t_.render(&ioAligned, Mat::zeros(sizeAligned, CV_8UC3), true, true);
+
+  moveWindow("source", 15, 15);
+  moveWindow("aligned", 160+15, 15);
 }
 
 void testModel()

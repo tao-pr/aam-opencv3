@@ -26,6 +26,7 @@ public:
 
   vector<Point2f> toFloatVector() const;
   vector<Point2d> toVector() const;
+  void toIntArray(Point* p) const;
   Rect boundingRect() const;
 
   Triangle operator >>(const Point2d &displacement) const;
