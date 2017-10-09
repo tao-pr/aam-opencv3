@@ -146,7 +146,9 @@ Mat Texture::render(IO::GenericIO* io, Mat background, bool withVertices, bool w
   for (int i=(int)a; i<(int)c; i++)
     for (int j=(int)b; j<(int)d; j++)
     {
-      if (mask.at<unsigned char>(j,i) > 0)
+      if (mask.at<unsigned char>(j,i) > 0 &&
+        i>=0 && i<min(canvas.cols, img->cols) &&
+        j>=0 && j<min(canvas.rows, img->rows))
       {
         canvas.at<Vec3b>(j,i) = this->img->at<Vec3b>(j,i);
       }

@@ -112,9 +112,9 @@ void testTexture(char** argv)
   };
   vector<Point2d> verticesB
   {
-    Point2d(50, 100),
-    Point2d(200, 25),
-    Point2d(0, 250)
+    Point2d(25, 25),
+    Point2d(200, 75),
+    Point2d(5, 250)
   };
 
   // Source texture to warp
