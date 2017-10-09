@@ -1,5 +1,15 @@
 #include "Texture.h"
 
+Triangle::Triangle(const vector<Point2d>& v)
+{
+  this->vertices = Mat(3, 2, CV_64FC1);
+  for (int n=0; n<3; n++)
+  {
+    this->vertices.at<double>(n,0) = v[n].x;
+    this->vertices.at<double>(n,1) = v[n].y;
+  }
+}
+
 Triangle Triangle::operator >>(const Point2d &displacement) const
 {
   Mat dist = Mat(3, 2, CV_64FC1);

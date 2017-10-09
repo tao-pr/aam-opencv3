@@ -102,25 +102,25 @@ void testTexture(char** argv)
   Rect crop(20, 20, 160, 160);
   Mat plane = original(crop);
   Size size = plane.size();
-  
+
   // Source & destination triangles
-  vector<Point> verticesA
+  vector<Point2d> verticesA
   {
-    Point(0, 0),
-    Point(plane.cols-1, 0),
-    Point(0, plane.rows-1),
+    Point2d(0, 0),
+    Point2d(plane.cols-1, 0),
+    Point2d(0, plane.rows-1),
   };
-  vector<Point> verticesB
+  vector<Point2d> verticesB
   {
-    Point(25, 25),
-    Point(50, 5),
-    Point(35, 75)
+    Point2d(25, 25),
+    Point2d(50, 5),
+    Point2d(35, 75)
   };
 
   // Source texture to warp
   IO::WindowIO ioT("source");
-  Texture t(Triangle(Mat(verticesA)), &plane);
-  t.render(&ioT, Mat::zeros(size, CV_8UC3), true, true);
+  Texture t(Triangle(verticesA), &plane);
+  t.render(&ioT, plane, true, true);
   // TAOTODO:
 }
 
@@ -135,12 +135,12 @@ int main(int argc, char** argv)
   cout << MAGENTA << " Shape model testing  " << RESET << endl;
   cout << MAGENTA << "**********************" << RESET << endl;
 
-  testShape(argv);
+  //testShape(argv); TAODEBUG:
 
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to texture model testing " << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
-  waitKey(0);
+  //waitKey(0);
   destroyAllWindows();
 
   testTexture(argv);

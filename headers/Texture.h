@@ -13,6 +13,7 @@ class Triangle
 {
 public:
   Mat vertices; // 3 x 2
+  Triangle(const vector<Point2d>& v);
   inline Triangle(const Mat& v) : vertices(v) {};
   inline ~Triangle(){};
 
