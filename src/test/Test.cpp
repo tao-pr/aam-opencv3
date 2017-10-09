@@ -121,7 +121,12 @@ void testTexture(char** argv)
   IO::WindowIO ioT("source");
   Texture t(Triangle(verticesA), &plane);
   t.render(&ioT, plane, true, true);
-  // TAOTODO:
+  
+  // Re-align to the new triangle & render
+  Mat plane_ = Mat::zeros(size, CV_8UC3);
+  IO::WindowIO ioAligned("aligned");
+  auto t_ = t.realignTo(verticesB, &plane_);
+  t_.render(&ioAligned, Mat::zeros(size, CV_8UC3), true, true);
 }
 
 void testModel()
