@@ -216,18 +216,18 @@ Texture Texture::realignTo(const Triangle &newBound, Mat* dest) const
   imshow("mask", mask);
 
   // Clone pixels inside the mask to the output canvas
-  // for (int x=0; x<destSize.width; x++)
-  //   for (int y=0; y<destSize.height; y++)
-  //   {
-  //     if (mask.at<unsigned char>(y,x) > 0 && 
-  //       x >= 0 &&
-  //       x < dest->cols &&
-  //       y >= 0 &&
-  //       y < dest->rows)
-  //     {
-  //       dest->at<Vec3b>(y+destRect.y, x+destRect.x) = Vec3b(255,255,255);//imgDest.at<Vec3b>(y,x)[c];
-  //     }
-  //   }
+  for (int x=0; x<destSize.width; x++)
+    for (int y=0; y<destSize.height; y++)
+    {
+      if (mask.at<unsigned char>(y,x) > 0 && 
+        x >= 0 &&
+        x < dest->cols &&
+        y >= 0 &&
+        y < dest->rows)
+      {
+        dest->at<Vec3b>(y+destRect.y, x+destRect.x) = imgDest.at<Vec3b>(y,x);
+      }
+    }
 
   delete[] triangle;
   return Texture(newBound, dest);

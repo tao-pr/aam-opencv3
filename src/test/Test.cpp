@@ -123,12 +123,12 @@ void testTexture(char** argv)
   t.render(&ioT, plane, true, true);
   
   // Re-align to the new triangle & render
-  Size sizeAligned(500, 400);
+  Size sizeAligned(500, 500);
   Mat canvas = Mat(sizeAligned, CV_8UC3, Scalar(0,255,125));
 
   IO::WindowIO ioAligned("aligned");
   auto t_ = t.realignTo(verticesB, &canvas);
-  t_.render(&ioAligned, Mat::zeros(sizeAligned, CV_8UC3), true, true);
+  t_.render(&ioAligned, Mat(sizeAligned, CV_8UC3, Scalar(0,10,60)), true, true);
 
   moveWindow("source", 15, 15);
   moveWindow("aligned", 160+15, 15);
