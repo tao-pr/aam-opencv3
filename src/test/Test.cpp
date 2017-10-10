@@ -179,15 +179,18 @@ int main(int argc, char** argv)
   cout << MAGENTA << " Shape model testing  " << RESET << endl;
   cout << MAGENTA << "**********************" << RESET << endl;
 
-  //testShape(argv); TAODEBUG:
+  testShape(argv);
 
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to texture model testing " << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
-  //waitKey(0);
+  waitKey(0);
   destroyAllWindows();
 
   testTexture(argv);
 
+  cout << MAGENTA << "***********************************************" << RESET << endl;
+  cout << MAGENTA << " Hit a key to proceed to AAM testing " << RESET << endl;
+  cout << MAGENTA << "***********************************************" << RESET << endl;
   waitKey(0);
 }
