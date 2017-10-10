@@ -104,32 +104,64 @@ void testTexture(char** argv)
   Size size = plane.size();
 
   // Source & destination triangles
-  vector<Point2d> verticesA
+  vector<Point2d> A0
   {
     Point2d(0, 0),
     Point2d(plane.cols-1, 0),
     Point2d(0, plane.rows-1),
   };
-  vector<Point2d> verticesB
+  vector<Point2d> A1
+  {
+    Point2d(plane.cols-1, 0),
+    Point2d(plane.cols-1, plane.rows-1),
+    Point2d(0, plane.rows-1)
+  };
+  auto source = {A0, A1};
+
+
+  const vector<Point2d> B0
   {
     Point2d(25, 25),
     Point2d(200, 75),
     Point2d(5, 250)
   };
+  const vector<Point2d> B1
+  {
+    Point2d(200, 75),
+    Point2d(250, 350),
+    Point2d(5, 250)
+  };
+  vector<vector<Point2d>> dest = {B0, B1};
 
   // Source texture to warp
+  Mat p = plane;
   IO::WindowIO ioT("source");
-  Texture t(Triangle(verticesA), &plane);
-  t.render(&ioT, plane, true, true);
+  vector<Texture> textures;
+  for (auto t:source)
+  {
+    Texture tx(Triangle(t), &plane);
+    p = tx.render(&ioT, p, true, true);
+    textures.push_back(tx);
+  }
   
-  // Re-align to the new triangle & render
+  // Re-align to the new triangles & render
   Size sizeAligned(500, 500);
-  Mat canvas = Mat(sizeAligned, CV_8UC3, Scalar(0,255,125));
+  Mat canvas = Mat(sizeAligned, CV_8UC3, Scalar(0,255,125)); // TAODEBUG: Show this?
 
   IO::WindowIO ioAligned("aligned");
-  auto t_ = t.realignTo(verticesB, &canvas);
-  t_.render(&ioAligned, Mat(sizeAligned, CV_8UC3, Scalar(0,10,60)), true, true);
-
+  Mat background = Mat(sizeAligned, CV_8UC3, Scalar(0,10,60));
+  for (int i=0; i<dest.size(); i++)
+  {
+    Triangle destTriangle(dest[i]);
+    cout << "-------------------------" << endl;
+    cout << "Aligning #[" << i << "]" << endl;
+    cout << textures[i].bound.vertices << endl;
+    cout << "to => " << endl;
+    cout << destTriangle.vertices << endl;
+    auto texture_ = textures[i].realignTo(destTriangle, &canvas);
+    background = texture_.render(&ioAligned, background, true, true);
+  }
+  
   moveWindow("source", 15, 15);
   moveWindow("aligned", 160+15, 15);
 }

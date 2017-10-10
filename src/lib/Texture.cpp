@@ -214,10 +214,6 @@ Texture Texture::realignTo(const Triangle &newBound, Mat* dest) const
   const Point* triangles[] = {&triangle[0], &triangle[0]+3};
   fillPoly(mask, triangles, counters, 1, Scalar(255), LINE_8);
 
-  // TAODEBUG:
-  imshow("imgDest", imgDest);
-  imshow("mask", mask);
-
   // Clone pixels inside the mask to the output canvas
   for (int x=0; x<destSize.width; x++)
     for (int y=0; y<destSize.height; y++)
