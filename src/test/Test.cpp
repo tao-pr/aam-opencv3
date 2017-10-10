@@ -101,9 +101,8 @@ void testTexture(char** argv)
   Mat original = imread("media/numbers.jpg", CV_LOAD_IMAGE_COLOR);
   Rect crop(20, 20, 160, 160);
   Mat plane = original(crop);
-  Size size = plane.size();
 
-  // Source & destination triangles
+  // Source triangle coordinates
   vector<Point2d> A0
   {
     Point2d(0, 0),
@@ -118,18 +117,18 @@ void testTexture(char** argv)
   };
   auto source = {A0, A1};
 
-
+  // Destination triangle coordinates
   const vector<Point2d> B0
   {
     Point2d(25, 25),
     Point2d(200, 75),
-    Point2d(5, 250)
+    Point2d(140, 350)
   };
   const vector<Point2d> B1
   {
     Point2d(200, 75),
     Point2d(250, 350),
-    Point2d(5, 250)
+    Point2d(140, 350)
   };
   vector<vector<Point2d>> dest = {B0, B1};
 
@@ -146,7 +145,7 @@ void testTexture(char** argv)
   
   // Re-align to the new triangles & render
   Size sizeAligned(500, 500);
-  Mat canvas = Mat(sizeAligned, CV_8UC3, Scalar(0,255,125)); // TAODEBUG: Show this?
+  Mat canvas = Mat(sizeAligned, CV_8UC3, Scalar(0,255,125));
 
   IO::WindowIO ioAligned("aligned");
   Mat background = Mat(sizeAligned, CV_8UC3, Scalar(0,10,60));
@@ -161,9 +160,12 @@ void testTexture(char** argv)
     auto texture_ = textures[i].realignTo(destTriangle, &canvas);
     background = texture_.render(&ioAligned, background, true, true);
   }
+
+  imshow("canvas", canvas);
   
   moveWindow("source", 15, 15);
-  moveWindow("aligned", 160+15, 15);
+  moveWindow("aligned", 185, 15);
+  moveWindow("canvas", 750, 250);
 }
 
 void testModel()

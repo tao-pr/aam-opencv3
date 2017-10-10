@@ -148,9 +148,9 @@ Mat Texture::render(IO::GenericIO* io, Mat background, bool withVertices, bool w
   for (int i=boundary.x; i<boundary.x + boundary.width; i++)
     for (int j=boundary.y; j<boundary.y + boundary.height; j++)
     {
-      if (mask.at<unsigned char>(j,i) > 0 &&
-        i>=0 && i<min(canvas.cols, img->cols) &&
-        j>=0 && j<min(canvas.rows, img->rows))
+      if (i>=0 && i<min(canvas.cols, img->cols) &&
+          j>=0 && j<min(canvas.rows, img->rows) &&
+          mask.at<unsigned char>(j,i) > 0)
       {
         canvas.at<Vec3b>(j,i) = this->img->at<Vec3b>(j,i);
       }
