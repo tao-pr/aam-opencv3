@@ -135,16 +135,18 @@ Mat Texture::render(IO::GenericIO* io, Mat background, bool withVertices, bool w
   this->bound.boundary(a,b,c,d);
   const vector<Point2d> vertices = this->bound.toVector();
 
+  Rect boundary((int)floor(a), (int)floor(b), (int)floor(c), (int)floor(d));
+
   // Draw the masking region
   auto triangle = new Point[3];
   this->bound.toIntArray(triangle);
-  Mat mask = Mat::zeros(Size(c-a, d-b), CV_8UC1);
+  Mat mask = Mat::zeros(boundary.height, boundary.width, CV_8UC1);
   const int counters[] = {3};
   const Point* triangles[] = {&triangle[0], &triangle[0]+3};
   fillPoly(mask, triangles, counters, 1, Scalar(255), LINE_8);
 
-  for (int i=(int)a; i<(int)c; i++)
-    for (int j=(int)b; j<(int)d; j++)
+  for (int i=boundary.x; i<boundary.x + boundary.width; i++)
+    for (int j=boundary.y; j<boundary.y + boundary.height; j++)
     {
       if (mask.at<unsigned char>(j,i) > 0 &&
         i>=0 && i<min(canvas.cols, img->cols) &&
@@ -213,7 +215,6 @@ Texture Texture::realignTo(const Triangle &newBound, Mat* dest) const
   fillPoly(mask, triangles, counters, 1, Scalar(255), LINE_8);
 
   // TAODEBUG:
-  imshow("imgSrc", imgSrc);
   imshow("imgDest", imgDest);
   imshow("mask", mask);
 
