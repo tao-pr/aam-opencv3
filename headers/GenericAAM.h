@@ -19,6 +19,8 @@ class GenericAAM
 private:
 protected:
   FaceLocaliser* faceFinder;
+  Mat shapeParams;
+  Mat textureParams;
 
 public:
   inline GenericAAM(FaceLocaliser* faceDetector) { this->faceFinder = faceDetector; }

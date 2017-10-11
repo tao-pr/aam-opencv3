@@ -4,6 +4,7 @@
 
 #include "IO.h"
 #include "master.h"
+#include "AAM2D.h"
 #include "ShapeCollection.h"
 #include "Texture.h"
 
