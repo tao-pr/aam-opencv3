@@ -30,7 +30,7 @@ public:
   AppearanceCollection translateBy(const Point2d &p) const;
 
   // ---------- I/O ------------------
-  vector<Appearance> getItems() const;
+  inline vector<Appearance> getItems() const { return this->items; };
   Mat toMat() const;
 };
 

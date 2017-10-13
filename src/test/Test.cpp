@@ -1,8 +1,16 @@
 #include "Test.h"
 
+void testMeshShape(char** argv)
+{
+  const int NUM_VERTICES = 8;
+  MeshShape mesh = initialMesh(NUM_VERTICES);
+
+
+  // TAOTODO:
+}
+
 void testShape(char** argv)
 {
-  // TAOTODO: Following should be parsed from args
   const int TRAIN_SET_SIZE = 16;
   const int SHAPE_SIZE     = 3;
   const double TOL         = 1e-3;
@@ -175,6 +183,12 @@ void testModel()
 
 int main(int argc, char** argv)
 {
+  cout << MAGENTA << "**********************" << RESET << endl;
+  cout << MAGENTA << " Mesh shape testing  "  << RESET << endl;
+  cout << MAGENTA << "**********************" << RESET << endl;
+
+  testMeshShape(argv);
+
   cout << MAGENTA << "**********************" << RESET << endl;
   cout << MAGENTA << " Shape model testing  " << RESET << endl;
   cout << MAGENTA << "**********************" << RESET << endl;

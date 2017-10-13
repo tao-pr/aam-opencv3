@@ -6,6 +6,7 @@
 #include "master.h"
 #include "AAM2D.h"
 #include "ShapeCollection.h"
+#include "MeshShape.h"
 #include "Texture.h"
 
 const bool   VERBOSE         = true;
@@ -13,6 +14,19 @@ const double CANVAS_SIZE     = 300.0;
 const double CANVAS_HALFSIZE = CANVAS_SIZE / 2.0;
 const double NOISE_T         = 15.0;
 const double NOISE_R         = 0.665;
+
+inline MeshShape initialMesh(int shapeSize)
+{
+  srand(time(NULL));
+  vector<Point2d> vs;
+  for (int i=0; i<shapeSize; i++)
+  {
+    double x = rand() % (int)CANVAS_SIZE;
+    double y = rand() % (int)CANVAS_SIZE;
+    vs.push_back(Point2d(x, y));
+  }
+  return MeshShape(vs);
+}
 
 inline ShapeCollection initialShapeCollection(int num, int shapeSize)
 {
