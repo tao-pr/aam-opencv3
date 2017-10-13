@@ -6,19 +6,19 @@
 #define APP_COLLECTION
 
 #include "master.h"
-#include "Texture.h"
+#include "AppearanceModel.h"
 
 class AppearanceCollection 
 {
 private:
 protected:
-  vector<Texture> items;
+  vector<Appearance> items;
 public:
   inline AppearanceCollection(){};
-  inline AppearanceCollection(const vector<Texture>& apps) : items(apps) {};
+  inline AppearanceCollection(const vector<Appearance>& apps) : items(apps) {};
   inline AppearanceCollection(const AppearanceCollection& original) : items(original.items) {};
 
-  inline void add(const Texture &t){ this->items.push_back(t); };
+  inline void add(const Appearance &t){ this->items.push_back(t); };
 
   // ---------- Analysis of textures ------------
   
@@ -30,7 +30,7 @@ public:
   AppearanceCollection translateBy(const Point2d &p) const;
 
   // ---------- I/O ------------------
-  vector<Texture> getItems() const;
+  vector<Appearance> getItems() const;
   Mat toMat() const;
 };
 
