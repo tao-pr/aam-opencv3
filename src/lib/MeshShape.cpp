@@ -31,6 +31,26 @@ void MeshShape::resubdiv()
   }
 }
 
+int MeshShape::numShapes() const
+{
+  vector<Vec6f> triangles;
+  this->subdiv.getTriangleList(triangles);
+  return triangles.size();
+}
+
+vector<Triangle> MeshShape::getTriangles() const
+{
+  vector<Vec6f> triangles;
+  this->subdiv.getTriangleList(triangles);
+  vector<Triangle> output;
+  for (auto tr:triangles)
+  {
+    vector<Point2d> pairs = {Point2d(tr[0], tr[1]), Point2d(tr[2], tr[3]), Point2d(tr[4], tr[5])};
+    output.push_back(Triangle(pairs));
+  }
+  return output;
+}
+
 Mat MeshShape::render(IO::GenericIO* io, Mat background, double scaleFactor, Point2d recentre) const
 {
   // TAOREVIEW: Utilise OpenGL
