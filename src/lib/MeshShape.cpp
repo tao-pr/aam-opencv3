@@ -23,37 +23,23 @@ MeshShape::MeshShape(const Shape& shape)
 
 void MeshShape::resubdiv()
 {
-  double minX = numeric_limits<double>::max();
-  double minY = numeric_limits<double>::max();
-  double maxY = -numeric_limits<double>::max();
-  double maxX = -numeric_limits<double>::max();
-  int N = this->mat.rows;
+  double minX, minY, maxX, maxY;
+  minMaxLoc(this->mat.col(0), &minX, &maxX);
+  minMaxLoc(this->mat.col(1), &minY, &maxY);
+
+  const double margin = 8.0;
+  Rect rect((int)floor(minX-margin), 
+    (int)floor(minY-margin), 
+    (int)ceil(maxX-minX+margin*2), 
+    (int)ceil(maxY-minY+margin*2));
+  this->subdiv = Subdiv2D(rect);
+
+  const int N = this->mat.rows;
   for (int j=0; j<N; j++)
   {
-    double x = this->mat.at<double>(j,0);
-    double y = this->mat.at<double>(j,1);
-    minX = x < minX ? x : minX;
-    minY = y < minY ? y : minY;
-    maxX = x > maxX ? x : maxX;
-    maxY = x > maxY ? y : maxY;
-
-    cout << "examining : " << x << ", " << y << endl; // TAODEBUG:
-  }
-
-  // TAODEBUG:
-  cout << "x : [" << 
-    minX << "~" << maxX << "] " <<
-    endl << "y : [" << 
-    minY << "~" << maxY << "]" << endl;
-
-  this->subdiv = Subdiv2D(Rect(minX-1, minY-1, maxX-minX+1, maxY-minY+1));
-  
-  cout << Rect(minX-1, minY-1, maxX-minX+1, maxY-minY+1) << endl;
-  cout << "collecting points" << endl; // TAODEBUG:
-
-  for (int j=0; j<N; j++)
-  {
-    this->subdiv.insert(Point2d(this->mat.at<double>(j,0), this->mat.at<double>(j,1)));
+    this->subdiv.insert(Point2f(
+      (float)this->mat.at<double>(j,0), 
+      (float)this->mat.at<double>(j,1)));
   }
   cout << "subdivision ended" << endl; // TAODEBUG:
 }
