@@ -50,6 +50,28 @@ namespace Aux
     return numIntersection % 2 == 1;
   }
 
+  bool inline isInsideShapeInt(const vector<Point>& vertices, Point2d c)
+  {
+    if (vertices.empty() || vertices.size()<=2)
+      return false;
+    auto v0 = vertices.front();
+    int numIntersection = 0;
+    for (auto v : vertices)
+    {
+      // Horizontal line test
+
+      // Check if an edge intersects with the horizontal line starting from [c]
+      if ((v0.x > (int)floor(c.x) || v.x > (int)floor(c.x)) && 
+        (min(v0.y, v.y) <= (int)ceil(c.y)) &&
+        (max(v0.y, v.y) >= (int)ceil(c.y)))
+      {
+        ++numIntersection;
+      }
+      v0 = v;
+    }
+    return numIntersection % 2 == 1;
+  }
+
   inline double square(double n)
   {
     return n*n;
