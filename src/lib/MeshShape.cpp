@@ -68,7 +68,6 @@ Mat MeshShape::render(IO::GenericIO* io, Mat background, double scaleFactor, Poi
   // TAOREVIEW: Utilise OpenGL
   vector<Vec6f> triangles;
   this->subdiv.getTriangleList(triangles);
-  //vector<Point2d> hull = this->convexHull();
   Size size = background.size();
   Mat canvas = Mat(size.height, size.width, CV_64FC3);
   background.copyTo(canvas);
@@ -84,17 +83,6 @@ Mat MeshShape::render(IO::GenericIO* io, Mat background, double scaleFactor, Poi
 
   // Render vertices
   Draw::drawSpots(canvas, this->toPoints(), Scalar(0,240,255));
-
-  // Render boundary
-  // Point2d v0 = hull.front();
-  // Point2d v0s = Point2d(v0.x * scaleFactor + recentre.x, v0.y * scaleFactor + recentre.y);
-  // for (auto v : hull)
-  // {
-  //   auto vs = Point2d(v.x * scaleFactor + recentre.x, v.y * scaleFactor + recentre.y);
-  //   line(canvas, v0s, vs, Scalar(0,0,200), 3, CV_AA);
-  //   v0s = vs;
-  // }
-
   io->render(canvas);
   return canvas;
 }

@@ -78,10 +78,40 @@ Mat Shape::render(IO::GenericIO* io, Mat background, double scaleFactor, Point2d
   return canvas;
 }
 
-vector<Point2d> Shape::convexHull() const
+vector<Point> Shape::convexHull() const
 {
-  vector<Point2d> hull;
-  cv::convexHull(Mat(this->toPoints()), hull, false);
+  const auto points = this->toPoints();
+
+  struct PolarPoint
+  {
+    double angle;
+    Point2d p;
+    PolarPoint(double a, Point2d p) : angle(a), p(p) {};
+    bool operator < (const PolarPoint& that) const
+    {
+      return angle > that.angle; // CCW order
+    }
+  };
+
+  const Point2d mean = this->centroid();
+
+  // Sort the points CCW
+  list<PolarPoint> polars;
+  for (auto p : points)
+  {
+    double angle = atan2(p.y - mean.y, p.x - mean.x);
+    polars.push_back(PolarPoint(angle, p));
+  }
+  polars.sort();
+
+  vector<Point> boundPoints;
+  for (auto elem : polars)
+  {
+    boundPoints.push_back(elem.p);
+  }
+
+  vector<Point> hull(boundPoints.size());
+  cv::convexHull(Mat(boundPoints), hull, false);
   return hull;
 }
 
