@@ -74,15 +74,20 @@ Mat MeshShape::render(IO::GenericIO* io, Mat background, double scaleFactor, Poi
 
   auto hull = this->convexHull();
 
+  const Point* hulls[] = {hull.data()};
+  const int counters[] = {(int)hull.size()};
+  Mat hullFill = Mat::zeros(canvas.rows, canvas.cols, CV_8UC1);
+  fillPoly(hullFill, hulls, counters, 1, Scalar(255), LINE_8);
+
   // Render edges
   for (auto tr : triangles)
   {
     auto a = Point2d(tr[0]*scaleFactor + recentre.x, tr[1]*scaleFactor + recentre.y);
     auto b = Point2d(tr[2]*scaleFactor + recentre.x, tr[3]*scaleFactor + recentre.y);
     auto c = Point2d(tr[4]*scaleFactor + recentre.x, tr[5]*scaleFactor + recentre.y);
-    if (Aux::isInsideShapeInt(hull, a) && 
-        Aux::isInsideShapeInt(hull, b) &&
-        Aux::isInsideShapeInt(hull, c))
+    if (hullFill.at<unsigned char>(a.y, a.x) > 0 && 
+        hullFill.at<unsigned char>(b.y, b.x) > 0 &&
+        hullFill.at<unsigned char>(c.y, c.x) > 0)
       Draw::drawTriangle(canvas, a,b,c, Scalar(0,0,200), 1, CV_AA);
   }
 

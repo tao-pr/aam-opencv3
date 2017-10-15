@@ -118,7 +118,7 @@ vector<Point> Shape::convexHull() const
   vector<Point> boundPoints;
   for (auto elem : polars)
   {
-    boundPoints.push_back(elem.p);
+    boundPoints.push_back(Aux::point2dToInt(elem.p));
   }
 
   vector<Point> hull(boundPoints.size());
