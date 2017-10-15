@@ -50,13 +50,12 @@ namespace Aux
       if (min(v0.x, v.x) <= c.x &&
           max(v0.x, v.x) >= c.x &&
           min(v0.y, v.y) <= c.y &&
-          max(v0.y, v.y) >= c.y) // TAOTODO: FIX THIS
+          max(v0.y, v.y) >= c.y) 
       {
         ++numIntersection;
       }
       v0 = v;
     }
-    cout << numIntersection << endl; // TAODEBUG:
     return numIntersection % 2 == 1;
   }
 

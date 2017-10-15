@@ -45,20 +45,40 @@ void MeshShape::resubdiv()
 
 int MeshShape::numTriangles() const
 {
-  vector<Vec6f> triangles;
-  this->subdiv.getTriangleList(triangles);
-  return triangles.size();
+  return this->getTriangles().size();
 }
 
 vector<Triangle> MeshShape::getTriangles() const
 {
   vector<Vec6f> triangles;
   this->subdiv.getTriangleList(triangles);
+
+  // Take only triangles of which edges are aligned 
+  // on or within the convex hull of the entire shape.
+  auto hull = this->convexHull();
+  Rect rect = boundingRect(hull);
+  const Point* hulls[] = {hull.data()};
+  const int counters[] = {(int)hull.size()};
+  Mat hullFill = Mat::zeros(rect.height + rect.y, rect.width + rect.x, CV_8UC1);
+  fillPoly(hullFill, hulls, counters, 1, Scalar(255), LINE_8);
+
   vector<Triangle> output;
   for (auto tr:triangles)
   {
-    vector<Point2d> pairs = {Point2d(tr[0], tr[1]), Point2d(tr[2], tr[3]), Point2d(tr[4], tr[5])};
-    output.push_back(Triangle(pairs));
+    auto a = Point2d(tr[0], tr[1]);
+    auto b = Point2d(tr[2], tr[3]);
+    auto c = Point2d(tr[4], tr[5]);
+    
+    if (hullFill.at<unsigned char>(a.y, a.x) > 0 && 
+        hullFill.at<unsigned char>(b.y, b.x) > 0 &&
+        hullFill.at<unsigned char>(c.y, c.x) > 0)
+    {
+      vector<Point2d> pairs = {
+        Point2d(a.x, a.y), 
+        Point2d(b.x, b.y), 
+        Point2d(c.x, c.y)};
+      output.push_back(Triangle(pairs));
+    }
   }
   return output;
 }
@@ -66,29 +86,21 @@ vector<Triangle> MeshShape::getTriangles() const
 Mat MeshShape::render(IO::GenericIO* io, Mat background, double scaleFactor, Point2d recentre) const
 {
   // TAOREVIEW: Utilise OpenGL
-  vector<Vec6f> triangles;
-  this->subdiv.getTriangleList(triangles);
+  auto triangles = this->getTriangles();
   Size size = background.size();
   Mat canvas = Mat(size.height, size.width, CV_64FC3);
   background.copyTo(canvas);
 
   auto hull = this->convexHull();
 
-  const Point* hulls[] = {hull.data()};
-  const int counters[] = {(int)hull.size()};
-  Mat hullFill = Mat::zeros(canvas.rows, canvas.cols, CV_8UC1);
-  fillPoly(hullFill, hulls, counters, 1, Scalar(255), LINE_8);
-
   // Render edges
   for (auto tr : triangles)
   {
-    auto a = Point2d(tr[0]*scaleFactor + recentre.x, tr[1]*scaleFactor + recentre.y);
-    auto b = Point2d(tr[2]*scaleFactor + recentre.x, tr[3]*scaleFactor + recentre.y);
-    auto c = Point2d(tr[4]*scaleFactor + recentre.x, tr[5]*scaleFactor + recentre.y);
-    if (hullFill.at<unsigned char>(a.y, a.x) > 0 && 
-        hullFill.at<unsigned char>(b.y, b.x) > 0 &&
-        hullFill.at<unsigned char>(c.y, c.x) > 0)
-      Draw::drawTriangle(canvas, a,b,c, Scalar(0,0,200), 1, CV_AA);
+    const auto vec = tr.toVector();
+    const auto a = vec[0];
+    const auto b = vec[1];
+    const auto c = vec[2];
+    Draw::drawTriangle(canvas, a,b,c, Scalar(0,0,200), 1, CV_AA);
   }
 
   // Render convex hull
