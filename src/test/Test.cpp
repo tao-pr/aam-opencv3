@@ -2,7 +2,7 @@
 
 void testMeshShape(char** argv)
 {
-  const int NUM_VERTICES = 8;
+  const int NUM_VERTICES = 32;
   cout << GREEN << "Initialising mesh shape ..." << RESET << endl;
   MeshShape mesh = initialMesh(NUM_VERTICES);
   int numTriangles = mesh.numTriangles();
@@ -12,7 +12,6 @@ void testMeshShape(char** argv)
   auto ioMesh = IO::WindowIO("mesh");
   mesh.render(&ioMesh, Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3));
   waitKey(0);
-  // TAOTODO:
 }
 
 void testShape(char** argv)
