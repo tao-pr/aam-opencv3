@@ -72,6 +72,8 @@ Mat MeshShape::render(IO::GenericIO* io, Mat background, double scaleFactor, Poi
   Mat canvas = Mat(size.height, size.width, CV_64FC3);
   background.copyTo(canvas);
 
+  auto hull = this->convexHull();
+
   // Render edges
   for (auto tr : triangles)
   {

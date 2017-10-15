@@ -104,6 +104,17 @@ vector<Point> Shape::convexHull() const
   }
   polars.sort();
 
+  // TAODEBUG:
+  Mat canvas = Mat::zeros(500, 500, CV_8UC3);
+  for (auto p : polars)
+  {
+    Draw::drawSpot(canvas, p.p, Scalar(0,255,128));
+    imshow("ccw", canvas);
+    cout << "P : " << p.p << endl;
+    waitKey(1000);
+  }
+  waitKey(0);
+
   vector<Point> boundPoints;
   for (auto elem : polars)
   {
