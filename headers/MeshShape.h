@@ -26,7 +26,7 @@ public:
   MeshShape(const Shape& shape);
   virtual inline ~MeshShape(){};
 
-  int numShapes() const;
+  int numTriangles() const;
   vector<Triangle> getTriangles() const;
 
   //------ I/O --------------

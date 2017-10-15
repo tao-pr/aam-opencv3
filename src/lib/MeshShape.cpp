@@ -23,15 +23,42 @@ MeshShape::MeshShape(const Shape& shape)
 
 void MeshShape::resubdiv()
 {
-  this->subdiv = Subdiv2D();
+  double minX = numeric_limits<double>::max();
+  double minY = numeric_limits<double>::max();
+  double maxY = -numeric_limits<double>::max();
+  double maxX = -numeric_limits<double>::max();
   int N = this->mat.rows;
+  for (int j=0; j<N; j++)
+  {
+    double x = this->mat.at<double>(j,0);
+    double y = this->mat.at<double>(j,1);
+    minX = x < minX ? x : minX;
+    minY = y < minY ? y : minY;
+    maxX = x > maxX ? x : maxX;
+    maxY = x > maxY ? y : maxY;
+
+    cout << "examining : " << x << ", " << y << endl; // TAODEBUG:
+  }
+
+  // TAODEBUG:
+  cout << "x : [" << 
+    minX << "~" << maxX << "] " <<
+    endl << "y : [" << 
+    minY << "~" << maxY << "]" << endl;
+
+  this->subdiv = Subdiv2D(Rect(minX-1, minY-1, maxX-minX+1, maxY-minY+1));
+  
+  cout << Rect(minX-1, minY-1, maxX-minX+1, maxY-minY+1) << endl;
+  cout << "collecting points" << endl; // TAODEBUG:
+
   for (int j=0; j<N; j++)
   {
     this->subdiv.insert(Point2d(this->mat.at<double>(j,0), this->mat.at<double>(j,1)));
   }
+  cout << "subdivision ended" << endl; // TAODEBUG:
 }
 
-int MeshShape::numShapes() const
+int MeshShape::numTriangles() const
 {
   vector<Vec6f> triangles;
   this->subdiv.getTriangleList(triangles);

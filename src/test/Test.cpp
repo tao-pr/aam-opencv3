@@ -3,9 +3,15 @@
 void testMeshShape(char** argv)
 {
   const int NUM_VERTICES = 8;
+  cout << GREEN << "Initialising mesh shape ..." << RESET << endl;
   MeshShape mesh = initialMesh(NUM_VERTICES);
+  int numTriangles = mesh.numTriangles();
 
+  cout << NUM_VERTICES << " vertices, " << numTriangles << " triangles" << endl;
 
+  auto ioMesh = IO::WindowIO("mesh");
+  mesh.render(&ioMesh, Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3));
+  waitKey(0);
   // TAOTODO:
 }
 

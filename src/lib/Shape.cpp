@@ -2,11 +2,12 @@
 
 Shape::Shape(const vector<Point2d>& vs)
 {
-  this->mat = Mat(vs.size(), 2, CV_64FC1);
-  for (int j=0; j<vs.size(); j++)
+  const int N = vs.size();
+  this->mat = Mat(N, 2, CV_64FC1);
+  for (int j=0; j<N; j++)
   {
-    this->mat.at<double>(j,0) = vs[0].x;
-    this->mat.at<double>(j,1) = vs[0].y;
+    this->mat.at<double>(j,0) = vs[j].x;
+    this->mat.at<double>(j,1) = vs[j].y;
   }
 }
 
