@@ -181,9 +181,11 @@ void testTexture(char** argv)
   moveWindow("canvas", 750, 250);
 }
 
-void testModel()
+void testAAM()
 {
+  cout << "Initialising simple untrained AAMs" << endl;
 
+  // TAOTODO:
 }
 
 int main(int argc, char** argv)
@@ -211,5 +213,9 @@ int main(int argc, char** argv)
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to AAM testing " << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
+  waitKey(0);
+  destroyAllWindows();
+  
+  testAAM();
   waitKey(0);
 }

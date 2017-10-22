@@ -7,8 +7,7 @@
 #include "Texture.h"
 
 /**
- * To this API, Appearance is a mixture of Shape and associated 
- * Texture inside each triangulated faces.
+ * A conjunction between [Texture] and its assoicated [Shape]
  */
 class Appearance
 {
@@ -24,7 +23,7 @@ public:
   virtual inline ~Appearance(){};
 
   //------ I/O --------------
-  Mat render(IO::GenericIO* io, Mat background, double scaleFactor=1.0, Point2d recentre=Point2d(0,0)) const;
+  Mat render(IO::GenericIO* io, Mat background, bool withVertices=true, bool withEdges=true, double scaleFactor=1.0, Point2d recentre=Point2d(0,0)) const;
 };
 
 #endif
