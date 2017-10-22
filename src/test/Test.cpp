@@ -184,8 +184,16 @@ void testTexture(char** argv)
 void testAAM()
 {
   cout << "Initialising simple untrained AAMs" << endl;
+  auto canvas = chessPattern(3, Size(CANVAS_SIZE, CANVAS_SIZE));
+  auto canvasClone = canvas.clone();
 
-  // TAOTODO:
+  // Initial a mesh shape
+  int nVertices = 32;
+  auto mesh = initialMesh(nVertices);
+  auto appr = Appearance(mesh, &canvas);
+  
+  IO::WindowIO ioAAM("aam");
+  appr.render(&ioAAM, canvasClone);
 }
 
 int main(int argc, char** argv)

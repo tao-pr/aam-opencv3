@@ -53,3 +53,13 @@ inline ShapeCollection initialShapeCollection(int num, int shapeSize)
   }
   return ShapeCollection(trainset, VERBOSE);
 }
+
+inline Mat chessPattern(int stepSize, Size size)
+{
+  Mat mat = Mat::zeros(size, CV_8UC3);
+  for (int j=0; j<size.height; j+=stepSize)
+    line(mat, Point(0, j), Point(size.width-1,j), Scalar(255,255,255), 1, CV_AA);
+  for (int i=0; i<size.width; i+=stepSize)
+    line(mat, Point(i, 0), Point(i, size.height-1), Scalar(255,255,255), 1, CV_AA);
+  return mat;
+}
