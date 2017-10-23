@@ -12,7 +12,8 @@ MeshShape::MeshShape(const Mat& mat) : Shape(mat)
 
 MeshShape::MeshShape(const MeshShape& original)
 {
-  MeshShape(original.mat); // resubdiv is called automatically
+  this->mat = original.mat.clone();
+  this->subdiv = original.subdiv;
 }
 
 MeshShape::MeshShape(const Shape& shape)
@@ -40,9 +41,6 @@ void MeshShape::resubdiv()
       (float)this->mat.at<double>(j,0), 
       (float)this->mat.at<double>(j,1)));
   }
-
-  // TAODEBUG:
-  cout << "bound = " << rect << endl;
 }
 
 int MeshShape::numTriangles() const
@@ -54,6 +52,10 @@ vector<Triangle> MeshShape::getTriangles() const
 {
   vector<Vec6f> triangles;
   this->subdiv.getTriangleList(triangles);
+
+  // TAOTODO: This FAILED under [AppearanceModel]
+
+  cout << "triangles : " << triangles.size() << endl;// TAODEBUG:
 
   // Take only triangles of which edges are aligned 
   // on or within the convex hull of the entire shape.

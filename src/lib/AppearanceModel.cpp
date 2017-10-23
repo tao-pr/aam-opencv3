@@ -10,7 +10,6 @@ Appearance::Appearance(const MeshShape& shape, Mat* img)
 void Appearance::reinitiateTextures()
 {
   this->textureList.clear();  
-  cout << "Querying triangles ..." << endl; // TAODEBUG:
   auto triangles = this->mesh.getTriangles();
 
   // TAOTODO: FIX THIS
