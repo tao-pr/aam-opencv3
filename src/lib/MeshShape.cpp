@@ -2,34 +2,28 @@
 
 MeshShape::MeshShape(const vector<Point2d>& vs) : Shape(vs)
 {
-  cout << "aa" << endl; // TAODEBUG:
   resubdiv();
 }
 
 MeshShape::MeshShape(const Mat& mat) : Shape(mat)
 {
-  cout << "bb" << endl; // TAODEBUG:
   resubdiv();
 }
 
 MeshShape::MeshShape(const MeshShape& original)
 {
-  cout << "cc" << endl; // TAODEBUG:
   MeshShape(original.mat);
   resubdiv();
 }
 
 MeshShape::MeshShape(const Shape& shape)
 {
-  cout << "dd" << endl; // TAODEBUG:
   MeshShape(shape.mat);
   resubdiv();
 }
 
 void MeshShape::resubdiv()
 {
-  cout << "resubdiv..." << endl;
-  cout << this->mat << endl; // TAODEBUG:
   double minX, minY, maxX, maxY;
   minMaxLoc(this->mat.col(0), &minX, &maxX);
   minMaxLoc(this->mat.col(1), &minY, &maxY);
