@@ -1,6 +1,6 @@
 #include "MeshShape.h"
 
-MeshShape::MeshShape(vector<Point2d>& vs) : Shape(vs)
+MeshShape::MeshShape(const vector<Point2d>& vs) : Shape(vs)
 {
   resubdiv();
 }
@@ -12,9 +12,8 @@ MeshShape::MeshShape(const Mat& mat) : Shape(mat)
 
 MeshShape::MeshShape(const MeshShape& original)
 {
-  cout << "Copying mesh" << endl; // TAODEBUG:
-  cout << original.mat << endl;
   MeshShape(original.mat);
+  resubdiv();
 }
 
 MeshShape::MeshShape(const Shape& shape)
@@ -25,6 +24,7 @@ MeshShape::MeshShape(const Shape& shape)
 
 void MeshShape::resubdiv()
 {
+  cout << this->mat << endl; // TAODEBUG:
   double minX, minY, maxX, maxY;
   minMaxLoc(this->mat.col(0), &minX, &maxX);
   minMaxLoc(this->mat.col(1), &minY, &maxY);
