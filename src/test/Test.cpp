@@ -192,7 +192,6 @@ void testAAM()
   auto mesh = initialMesh(nVertices);
   IO::WindowIO ioMesh("mesh");
   mesh.render(&ioMesh, canvasClone);
-  waitKey(0); // TAODEBUG:
 
   cout << "... Initialising Appearance model ... " << endl;
   auto appr = Appearance(mesh, &canvas);
@@ -200,6 +199,11 @@ void testAAM()
   
   IO::WindowIO ioAAM("aam");
   appr.render(&ioAAM, canvasClone);
+
+  moveWindow("aam", CANVAS_SIZE+15, 0);
+  waitKey(300);
+
+
 }
 
 int main(int argc, char** argv)

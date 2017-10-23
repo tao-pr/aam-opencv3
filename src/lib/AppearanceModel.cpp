@@ -19,8 +19,7 @@ Mat Appearance::render(IO::GenericIO* io, Mat background, bool withVertices, boo
 
   for (auto texture : this->textureList)
   {
-    cout << "rendering texture " << endl; // TAODEBUG:
-    texture.render(io, canvas, withVertices, withEdges);
+    canvas = texture.render(io, canvas, withVertices, withEdges);
   }
 
   return canvas;
