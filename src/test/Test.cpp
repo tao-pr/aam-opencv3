@@ -198,14 +198,14 @@ void testAAM()
   cout << "... Appearance model initialised" << endl;
   
   IO::WindowIO ioAAM("aam");
-  appr.render(&ioAAM, canvasClone);
+  appr.render(&ioAAM, Mat::zeros(canvas.size(), canvas.type()));
 
   moveWindow("aam", CANVAS_SIZE+15, 0);
   waitKey(300);
 
   // TAOTODO: Apply morphological actions and re-render AAM
 
-  
+
 }
 
 int main(int argc, char** argv)
