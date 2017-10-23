@@ -17,7 +17,7 @@ void testMeshShape(char** argv)
 void testShape(char** argv)
 {
   const int TRAIN_SET_SIZE = 16;
-  const int SHAPE_SIZE     = 3;
+  const int SHAPE_SIZE     = 7;
   const double TOL         = 1e-3;
   const int MAX_ALIGN_ITER = 10;
   const ShapeCollection trainset = initialShapeCollection(TRAIN_SET_SIZE, SHAPE_SIZE);
@@ -214,27 +214,27 @@ int main(int argc, char** argv)
   cout << MAGENTA << " Mesh shape testing  "  << RESET << endl;
   cout << MAGENTA << "**********************" << RESET << endl;
 
-  // testMeshShape(argv);
+  testMeshShape(argv);
 
   cout << MAGENTA << "**********************" << RESET << endl;
   cout << MAGENTA << " Shape model testing  " << RESET << endl;
   cout << MAGENTA << "**********************" << RESET << endl;
 
-  // testShape(argv);
+  testShape(argv);
 
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to texture model testing " << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
-  // waitKey(0);
-  // destroyAllWindows();
+  waitKey(0);
+  destroyAllWindows();
 
-  // testTexture(argv);
+  testTexture(argv);
 
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to AAM testing " << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
-  // waitKey(0);
-  // destroyAllWindows();
+  waitKey(0);
+  destroyAllWindows();
   
   testAAM();
   waitKey(0);
