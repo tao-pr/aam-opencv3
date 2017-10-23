@@ -193,6 +193,8 @@ void testAAM()
   IO::WindowIO ioMesh("mesh");
   mesh.render(&ioMesh, canvasClone);
 
+  cout << "num triangles (original) = " << mesh.numTriangles() << endl; // TAODEBUG:
+
   cout << "... Initialising Appearance model ... " << endl;
   auto appr = Appearance(mesh, &canvas);
   cout << "... Appearance model initialised" << endl;
