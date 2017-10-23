@@ -24,7 +24,6 @@ inline MeshShape initialMesh(int shapeSize)
     double x = rand() % (int)CANVAS_SIZE;
     double y = rand() % (int)CANVAS_SIZE;
     vs.push_back(Point2d(x, y));
-    cout << "Init : " << Point2d(x, y) << endl; // TAODEBUG:
   }
   return MeshShape(vs);
 }

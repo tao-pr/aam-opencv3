@@ -30,7 +30,10 @@ vector<Point2d> Shape::toPoints() const
 Point2d Shape::centroid() const
 {
   Mat m;
+  cout << "computing centroid..." << endl;
+  cout << this->mat << endl; // TAODEBUG:
   reduce(this->mat, m, 0, CV_REDUCE_AVG); // Mean by row
+  cout << m << endl; // TAODEBUG:
   return Point2d(m.at<double>(0,0), m.at<double>(0,1));
 }
 
@@ -95,6 +98,8 @@ vector<Point> Shape::convexHull() const
 
   const Point2d mean = this->centroid();
 
+  cout << "centroid : " << mean << endl; // TAODEBUG:
+
   // Sort the points CCW
   list<PolarPoint> polars;
   for (auto p : points)
@@ -102,7 +107,9 @@ vector<Point> Shape::convexHull() const
     double angle = atan2(p.y - mean.y, p.x - mean.x);
     polars.push_back(PolarPoint(angle, p));
   }
+  cout << "sorting ... " << endl; // TAODEBUG:
   polars.sort();
+  cout << "sorted!" << endl; // TAODEBUG:
 
   // Draw each spots CCW, one by one
   // Mat canvas = Mat::zeros(500, 500, CV_8UC3);
@@ -121,8 +128,10 @@ vector<Point> Shape::convexHull() const
     boundPoints.push_back(Aux::point2dToInt(elem.p));
   }
 
+  cout << "Computing hull..." << endl; // TAODEBUG:
   vector<Point> hull(boundPoints.size());
   cv::convexHull(Mat(boundPoints), hull, false);
+  cout << "Hull computed!" << endl; // TAODEBUG:
   return hull;
 }
 

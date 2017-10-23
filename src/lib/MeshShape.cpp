@@ -12,6 +12,8 @@ MeshShape::MeshShape(const Mat& mat) : Shape(mat)
 
 MeshShape::MeshShape(const MeshShape& original)
 {
+  cout << "Copying mesh" << endl; // TAODEBUG:
+  cout << original.mat << endl;
   MeshShape(original.mat);
 }
 
@@ -56,15 +58,22 @@ vector<Triangle> MeshShape::getTriangles() const
   // Take only triangles of which edges are aligned 
   // on or within the convex hull of the entire shape.
   auto hull = this->convexHull();
+
+  cout << "convex computed" << endl; // TAODEBUG:
+
   Rect rect = boundingRect(hull);
   const Point* hulls[] = {hull.data()};
   const int counters[] = {(int)hull.size()};
   Mat hullFill = Mat::zeros(rect.height + rect.y, rect.width + rect.x, CV_8UC1);
+
   fillPoly(hullFill, hulls, counters, 1, Scalar(255), LINE_8);
+
+  cout << "fill poly done" << endl; // TAODEBUG:
 
   vector<Triangle> output;
   for (auto tr:triangles)
   {
+    // TAOTODO: Should parse these coordinates to int?
     auto a = Point2d(tr[0], tr[1]);
     auto b = Point2d(tr[2], tr[3]);
     auto c = Point2d(tr[4], tr[5]);
@@ -80,6 +89,7 @@ vector<Triangle> MeshShape::getTriangles() const
       output.push_back(Triangle(pairs));
     }
   }
+  cout << "enumurating triangles done" << endl; // TAODEBUG:
   return output;
 }
 

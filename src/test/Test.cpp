@@ -190,7 +190,13 @@ void testAAM()
   // Initial a mesh shape
   int nVertices = 32;
   auto mesh = initialMesh(nVertices);
+  IO::WindowIO ioMesh("mesh");
+  mesh.render(&ioMesh, canvasClone);
+  waitKey(0); // TAODEBUG:
+
+  cout << "... Initialising Appearance model ... " << endl;
   auto appr = Appearance(mesh, &canvas);
+  cout << "... Appearance model initialised" << endl;
   
   IO::WindowIO ioAAM("aam");
   appr.render(&ioAAM, canvasClone);
@@ -202,27 +208,27 @@ int main(int argc, char** argv)
   cout << MAGENTA << " Mesh shape testing  "  << RESET << endl;
   cout << MAGENTA << "**********************" << RESET << endl;
 
-  testMeshShape(argv);
+  // testMeshShape(argv);
 
   cout << MAGENTA << "**********************" << RESET << endl;
   cout << MAGENTA << " Shape model testing  " << RESET << endl;
   cout << MAGENTA << "**********************" << RESET << endl;
 
-  testShape(argv);
+  // testShape(argv);
 
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to texture model testing " << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
-  waitKey(0);
-  destroyAllWindows();
+  // waitKey(0);
+  // destroyAllWindows();
 
-  testTexture(argv);
+  // testTexture(argv);
 
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to AAM testing " << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
-  waitKey(0);
-  destroyAllWindows();
+  // waitKey(0);
+  // destroyAllWindows();
   
   testAAM();
   waitKey(0);
