@@ -12,14 +12,12 @@ MeshShape::MeshShape(const Mat& mat) : Shape(mat)
 
 MeshShape::MeshShape(const MeshShape& original)
 {
-  MeshShape(original.mat);
-  resubdiv();
+  MeshShape(original.mat); // resubdiv is called automatically
 }
 
 MeshShape::MeshShape(const Shape& shape)
 {
-  MeshShape(shape.mat);
-  resubdiv();
+  MeshShape(shape.mat); // resubdiv is called automatically
 }
 
 void MeshShape::resubdiv()
@@ -42,6 +40,9 @@ void MeshShape::resubdiv()
       (float)this->mat.at<double>(j,0), 
       (float)this->mat.at<double>(j,1)));
   }
+
+  // TAODEBUG:
+  cout << "bound = " << rect << endl;
 }
 
 int MeshShape::numTriangles() const

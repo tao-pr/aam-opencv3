@@ -1,10 +1,19 @@
 #include "AppearanceModel.h"
 
+Appearance::Appearance(const MeshShape& shape, Mat* img)
+{
+  this->imgRef = img;
+  this->mesh = MeshShape(shape);
+  reinitiateTextures();
+}
+
 void Appearance::reinitiateTextures()
 {
   this->textureList.clear();  
+  cout << "Querying triangles ..." << endl; // TAODEBUG:
   auto triangles = this->mesh.getTriangles();
 
+  // TAOTODO: FIX THIS
   cout << "num triangles for textures = " << triangles.size() << endl; // TAODEBUG:
 
   for (auto triangle : triangles)
