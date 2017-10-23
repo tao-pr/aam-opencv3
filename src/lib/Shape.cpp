@@ -13,6 +13,7 @@ Shape::Shape(const vector<Point2d>& vs)
 
 Shape::Shape(const Mat &_mat)
 {
+  this->mat = Mat(_mat.rows, _mat.cols, _mat.type());
   _mat.copyTo(this->mat);
 }
 
@@ -29,11 +30,8 @@ vector<Point2d> Shape::toPoints() const
 
 Point2d Shape::centroid() const
 {
-  Mat m;
-  cout << "computing centroid..." << endl;
-  cout << this->mat << endl; // TAODEBUG:
+  Mat m = Mat::zeros(1, 2, CV_64FC1);
   reduce(this->mat, m, 0, CV_REDUCE_AVG); // Mean by row
-  cout << m << endl; // TAODEBUG:
   return Point2d(m.at<double>(0,0), m.at<double>(0,1));
 }
 

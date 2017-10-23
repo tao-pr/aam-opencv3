@@ -19,7 +19,7 @@ protected:
 
   void reinitiateTextures();
 public:
-  Appearance(const MeshShape& shape, Mat* img) : imgRef(img), mesh(shape) { reinitiateTextures(); };
+  Appearance(const MeshShape& shape, Mat* img) : imgRef(img) { this->mesh = shape; reinitiateTextures(); };
   virtual inline ~Appearance(){};
 
   //------ I/O --------------

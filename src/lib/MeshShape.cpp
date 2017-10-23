@@ -2,28 +2,33 @@
 
 MeshShape::MeshShape(const vector<Point2d>& vs) : Shape(vs)
 {
+  cout << "aa" << endl; // TAODEBUG:
   resubdiv();
 }
 
 MeshShape::MeshShape(const Mat& mat) : Shape(mat)
 {
+  cout << "bb" << endl; // TAODEBUG:
   resubdiv();
 }
 
 MeshShape::MeshShape(const MeshShape& original)
 {
+  cout << "cc" << endl; // TAODEBUG:
   MeshShape(original.mat);
   resubdiv();
 }
 
 MeshShape::MeshShape(const Shape& shape)
 {
+  cout << "dd" << endl; // TAODEBUG:
   MeshShape(shape.mat);
   resubdiv();
 }
 
 void MeshShape::resubdiv()
 {
+  cout << "resubdiv..." << endl;
   cout << this->mat << endl; // TAODEBUG:
   double minX, minY, maxX, maxY;
   minMaxLoc(this->mat.col(0), &minX, &maxX);
@@ -59,16 +64,12 @@ vector<Triangle> MeshShape::getTriangles() const
   // on or within the convex hull of the entire shape.
   auto hull = this->convexHull();
 
-  cout << "convex computed" << endl; // TAODEBUG:
-
   Rect rect = boundingRect(hull);
   const Point* hulls[] = {hull.data()};
   const int counters[] = {(int)hull.size()};
   Mat hullFill = Mat::zeros(rect.height + rect.y, rect.width + rect.x, CV_8UC1);
 
   fillPoly(hullFill, hulls, counters, 1, Scalar(255), LINE_8);
-
-  cout << "fill poly done" << endl; // TAODEBUG:
 
   vector<Triangle> output;
   for (auto tr:triangles)
@@ -89,7 +90,6 @@ vector<Triangle> MeshShape::getTriangles() const
       output.push_back(Triangle(pairs));
     }
   }
-  cout << "enumurating triangles done" << endl; // TAODEBUG:
   return output;
 }
 
