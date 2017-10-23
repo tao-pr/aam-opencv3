@@ -53,10 +53,6 @@ vector<Triangle> MeshShape::getTriangles() const
   vector<Vec6f> triangles;
   this->subdiv.getTriangleList(triangles);
 
-  // TAOTODO: This FAILED under [AppearanceModel]
-
-  cout << "triangles : " << triangles.size() << endl;// TAODEBUG:
-
   // Take only triangles of which edges are aligned 
   // on or within the convex hull of the entire shape.
   auto hull = this->convexHull();
@@ -71,7 +67,6 @@ vector<Triangle> MeshShape::getTriangles() const
   vector<Triangle> output;
   for (auto tr:triangles)
   {
-    // TAOTODO: Should parse these coordinates to int?
     auto a = Point2d(tr[0], tr[1]);
     auto b = Point2d(tr[2], tr[3]);
     auto c = Point2d(tr[4], tr[5]);

@@ -203,7 +203,9 @@ void testAAM()
   moveWindow("aam", CANVAS_SIZE+15, 0);
   waitKey(300);
 
+  // TAOTODO: Apply morphological actions and re-render AAM
 
+  
 }
 
 int main(int argc, char** argv)
