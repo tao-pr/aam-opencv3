@@ -32,6 +32,7 @@ Mat Texture::render(IO::GenericIO* io, Mat background, bool withVertices, bool w
     {
       if (i>=0 && i<min(canvas.cols, img->cols) &&
           j>=0 && j<min(canvas.rows, img->rows) &&
+          i<mask.cols && j<mask.rows &&
           mask.at<unsigned char>(j,i) > 0)
       {
         canvas.at<Vec3b>(j,i) = this->img->at<Vec3b>(j,i);
