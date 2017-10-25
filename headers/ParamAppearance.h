@@ -20,4 +20,24 @@ public:
   Mat encode(const Appearance& a) const;
 };
 
+/**
+ * Parameterised Appearance, encoded by PCA parameters
+ */
+class ParameterisedAppearance
+{
+private:
+protected:
+  Mat params; // Column vector (Nx1)
+public:
+  ParameterisedAppearance(const Appearance& app, const AppearanceEncoder& enc);
+  ParameterisedAppearance(const Mat& params) : params(params) {};
+  inline virtual ~ParameterisedAppearance(){};
+
+  Mat getParams() const { return this->params; };
+
+  // ---------- Conversion -----------
+  Appearance toAppearance(const AppearanceEncoder& enc) const;
+
+};
+
 #endif
