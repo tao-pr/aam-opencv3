@@ -17,6 +17,7 @@ private:
 
 protected:
   Subdiv2D subdiv;
+  Rect bound;
 
 public:
   MeshShape() : Shape(){};
@@ -28,6 +29,7 @@ public:
 
   int numTriangles() const;
   vector<Triangle> getTriangles() const;
+  inline Rect getBound() const { return this->bound; };
 
   //------ I/O --------------
   Mat render(IO::GenericIO* io, Mat background, double scaleFactor=1.0, Point2d recentre=Point2d(0,0)) const;

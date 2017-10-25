@@ -28,11 +28,11 @@ void MeshShape::resubdiv()
   minMaxLoc(this->mat.col(1), &minY, &maxY);
 
   const double margin = 8.0;
-  Rect rect((int)floor(minX-margin), 
+  this->bound = Rect((int)floor(minX-margin), 
     (int)floor(minY-margin), 
     (int)ceil(maxX-minX+margin*2), 
     (int)ceil(maxY-minY+margin*2));
-  this->subdiv = Subdiv2D(rect);
+  this->subdiv = Subdiv2D(bound);
 
   const int N = this->mat.rows;
   for (int j=0; j<N; j++)
