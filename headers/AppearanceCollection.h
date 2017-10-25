@@ -7,6 +7,7 @@
 
 #include "master.h"
 #include "AppearanceModel.h"
+#include "ParamAppearance.h"
 
 class AppearanceCollection 
 {
@@ -21,6 +22,8 @@ public:
   inline void add(const Appearance &t){ this->items.push_back(t); };
 
   // ---------- Analysis of textures ------------
+  Mat covariance(const Shape& mean) const;
+  AppearanceEncoder pca(const Shape& meanShape) const;
   
 
   // ---------- Transformations ---------------
