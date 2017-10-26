@@ -22,8 +22,8 @@ public:
   inline void add(const Appearance &t){ this->items.push_back(t); };
 
   // ---------- Analysis of textures ------------
-  Mat covariance(const Shape& mean) const;
-  AppearanceEncoder pca(const Shape& meanShape) const;
+  Mat covariance(const Appearance& mean) const;
+  AppearanceEncoder pca(const Appearance& meanAppearance) const;
   
 
   // ---------- Transformations ---------------

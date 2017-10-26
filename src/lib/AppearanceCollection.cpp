@@ -18,4 +18,22 @@ Mat AppearanceCollection::toMat() const
   return m;
 }
 
-// TAOTODO:
+Mat AppearanceCollection::covariance(const Appearance& mean) const
+{
+  Mat frontMat = this->items[0].toRowVector();
+  int M = frontMat.cols;
+  int N = this->items.size();
+  Mat cov = Mat::zeros(M, M, CV_32FC3);
+  Mat meanVector = mean.toRowVector();
+  for (auto item : this->items)
+  {
+    auto res = item.toRowVector() - meanVector;
+    cov = cov + res * res.t();
+  }
+  return (1/(double)N) * cov;
+}
+
+AppearanceEncoder AppearanceCollection::pca(const Appearance& meanAppearance) const
+{
+
+}
