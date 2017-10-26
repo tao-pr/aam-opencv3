@@ -157,7 +157,7 @@ ShapeEncoder ShapeCollection::pca(const Shape& meanShape) const
   auto pca = PCA(data, meanVector, CV_PCA_DATA_AS_ROW);
 
   // Collect lambdas
-  // TAOTODO: Take only highest K lambda where K<N
+  // TAOTOREVIEW: Take only highest K lambda where K<N
   int N = pca.eigenvalues.rows;
   if (verbose)
   {
