@@ -13,6 +13,7 @@ class AppearanceCollection
 {
 private:
 protected:
+  bool verbose;
   vector<Appearance> items;
 public:
   inline AppearanceCollection(){};

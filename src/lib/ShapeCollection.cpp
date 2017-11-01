@@ -146,7 +146,7 @@ Mat ShapeCollection::toMat() const
  */
 ShapeEncoder ShapeCollection::pca(const Shape& meanShape) const
 {
-  if (verbose) cout << GREEN << "[Computing PCA]" << RESET << endl;
+  if (verbose) cout << GREEN << "[Computing Shape PCA]" << RESET << endl;
   Mat meanVector = meanShape.toRowVector();
   Mat data       = this->toMat();
   if (verbose) 

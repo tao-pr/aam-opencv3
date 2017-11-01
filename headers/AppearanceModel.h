@@ -7,7 +7,7 @@
 #include "Texture.h"
 
 /**
- * A conjunction between [Texture] and its assoicated [Shape]
+ * Statistical model of bounded texture
  */
 class Appearance
 {
