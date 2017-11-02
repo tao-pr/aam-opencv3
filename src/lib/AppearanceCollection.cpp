@@ -38,7 +38,26 @@ Mat AppearanceCollection::covariance(const Appearance& mean) const
  */
 ModelEncoder AppearanceCollection::pca(const Appearance& meanAppearance) const
 {
-  if (verbose) cout << GREEN << "[Computing Shape PCA]" << RESET << endl;
+  if (verbose) cout << GREEN << "[Computing Appearance PCA]" << RESET << endl;
 
-  // TAOTODO:
+  Mat meanVector = meanAppearance.toRowVector();
+  Mat data       = this->toMat();
+  if (verbose) 
+  {
+    cout << "... mean appearance size : " << meanVector.rows << " x " << meanVector.cols << endl;
+    cout << "... data size            : " << data.rows << " x " << data.cols << endl;
+  }
+  auto pca = PCA(data, meanVector, CV_PCA_DATA_AS_ROW);
+
+  // Collect lambdas
+  // TAOTOREVIEW: Take only highest K lambda where K<N
+  int N = pca.eigenvalues.rows;
+  if (verbose)
+  {
+    cout << "... eigenvalues  : " << N << endl;
+    cout << "... eigenvectors : " << pca.eigenvectors.rows << " x " << pca.eigenvectors.cols << endl;
+  }
+
+  // Compose an appearance param set from eigenvalues
+  return ModelEncoder(meanAppearance.toColVector(), pca.eigenvectors);
 }

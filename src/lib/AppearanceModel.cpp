@@ -62,3 +62,9 @@ Mat Appearance::toRowVector() const
   return out;
 }
 
+Mat Appearance::toColVector() const 
+{
+  auto rowVec = this->toRowVector();
+  return rowVec.t();
+}
+
