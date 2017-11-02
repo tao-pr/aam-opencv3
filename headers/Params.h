@@ -3,8 +3,8 @@
 
 #include "master.h"
 #include "Shape.h"
+#include "AppearanceModel.h"
 
-// TAOTODO: Make following more generic, so they support both Shape & Texture
 class ModelParameters;
 
 class ModelEncoder
@@ -16,8 +16,10 @@ protected:
 public:
   ModelEncoder(Mat mean, Mat eigen) : mean(mean), eigen(eigen), eigen_1(eigen.inv()) {};
   virtual ~ModelEncoder(){};
-  Shape decode(const ModelParameters &s) const;
+  Shape toShape(const ModelParameters &s) const;
+  Appearance toAppearance(const ModelParameters &s) const;
   Mat encode(const Shape& s) const;
+  Mat encode(const Appearance& a) const;
 };
 
 /**
@@ -30,6 +32,7 @@ protected:
   Mat params; // Column vector (Nx1)
 public:
   ModelParameters(const Shape& shape, const ModelEncoder& enc);
+  ModelParameters(const Appearance& app, const ModelEncoder& enc);
   ModelParameters(const Mat& params) : params(params) {};
   inline virtual ~ModelParameters(){};
 
@@ -37,6 +40,7 @@ public:
 
   // ---------- Conversion -----------
   Shape toShape(const ModelEncoder& enc) const;
+  Appearance toAppearance(const ModelEncoder& enc) const;
 };
 
 #endif

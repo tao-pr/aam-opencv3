@@ -7,7 +7,7 @@
 
 #include "master.h"
 #include "AppearanceModel.h"
-#include "ParamAppearance.h"
+#include "Params.h"
 
 class AppearanceCollection 
 {
@@ -24,7 +24,7 @@ public:
 
   // ---------- Analysis of textures ------------
   Mat covariance(const Appearance& mean) const;
-  AppearanceEncoder pca(const Appearance& meanAppearance) const;
+  ModelEncoder pca(const Appearance& meanAppearance) const;
   
 
   // ---------- Transformations ---------------

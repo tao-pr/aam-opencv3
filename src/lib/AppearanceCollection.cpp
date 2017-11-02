@@ -36,7 +36,7 @@ Mat AppearanceCollection::covariance(const Appearance& mean) const
 /**
  * Compute eigenvectors of the covariance matrix of the appearnces
  */
-AppearanceEncoder AppearanceCollection::pca(const Appearance& meanAppearance) const
+ModelEncoder AppearanceCollection::pca(const Appearance& meanAppearance) const
 {
   if (verbose) cout << GREEN << "[Computing Shape PCA]" << RESET << endl;
 

@@ -101,7 +101,7 @@ void testShape(char** argv)
     cout << CYAN << "... Encoding shape # " << RESET << i << endl;
     auto param = eigenShape.encode(shape);
     cout << "... Decoding shape # " << i << endl;
-    auto encodedShape = eigenShape.decode(param);
+    auto encodedShape = eigenShape.toShape(param);
     double error = shape.procrustesDistance(encodedShape);
     cout << "... Estimation error : " << error << endl;
     i++;
