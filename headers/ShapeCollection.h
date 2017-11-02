@@ -8,7 +8,7 @@
 #include "IO.h"
 #include "master.h"
 #include "Shape.h"
-#include "ParamShape.h"
+#include "Params.h"
 
 class ShapeCollection 
 {
@@ -28,7 +28,7 @@ public:
   tuple<Shape, ShapeCollection> procrustesMeanShape(double tol=1e-3, int maxIter=10) const;
   double sumProcrustesDistance(const Shape& targetShape) const;
   Mat covariance(const Shape& mean) const;
-  ShapeEncoder pca(const Shape& meanShape) const;
+  ModelEncoder pca(const Shape& meanShape) const;
 
   // ---------- Transformations ---------------
   ShapeCollection clone(bool verbose=false) const;

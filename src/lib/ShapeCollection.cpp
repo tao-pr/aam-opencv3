@@ -144,7 +144,7 @@ Mat ShapeCollection::toMat() const
 /**
  * Compute eigenvectors of the covariance matrix of the shapes
  */
-ShapeEncoder ShapeCollection::pca(const Shape& meanShape) const
+ModelEncoder ShapeCollection::pca(const Shape& meanShape) const
 {
   if (verbose) cout << GREEN << "[Computing Shape PCA]" << RESET << endl;
   Mat meanVector = meanShape.toRowVector();
@@ -166,7 +166,7 @@ ShapeEncoder ShapeCollection::pca(const Shape& meanShape) const
   }
 
   // Compose a shape param set from eigenvalues
-  return ShapeEncoder(meanShape.toColVector(), pca.eigenvectors);
+  return ModelEncoder(meanShape.toColVector(), pca.eigenvectors);
 }
 
 void ShapeCollection::renderShapeVariation(IO::GenericIO* io, Size sz, double scaleFactor, Point2d recentred) const
