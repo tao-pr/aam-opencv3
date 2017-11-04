@@ -4,10 +4,10 @@ Appearance::Appearance(const MeshShape& shape, Mat* img)
 {
   this->imgRef = img;
   this->mesh = MeshShape(shape);
-  reinitiateTextures();
+  reinitTextures();
 }
 
-void Appearance::reinitiateTextures()
+void Appearance::reinitTextures()
 {
   this->textureList.clear();  
   auto triangles = this->mesh.getTriangles();

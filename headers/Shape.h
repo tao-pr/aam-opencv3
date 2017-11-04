@@ -6,10 +6,11 @@
 #define SHAPE_MODEL
 
 #include "master.h"
+#include "GenericModel.h"
 #include "IO.h"
 #include "aux.h"
 
-class Shape
+class Shape : public GenericModel
 {
 private:
 public:

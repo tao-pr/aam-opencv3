@@ -10,28 +10,12 @@ Shape ModelEncoder::toShape(const ModelParameters &s) const
 }
 
 /**
- * Convert a parameter set to an appearance
- */
-Appearance ModelEncoder::toAppearance(const ModelParameters &s) const
-{
-  // TAOTODO:
-}
-
-/**
  * Convert a shape to a parameter set
  */
 Mat ModelEncoder::encode(const Shape& s) const
 {
   // params = (Eigen^-1)•(shape - mean)
   return this->eigen_1 * (s.toColVector() - this->mean);
-}
-
-/**
- * Convert an appearance to a parameter set
- */
-Mat ModelEncoder::encode(const Appearance& a) const
-{
-  // TAOTODO:
 }
 
 ModelParameters::ModelParameters(const Shape& shape, const ModelEncoder& enc)
@@ -49,7 +33,7 @@ Shape ModelParameters::toShape(const ModelEncoder& enc) const
   return enc.toShape(*this);
 }
 
-Appearance ModelParameters::toAppearance(const ModelEncoder& enc) const
+Appearance ModelParameters::toAppearance(const ModelEncoder& enc, const Shape& shape, const Mat* img) const
 {
-  return enc.toAppearance(*this);
+  return enc.toAppearance(*this, shape, img);
 }

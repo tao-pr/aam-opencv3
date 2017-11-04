@@ -9,6 +9,7 @@
 #include "AppearanceModel.h"
 #include "Params.h"
 
+// TAOTODO: Should make a generic collection which shares the same functionality
 class AppearanceCollection 
 {
 private:

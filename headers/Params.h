@@ -2,11 +2,16 @@
 #define PARAM_SHAPE
 
 #include "master.h"
+#include "GenericModel.h"
 #include "Shape.h"
 #include "AppearanceModel.h"
 
 class ModelParameters;
 
+/**
+ * Common encoder for the model.
+ * Multiple models may share the same [[ModelEncoder]].
+ */
 class ModelEncoder
 {
 protected:
@@ -19,7 +24,6 @@ public:
   Shape toShape(const ModelParameters &s) const;
   Appearance toAppearance(const ModelParameters &s) const;
   Mat encode(const Shape& s) const;
-  Mat encode(const Appearance& a) const;
 };
 
 /**
