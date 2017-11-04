@@ -23,7 +23,7 @@ public:
   virtual ~ModelEncoder(){};
   
   Shape toShape(const ModelParameters &s) const;
-  tuple<Appearance,Mat> toAppearance(const ModelParameters &s, const MeshShape& meanShape) const;
+  tuple<Appearance,Mat*> toAppearance(const ModelParameters &s, const MeshShape& meanShape) const;
   Mat encode(const GenericModel& m) const;
 };
 
@@ -45,7 +45,7 @@ public:
 
   // ---------- Conversion -----------
   Shape toShape(const ModelEncoder& enc) const;
-  tuple<Appearance,Mat> toAppearance(const ModelEncoder& enc, const MeshShape& meanShape) const;
+  tuple<Appearance,Mat*> toAppearance(const ModelEncoder& enc, const MeshShape& meanShape) const;
 };
 
 #endif
