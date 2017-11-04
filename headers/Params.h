@@ -21,13 +21,14 @@ protected:
 public:
   ModelEncoder(Mat mean, Mat eigen) : mean(mean), eigen(eigen), eigen_1(eigen.inv()) {};
   virtual ~ModelEncoder(){};
+  
   Shape toShape(const ModelParameters &s) const;
-  Appearance toAppearance(const ModelParameters &s) const;
-  Mat encode(const Shape& s) const;
+  tuple<Appearance,Mat> toAppearance(const ModelParameters &s, const MeshShape& meanShape) const;
+  Mat encode(const GenericModel& m) const;
 };
 
 /**
- * PCA parameters of a model
+ * PCA parameters of a model instance
  */
 class ModelParameters
 {
@@ -44,7 +45,7 @@ public:
 
   // ---------- Conversion -----------
   Shape toShape(const ModelEncoder& enc) const;
-  Appearance toAppearance(const ModelEncoder& enc) const;
+  tuple<Appearance,Mat> toAppearance(const ModelEncoder& enc, const MeshShape& meanShape) const;
 };
 
 #endif
