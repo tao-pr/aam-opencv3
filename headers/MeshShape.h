@@ -30,6 +30,7 @@ public:
   int numTriangles() const;
   vector<Triangle> getTriangles() const;
   inline Rect getBound() const { return this->bound; };
+  Mat convexFill() const;
 
   //------ I/O --------------
   Mat render(IO::GenericIO* io, Mat background, double scaleFactor=1.0, Point2d recentre=Point2d(0,0)) const;

@@ -16,20 +16,10 @@ tuple<Appearance,Mat*> ModelEncoder::toAppearance(const ModelParameters &s, cons
   // Convert column vector of appearance to a spatial mat
   // Also round the floating points of pixel values to 8-bit ints
   auto bound  = meanShape.getBound();
+  auto mtype  = this->mean.channels() == 3 ? CV_8UC3 : CV_8UC1;
   Mat* spatial = new Mat(bound.size(), CV_8UC3, Scalar(0,0,0));
 
-  const int xA = bound.x;
-  const int xB = bound.x + bound.width;
-  const int yA = bound.y;
-  const int yB = bound.y + bound.height;
-
-  for (int j=yA; j<yB; j++)
-    for (int i=xA; i<xB; i++)
-    {
-      // Draw if the pixel lies within the convex hull of the shape
-      // TAOTODO:
-    }
-
+  this->mean.reshape(this->mean.channels(), bound.height).copyTo(*spatial);
   auto app    = Appearance(meanShape, spatial);
   return make_tuple(app, spatial);
 }
