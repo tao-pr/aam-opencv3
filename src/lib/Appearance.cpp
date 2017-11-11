@@ -1,4 +1,4 @@
-#include "AppearanceModel.h"
+#include "Appearance.h"
 
 Appearance::Appearance(const MeshShape& shape, Mat* img)
 {

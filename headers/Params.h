@@ -4,7 +4,7 @@
 #include "master.h"
 #include "BaseModel.h"
 #include "Shape.h"
-#include "AppearanceModel.h"
+#include "Appearance.h"
 
 class ModelParameters;
 

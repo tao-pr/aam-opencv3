@@ -6,7 +6,7 @@
 #define APP_COLLECTION
 
 #include "master.h"
-#include "AppearanceModel.h"
+#include "Appearance.h"
 #include "Params.h"
 
 // TAOTODO: Should make a generic collection which shares the same functionality
