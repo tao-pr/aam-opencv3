@@ -56,7 +56,7 @@ unique_ptr<ModelCollection> ShapeCollection::translateBy(const Point2d &p) const
 unique_ptr<ModelCollection> ShapeCollection::normaliseRotation() const
 {
   // Use the first shape as base rotation = 0
-  Mat x0 = this->items[0].getMat();
+  Mat x0 = this->items[0]->getMat();
   vector<Shape*> norml{ new Shape(x0); };
   
   for (auto shapeIter=this->items.begin()+1; shapeIter!=this->items.end(); shapeIter++)

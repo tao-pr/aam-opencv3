@@ -16,10 +16,8 @@ ModelCollection::~ModelCollection()
   if (this->verbose) cout << "... ModelCollection cleared and destroyed." << endl;
 }
 
-ModelAlignment ModelCollection::procrustesMean(double tol=1e-3, int maxIter=10) const
+unique_ptr<ModelCollection> ModelCollection::procrustesMeanSet(double tol=1e-3, int maxIter=10) const
 {
-  // Pick the first element from the collection as initial mean
-  auto mean        = this->items[0];
   auto alignedSet  = this->clone();
   double lastError = 0;
   double tl        = numeric_limits<double>::max();
@@ -33,9 +31,11 @@ ModelAlignment ModelCollection::procrustesMean(double tol=1e-3, int maxIter=10) 
   if (verbose) cout << GREEN << "[Calculating Procrustes mean]" << RESET << endl;
   while (tl > tol && iter < maxIter)
   {
+    auto mean  = alignedSet->items[0];
     if (verbose) cout << CYAN << "... Aligning iter# " << RESET << iter << endl;
-    alignedSet = alignedSet.clone(this->verbose).normaliseRotation();
-    double err = alignedSet.sumProcrustesDistance(mean);
+    // TAOTODO: Will following work with unique_ptr<> ?
+    alignedSet = alignedSet->clone(this->verbose).normaliseRotation();
+    double err = alignedSet->sumProcrustesDistance(mean);
 
     if (verbose) cout << "... Error so far : " << err << endl;
     if (verbose) cout << "... tol : " << tolerance(err, lastError) << endl;
@@ -46,8 +46,9 @@ ModelAlignment ModelCollection::procrustesMean(double tol=1e-3, int maxIter=10) 
   }
   if (verbose) cout << "... Alignment done" << endl;
 
-  // TAOTODO: Following would possibly cause memory leakage?
-  return make_tuple(alignedSet, mean->clone());
+  unique_ptr<ModelCollection> newSet(new ModelCollection(*alignedSet));
+  // TAOTODO: Should we delete [alignedSet]?
+  return newSet;
 }
 
 double ModelCollection::sumProcrustesDistance(const BaseModel* targetModel) const
@@ -60,18 +61,23 @@ double ModelCollection::sumProcrustesDistance(const BaseModel* targetModel) cons
   return sumDist;
 }
 
+unique_ptr<ModelCollection> ModelCollection::normaliseRotation() const
+{
+  cerr << RED << "ModelCollection::normaliseRotation is not implemented" << RESET << endl;
+}
+
 Mat ModelCollection::covariance(const BaseModel* mean) const
 {
   int N = this->items[0]->getMat().rows;
   Mat cov = Mat::zeros(N, N, CV_64FC1);
-  double N = 0;
+  double M = 0;
   for (auto model : this->items)
   {
     auto res = model->getMat() - mean->getMat();
     cov = cov + res * res.t();
-    N += 1.0;
+    M += 1.0;
   }
-  return cov * (1/N);
+  return cov * (1/M);
 }
 
 ModelEncoder ModelCollection::pca(const BaseModel* mean) const

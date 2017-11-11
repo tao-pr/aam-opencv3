@@ -7,8 +7,6 @@
 
 class ModelCollection;
 
-#define ModelAlignment    tuple<unique_ptr<ModelCollection>, BaseModel*>
-
 class ModelCollection 
 {
 private:
@@ -22,12 +20,14 @@ public:
 
   inline void add(BaseModel* item){ this->items.push_back(item); };
   virtual unique_ptr<ModelCollection> clone() const = 0;
+  virtual Mat toMat() const = 0;
 
   // ------- Geometrical Analysis -------------
-  ModelAlignment procrustesMean(double tol=1e-3, int maxIter=10) const;
-  double sumProcrustesDistance(const BaseModel* targetModel) const;
-  Mat covariance(const BaseModel* mean) const;
-  ModelEncoder pca(const BaseModel* mean) const;
+  virtual unique_ptr<ModelCollection> procrustesMeanSet(double tol=1e-3, int maxIter=10) const;
+  virtual double sumProcrustesDistance(const BaseModel* targetModel) const;
+  virtual unique_ptr<ModelCollection> normaliseRotation() const;
+  virtual Mat covariance(const BaseModel* mean) const;
+  virtual ModelEncoder pca(const BaseModel* mean) const;
 
 };
 
