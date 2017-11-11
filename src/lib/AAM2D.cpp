@@ -19,14 +19,3 @@ void AAM2D::trainFromFileList(const vector<string>& filelist)
 {
   
 }
-
-GenericAAM Trainset2D::train(bool verbose) const
-{
-  // Create Shape model
-
-  // Create Texture model
-
-  // Consolidate Shape and Texture models
-
-  // Return a downcasted [[AAM2D]] model
-}

@@ -2,7 +2,7 @@
 #define PARAM_SHAPE
 
 #include "master.h"
-#include "GenericModel.h"
+#include "BaseModel.h"
 #include "Shape.h"
 #include "AppearanceModel.h"
 
@@ -24,7 +24,7 @@ public:
   
   Shape toShape(const ModelParameters &s) const;
   tuple<Appearance,Mat*> toAppearance(const ModelParameters &s, const MeshShape& meanShape) const;
-  Mat encode(const GenericModel& m) const;
+  Mat encode(const BaseModel& m) const;
 };
 
 /**

@@ -24,7 +24,7 @@ tuple<Appearance,Mat*> ModelEncoder::toAppearance(const ModelParameters &s, cons
   return make_tuple(app, spatial);
 }
 
-Mat ModelEncoder::encode(const GenericModel& m) const
+Mat ModelEncoder::encode(const BaseModel& m) const
 {
   // params = (Eigen^-1)•(shape - mean)
   return this->eigen_1 * (m.toColVector() - this->mean);

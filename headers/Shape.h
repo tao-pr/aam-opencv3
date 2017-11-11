@@ -32,6 +32,7 @@ public:
   const double procrustesDistance(const Shape& that) const;
 
   //------ I/O ------
+  unique_ptr<BaseModel> clone() const;
   virtual void save(const string path) const;
   virtual void load(const string path);
   vector<Point2d> toPoints() const;

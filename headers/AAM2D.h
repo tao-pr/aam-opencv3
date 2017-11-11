@@ -23,13 +23,13 @@ public:
   void trainFromFileList(const vector<string>& filelist);
 };
 
-class Trainset2D : public GenericTrainset
-{
-private:
-protected:
-public:
-  GenericAAM train(bool verbose) const;
-};
+// class Trainset2D : public GenericTrainset
+// {
+// private:
+// protected:
+// public:
+//   GenericAAM train(bool verbose) const;
+// };
 
 
 #endif

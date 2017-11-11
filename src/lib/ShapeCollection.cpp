@@ -11,7 +11,12 @@ ShapeCollection::ShapeCollection(const vector<Shape*> shapes, const bool isVerbo
   this->items = vs;
 }
 
-ModelCollection ShapeCollection::clone(bool isVerbose) const
+ShapeCollection::ShapeCollection(const ShapeCollection& original, const bool isVerbose)
+{
+  ShapeCollection(original.items, isVerbose);
+}
+
+unique_ptr<ModelCollection> ShapeCollection::clone(bool isVerbose) const
 {
   // Deep copy
   vector<BaseModel*> clonedVector;
@@ -19,10 +24,10 @@ ModelCollection ShapeCollection::clone(bool isVerbose) const
   {
     clonedVector.push_back(new Shape(*model));
   }
-  return ShapeCollection(clonedVector, isVerbose);
+  return {new ShapeCollection(clonedVector, isVerbose)};
 }
 
-ShapeCollection ShapeCollection::normaliseScalingTranslation() const
+unique_ptr<ModelCollection> ShapeCollection::normaliseScalingTranslation() const
 {
   // Rescale each shape so the centroid size = 1
   // and translate to the centroid
@@ -34,10 +39,10 @@ ShapeCollection ShapeCollection::normaliseScalingTranslation() const
     auto cdist    = shape->sumSquareDistanceToPoint(centroid);
     scaled.push_back(new Shape((*shape << centroid) * (1.0/cdist)));
   }
-  return ShapeCollection(scaled, verbose);
+  return {new ShapeCollection(scaled, verbose)};
 }
 
-ShapeCollection ShapeCollection::translateBy(const Point2d &p) const
+unique_ptr<ModelCollection> ShapeCollection::translateBy(const Point2d &p) const
 {
   vector<Shape*> tr;
   for (auto model : this->items)
@@ -45,10 +50,10 @@ ShapeCollection ShapeCollection::translateBy(const Point2d &p) const
     Shape* shape = dynamic_cast<Shape*>(model);
     tr.push_back(new Shape(shape >> p));
   }
-  return ShapeCollection(tr, verbose);
+  return {new ShapeCollection(tr, verbose)};
 }
 
-ShapeCollection ShapeCollection::normaliseRotation() const
+unique_ptr<ModelCollection> ShapeCollection::normaliseRotation() const
 {
   // Use the first shape as base rotation = 0
   Mat x0 = this->items[0].getMat();
@@ -74,36 +79,12 @@ ShapeCollection ShapeCollection::normaliseRotation() const
     norml.push_back(new Shape((R * xj.t()).t()));
   }
 
-  return ShapeCollection(norml, verbose);
+  return {new ShapeCollection(norml, verbose)};
 }
 
 vector<Shape*> ShapeCollection::getShapeItems() const
 {
   return this->items;
-}
-
-double ShapeCollection::sumProcrustesDistance(const Shape* targetShape) const
-{
-  double sumDist = 0.0;
-  for (auto model : this->items)
-  {
-    sumDist += model->procrustesDistance(targetShape);
-  }
-  return sumDist;
-}
-
-Mat ShapeCollection::covariance(const Shape& mean) const
-{
-  int shapeSize = this->items[0].mat.rows;
-  Mat cov = Mat::zeros(shapeSize, shapeSize, CV_64FC1);
-  double N = 0;
-  for (auto shape : this->items)
-  {
-    auto res = shape.mat - mean.mat;
-    cov = cov + res * res.t();
-    N += 1.0;
-  }
-  return cov * (1/N);
 }
 
 /**
@@ -122,34 +103,6 @@ Mat ShapeCollection::toMat() const
     j++;
   }
   return m;
-}
-
-/**
- * Compute eigenvectors of the covariance matrix of the shapes
- */
-ModelEncoder ShapeCollection::pca(const Shape& meanShape) const
-{
-  if (verbose) cout << GREEN << "[Computing Shape PCA]" << RESET << endl;
-  Mat meanVector = meanShape.toRowVector();
-  Mat data       = this->toMat();
-  if (verbose) 
-  {
-    cout << "... mean shape size : " << meanVector.rows << " x " << meanVector.cols << endl;
-    cout << "... data size       : " << data.rows << " x " << data.cols << endl;
-  }
-  auto pca = PCA(data, meanVector, CV_PCA_DATA_AS_ROW);
-
-  // Collect lambdas
-  // TAOTOREVIEW: Take only highest K lambda where K<N
-  int N = pca.eigenvalues.rows;
-  if (verbose)
-  {
-    cout << "... eigenvalues  : " << N << endl;
-    cout << "... eigenvectors : " << pca.eigenvectors.rows << " x " << pca.eigenvectors.cols << endl;
-  }
-
-  // Compose a shape param set from eigenvalues
-  return ModelEncoder(meanShape.toColVector(), pca.eigenvectors);
 }
 
 void ShapeCollection::renderShapeVariation(IO::GenericIO* io, Size sz, double scaleFactor, Point2d recentred) const

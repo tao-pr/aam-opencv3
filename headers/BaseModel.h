@@ -15,10 +15,11 @@ public:
   virtual ~BaseModel(){};
   virtual Mat toRowVector() const = 0;
   virtual Mat toColVector() const = 0;
-  Mat getMat() const = 0;
+  virtual Mat getMat() const = 0;
 
-  const double procrustesDistance(unique_ptr<GenericModel> that) const;
+  virtual const double procrustesDistance(unique_ptr<BaseModel> that) const;
 
+  virtual unique_ptr<BaseModel> clone() const = 0;
   virtual void save(const string path) const = 0;
   virtual void load(const string path) = 0;
 };

@@ -198,6 +198,12 @@ Shape Shape::recentreAndScale(Point2d t, double scaleFactor) const
   return (*this * scaleFactor) >> t;
 }
 
+unique_ptr<BaseModel> Shape::clone() const
+{
+  unique_ptr<BaseModel> anotherCopy(new Shape(*this));
+  return anotherCopy;
+}
+
 void Shape::save(const string path) const
 {
 
