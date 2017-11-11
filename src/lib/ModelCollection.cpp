@@ -1,6 +1,6 @@
-#include "BaseCollection.h"
+#include "ModelCollection.h"
 
-~ModelCollection::ModelCollection()
+ModelCollection::~ModelCollection()
 {
   if (this->verbose) 
   {

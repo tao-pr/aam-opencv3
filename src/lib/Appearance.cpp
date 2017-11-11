@@ -39,6 +39,12 @@ Mat Appearance::render(IO::GenericIO* io, Mat background, bool withVertices, boo
   return canvas;
 }
 
+unique_ptr<BaseModel> Appearance::clone() const
+{
+  unique_ptr<BaseModel> anotherCopy(new Appearance(*this));
+  return anotherCopy;
+}
+
 Mat Appearance::toRowVector() const
 {
   auto roi = this->mesh.getBound();

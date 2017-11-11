@@ -13,14 +13,22 @@ AppearanceCollection::AppearanceCollection(const vector<Appearance*>& apps, bool
 
 AppearanceCollection::AppearanceCollection(const AppearanceCollection& original)
 {
-  AppearanceCollection(original.items);
+  this->verbose = original.verbose;
+  vector<BaseModel*> vs;
+  for (auto model : original.items)
+  {
+    auto app = dynamic_cast<Appearance*>(model);
+    BaseModel* cloned = new Appearance(*app);
+    vs.push_back(cloned);
+  }
+  this->items = vs;
 }
 
 Mat AppearanceCollection::toMat() const
 {
   // Each element has to have equal boundary
   //
-  Mat frontMat = this->items[0].toRowVector();
+  Mat frontMat = this->items[0]->toRowVector();
   int N = this->items.size();
   int M = frontMat.cols;
   auto type = frontMat.type();
@@ -28,7 +36,7 @@ Mat AppearanceCollection::toMat() const
   int j = 0;
   for (auto item : this->items)
   {
-    item.toRowVector().row(0).copyTo(m.row(j));
+    item->toRowVector().row(0).copyTo(m.row(j));
     ++j;
   }
   return m;
@@ -36,7 +44,7 @@ Mat AppearanceCollection::toMat() const
 
 Mat AppearanceCollection::covariance(const BaseModel* mean) const
 {
-  Mat frontMat = this->items[0].toRowVector();
+  Mat frontMat = this->items[0]->toRowVector();
   int M = frontMat.cols;
   int N = this->items.size();
   Mat cov = Mat::zeros(M, M, CV_32FC3);
