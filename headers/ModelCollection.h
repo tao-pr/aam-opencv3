@@ -7,7 +7,7 @@
 
 class ModelCollection;
 
-typedef tuple<unique_ptr<ModelCollection>, BaseModel*> ModelAlignment;
+#define ModelAlignment    tuple<unique_ptr<ModelCollection>, BaseModel*>
 
 class ModelCollection 
 {
