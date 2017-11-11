@@ -14,6 +14,7 @@ class Appearance : public BaseModel
 {
 private:
 protected:
+  // TAOTOREVIEW: Make [imgRef] a [shared_ptr]
   Mat* imgRef; // Reference to an appearance image (external variable)
   MeshShape mesh;
   vector<Texture> textureList;
@@ -21,6 +22,7 @@ protected:
   void reinitTextures();
 public:
   Appearance(const MeshShape& shape, Mat* img);
+  Appearance(const Appearance& another);
   virtual inline ~Appearance(){};
 
   //------ I/O --------------

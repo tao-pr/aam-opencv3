@@ -17,8 +17,8 @@ class ShapeCollection : public ModelCollection
 public:
   inline ShapeCollection() : ModelCollection() {};
   inline ShapeCollection(const bool isVerbose=false) : ModelCollection(isVerbose) {};
-  ShapeCollection(const ShapeCollection& original, const bool isVerbose=false);
-  ShapeCollection(const vector<Shape*> shapes, const bool isVerbose=false);
+  ShapeCollection(const ShapeCollection& original);
+  ShapeCollection(const vector<Shape*>& shapes, const bool isVerbose=false);
   
   // ---------- Transformations ---------------
   unique_ptr<ModelCollection> clone(bool verbose=false) const;

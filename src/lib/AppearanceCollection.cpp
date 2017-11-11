@@ -1,5 +1,21 @@
 #include "AppearanceCollection.h"
 
+AppearanceCollection::AppearanceCollection(const vector<Appearance*>& apps, bool isVerbose)
+{
+  this->verbose = isVerbose;
+  vector<BaseModel*> vs;
+  for (auto app : apps)
+  {
+    vs.push_back(app);
+  }
+  this->items = vs;
+}
+
+AppearanceCollection::AppearanceCollection(const AppearanceCollection& original)
+{
+  AppearanceCollection(original.items);
+}
+
 Mat AppearanceCollection::toMat() const
 {
   // Each element has to have equal boundary
@@ -18,46 +34,18 @@ Mat AppearanceCollection::toMat() const
   return m;
 }
 
-Mat AppearanceCollection::covariance(const Appearance& mean) const
+Mat AppearanceCollection::covariance(const BaseModel* mean) const
 {
   Mat frontMat = this->items[0].toRowVector();
   int M = frontMat.cols;
   int N = this->items.size();
   Mat cov = Mat::zeros(M, M, CV_32FC3);
-  Mat meanVector = mean.toRowVector();
+  Mat meanVector = mean->toRowVector();
   for (auto item : this->items)
   {
-    auto res = item.toRowVector() - meanVector;
+    auto app = dynamic_cast<Appearance*>(item);
+    auto res = app->toRowVector() - meanVector;
     cov = cov + res * res.t();
   }
   return (1/(double)N) * cov;
-}
-
-/**
- * Compute eigenvectors of the covariance matrix of the appearnces
- */
-ModelEncoder AppearanceCollection::pca(const Appearance& meanAppearance) const
-{
-  if (verbose) cout << GREEN << "[Computing Appearance PCA]" << RESET << endl;
-
-  Mat meanVector = meanAppearance.toRowVector();
-  Mat data       = this->toMat();
-  if (verbose) 
-  {
-    cout << "... mean appearance size : " << meanVector.rows << " x " << meanVector.cols << endl;
-    cout << "... data size            : " << data.rows << " x " << data.cols << endl;
-  }
-  auto pca = PCA(data, meanVector, CV_PCA_DATA_AS_ROW);
-
-  // Collect lambdas
-  // TAOTOREVIEW: Take only highest K lambda where K<N
-  int N = pca.eigenvalues.rows;
-  if (verbose)
-  {
-    cout << "... eigenvalues  : " << N << endl;
-    cout << "... eigenvectors : " << pca.eigenvectors.rows << " x " << pca.eigenvectors.cols << endl;
-  }
-
-  // Compose an appearance param set from eigenvalues
-  return ModelEncoder(meanAppearance.toColVector(), pca.eigenvectors);
 }

@@ -62,8 +62,8 @@ double ModelCollection::sumProcrustesDistance(const BaseModel* targetModel) cons
 
 Mat ModelCollection::covariance(const BaseModel* mean) const
 {
-  int shapeSize = this->items[0]->getMat().rows;
-  Mat cov = Mat::zeros(shapeSize, shapeSize, CV_64FC1);
+  int N = this->items[0]->getMat().rows;
+  Mat cov = Mat::zeros(N, N, CV_64FC1);
   double N = 0;
   for (auto model : this->items)
   {

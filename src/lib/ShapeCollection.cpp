@@ -1,6 +1,6 @@
 #include "ShapeCollection.h"
 
-ShapeCollection::ShapeCollection(const vector<Shape*> shapes, const bool isVerbose)
+ShapeCollection::ShapeCollection(const vector<Shape*>& shapes, const bool isVerbose)
 {
   this->verbode = isVerbose;
   vector<BaseModel*> vs;
@@ -11,9 +11,9 @@ ShapeCollection::ShapeCollection(const vector<Shape*> shapes, const bool isVerbo
   this->items = vs;
 }
 
-ShapeCollection::ShapeCollection(const ShapeCollection& original, const bool isVerbose)
+ShapeCollection::ShapeCollection(const ShapeCollection& original)
 {
-  ShapeCollection(original.items, isVerbose);
+  ShapeCollection(original.items, original.verbose);
 }
 
 unique_ptr<ModelCollection> ShapeCollection::clone(bool isVerbose) const
@@ -93,7 +93,7 @@ vector<Shape*> ShapeCollection::getShapeItems() const
  */
 Mat ShapeCollection::toMat() const
 {
-  int M = this->items[0].mat.rows;
+  int M = this->items[0]->toMat().rows;
   int N = this->items.size();
   Mat m = Mat(N, M*2, CV_64FC1);
   int j = 0;

@@ -1,5 +1,12 @@
 #include "Appearance.h"
 
+Appearance::Appearance(const Appearance& another)
+{
+  this->imgRef = another.imgRef;
+  this->mesh = another.mesh;
+  reinitTextures();
+}
+
 Appearance::Appearance(const MeshShape& shape, Mat* img)
 {
   this->imgRef = img;
