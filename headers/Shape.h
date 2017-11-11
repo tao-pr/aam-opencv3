@@ -6,11 +6,11 @@
 #define SHAPE_MODEL
 
 #include "master.h"
-#include "GenericModel.h"
+#include "BaseModel.h"
 #include "IO.h"
 #include "aux.h"
 
-class Shape : public GenericModel
+class Shape : public BaseModel
 {
 private:
 public:
@@ -23,6 +23,7 @@ public:
   inline virtual ~Shape(){};
 
   //----- General properties ------
+  Mat getMat() const { return this->mat; };
   Mat toRowVector() const;
   Mat toColVector() const;
   Point2d centroid() const;

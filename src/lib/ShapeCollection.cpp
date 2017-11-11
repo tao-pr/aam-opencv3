@@ -1,30 +1,49 @@
 #include "ShapeCollection.h"
 
-ShapeCollection ShapeCollection::clone(bool isVerbose) const
+ShapeCollection::ShapeCollection(const vector<Shape*> shapes, const bool isVerbose)
 {
-  return ShapeCollection(this->items, isVerbose);
+  this->verbode = isVerbose;
+  vector<BaseModel*> vs;
+  for (auto shape : shapes)
+  {
+    vs.push_back(shape);
+  }
+  this->items = vs;
+}
+
+ModelCollection ShapeCollection::clone(bool isVerbose) const
+{
+  // Deep copy
+  vector<BaseModel*> clonedVector;
+  for (auto model : this->items)
+  {
+    clonedVector.push_back(new Shape(*model));
+  }
+  return ShapeCollection(clonedVector, isVerbose);
 }
 
 ShapeCollection ShapeCollection::normaliseScalingTranslation() const
 {
   // Rescale each shape so the centroid size = 1
   // and translate to the centroid
-  vector<Shape> scaled;
-  for (auto shape : this->items)
+  vector<Shape*> scaled;
+  for (auto model : this->items)
   {
-    auto centroid = shape.centroid();
-    auto cdist    = shape.sumSquareDistanceToPoint(centroid);
-    scaled.push_back((shape << centroid) * (1.0/cdist));
+    auto shape = dynamic_cast<Shape*>(model);
+    auto centroid = shape->centroid();
+    auto cdist    = shape->sumSquareDistanceToPoint(centroid);
+    scaled.push_back(new Shape((*shape << centroid) * (1.0/cdist)));
   }
   return ShapeCollection(scaled, verbose);
 }
 
 ShapeCollection ShapeCollection::translateBy(const Point2d &p) const
 {
-  vector<Shape> tr;
-  for (auto shape : this->items)
+  vector<Shape*> tr;
+  for (auto model : this->items)
   {
-    tr.push_back(shape >> p);
+    Shape* shape = dynamic_cast<Shape*>(model);
+    tr.push_back(new Shape(shape >> p));
   }
   return ShapeCollection(tr, verbose);
 }
@@ -32,13 +51,13 @@ ShapeCollection ShapeCollection::translateBy(const Point2d &p) const
 ShapeCollection ShapeCollection::normaliseRotation() const
 {
   // Use the first shape as base rotation = 0
-  Mat x0 = this->items[0].mat;
-  vector<Shape> norml = {x0};
+  Mat x0 = this->items[0].getMat();
+  vector<Shape*> norml{ new Shape(x0); };
   
   for (auto shapeIter=this->items.begin()+1; shapeIter!=this->items.end(); shapeIter++)
   {
     // Compute SVD on xj•x0
-    Mat xj = shapeIter->mat;
+    Mat xj = shapeIter->getMat();
     Mat xx = xj.t() * x0;
     auto svd = SVD(xx, SVD::FULL_UV);
     auto u = svd.u;
@@ -52,61 +71,25 @@ ShapeCollection ShapeCollection::normaliseRotation() const
     }
 
     // rotate shape by theta and store in norm<>
-    norml.push_back(Shape((R * xj.t()).t()));
+    norml.push_back(new Shape((R * xj.t()).t()));
   }
 
   return ShapeCollection(norml, verbose);
 }
 
-vector<Shape> ShapeCollection::getItems() const
+vector<Shape*> ShapeCollection::getShapeItems() const
 {
   return this->items;
 }
 
-double ShapeCollection::sumProcrustesDistance(const Shape& targetShape) const
+double ShapeCollection::sumProcrustesDistance(const Shape* targetShape) const
 {
   double sumDist = 0.0;
-  for (auto shape : this->items)
+  for (auto model : this->items)
   {
-    sumDist += shape.procrustesDistance(targetShape);
+    sumDist += model->procrustesDistance(targetShape);
   }
   return sumDist;
-}
-
-/**
- * Compute the Procrustes mean shape and the aligned collection onto that mean
- */
-tuple<Shape, ShapeCollection> ShapeCollection::procrustesMeanShape(double tol, int maxIter) const
-{
-  // Pick the first shape from the collection as initial mean
-  auto mean        = this->items[0];
-  auto alignedSet  = this->clone();
-  double lastError = 0;
-  double tl        = numeric_limits<double>::max();
-  int iter         = 0;
-
-  auto tolerance = [&](double e, double e0)
-  {
-    return abs(e-e0)/min(e0,e);
-  };
-
-  if (verbose) cout << GREEN << "[Procrustes Mean shape]" << RESET << endl;
-  while (tl > tol && iter < maxIter)
-  {
-    if (verbose) cout << CYAN << "... Aligning iter# " << RESET << iter << endl;
-    alignedSet = alignedSet.clone(this->verbose).normaliseRotation();
-    double err = alignedSet.sumProcrustesDistance(mean);
-
-    if (verbose) cout << "... Error so far : " << err << endl;
-    if (verbose) cout << "... tol : " << tolerance(err, lastError) << endl;
-
-    iter++;
-    tl = tolerance(err, lastError);
-    lastError = err;
-  }
-  if (verbose) cout << "... Alignment done" << endl;
-
-  return make_tuple(mean, alignedSet);
 }
 
 Mat ShapeCollection::covariance(const Shape& mean) const
