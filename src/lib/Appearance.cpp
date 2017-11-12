@@ -25,6 +25,18 @@ void Appearance::reinitTextures()
   }
 }
 
+const double Appearance::procrustesDistance(const BaseModel* that) const
+{
+  const auto thatApp = dynamic_cast<const Appearance*>(that);
+  Mat thisMat  = this->toRowVector();
+  Mat thatMat  = thatApp->toRowVector();
+  Mat A = Mat(thisMat.size(), CV_8UC1);
+  Mat B = Mat(thatMat.size(), CV_8UC1);
+  cvtColor(thisMat, A, COLOR_BGR2GRAY);
+  cvtColor(thatMat, B, COLOR_BGR2GRAY);
+  return Aux::sqrt(Aux::square(sum(A - B)[0]));
+}
+
 Mat Appearance::render(IO::GenericIO* io, Mat background, bool withVertices, bool withEdges, double scaleFactor, Point2d recentre) const
 {
   Size size = background.size();

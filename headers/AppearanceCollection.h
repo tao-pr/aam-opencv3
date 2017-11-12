@@ -15,14 +15,17 @@ class AppearanceCollection : public ModelCollection
 {
 public:
   inline AppearanceCollection() : ModelCollection() {};
+  AppearanceCollection(const vector<BaseModel*>& models, bool isVerbose=false) : ModelCollection(models, isVerbose) {};
   AppearanceCollection(const vector<Appearance*>& apps, bool isVerbose=false);
   AppearanceCollection(const AppearanceCollection& original);
 
   // ---------- Analysis -------------
   Mat covariance(const BaseModel* mean) const;
+  unique_ptr<ModelCollection> normaliseRotation() const;
   
   // ---------- I/O ------------------
   Mat toMat() const;
+  unique_ptr<ModelCollection> clone() const;
 };
 
 #endif

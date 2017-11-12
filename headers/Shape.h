@@ -29,7 +29,7 @@ public:
   Point2d centroid() const;
   vector<Point> convexHull() const;
   const double sumSquareDistanceToPoint(const Point2d& p) const;
-  const double procrustesDistance(const Shape& that) const;
+  const double procrustesDistance(const BaseModel* that) const;
 
   //------ I/O ------
   unique_ptr<BaseModel> clone() const;

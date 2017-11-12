@@ -38,14 +38,16 @@ Point2d Shape::centroid() const
 /**
  * Compute the sum of square distance to another shape.
  */
-const double Shape::procrustesDistance(const Shape& that) const
+const double Shape::procrustesDistance(const BaseModel* that) const
 {
-  double d = 0.0;
-  int N = this->mat.rows;
+  double d       = 0.0;
+  int N          = this->mat.rows;
+  auto thatShape = dynamic_cast<Shape*>(that);
+  Mat thatMat    = thatShape->getMat();
   for (int j=0; j<N; j++)
   {
     auto pThis = Point2d(this->mat.at<double>(j,0), this->mat.at<double>(j,1));
-    auto pThat = Point2d(that.mat.at<double>(j,0), that.mat.at<double>(j,1));
+    auto pThat = Point2d(thatMat.at<double>(j,0), thatMat.at<double>(j,1));
     d += Aux::squareDistance(pThis, pThat);
   }
   return d;

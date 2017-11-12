@@ -25,6 +25,8 @@ public:
   Appearance(const Appearance& another);
   virtual inline ~Appearance(){};
 
+  const double procrustesDistance(const BaseModel* that) const;
+
   //------ I/O --------------
   Mat render(IO::GenericIO* io, Mat background, bool withVertices=true, bool withEdges=true, double scaleFactor=1.0, Point2d recentre=Point2d(0,0)) const;
   Mat getMat() const { return this->toRowVector(); }; // TAOTODO: really?

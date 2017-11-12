@@ -57,3 +57,21 @@ Mat AppearanceCollection::covariance(const BaseModel* mean) const
   }
   return (1/(double)N) * cov;
 }
+
+unique_ptr<ModelCollection> AppearanceCollection::normaliseRotation() const
+{
+  return this->clone();
+}
+
+unique_ptr<ModelCollection> AppearanceCollection::clone() const
+{
+  vector<BaseModel*> vs;
+  for (auto model : this->items)
+  {
+    auto app = dynamic_cast<Appearance*>(model);
+    BaseModel* cloned = new Appearance(*app);
+    vs.push_back(cloned);
+  }
+  unique_ptr<ModelCollection> newSet(new AppearanceCollection(vs, this->verbose));
+  return newSet;
+}

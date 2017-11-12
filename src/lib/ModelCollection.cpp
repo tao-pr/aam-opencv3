@@ -16,7 +16,7 @@ ModelCollection::~ModelCollection()
   if (this->verbose) cout << "... ModelCollection cleared and destroyed." << endl;
 }
 
-unique_ptr<ModelCollection> ModelCollection::procrustesMeanSet(double tol=1e-3, int maxIter=10) const
+unique_ptr<ModelCollection> ModelCollection::procrustesMeanSet(double tol, int maxIter) const
 {
   auto alignedSet  = this->clone();
   double lastError = 0;
@@ -34,7 +34,7 @@ unique_ptr<ModelCollection> ModelCollection::procrustesMeanSet(double tol=1e-3, 
     auto mean  = alignedSet->items[0];
     if (verbose) cout << CYAN << "... Aligning iter# " << RESET << iter << endl;
     // TAOTODO: Will following work with unique_ptr<> ?
-    alignedSet = alignedSet->clone(this->verbose).normaliseRotation();
+    alignedSet = alignedSet->clone()->normaliseRotation();
     double err = alignedSet->sumProcrustesDistance(mean);
 
     if (verbose) cout << "... Error so far : " << err << endl;
@@ -46,9 +46,7 @@ unique_ptr<ModelCollection> ModelCollection::procrustesMeanSet(double tol=1e-3, 
   }
   if (verbose) cout << "... Alignment done" << endl;
 
-  unique_ptr<ModelCollection> newSet(new ModelCollection(*alignedSet));
-  // TAOTODO: Should we delete [alignedSet]?
-  return newSet;
+  return alignedSet->clone();
 }
 
 double ModelCollection::sumProcrustesDistance(const BaseModel* targetModel) const
