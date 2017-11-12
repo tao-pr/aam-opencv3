@@ -2,7 +2,7 @@
 
 ShapeCollection::ShapeCollection(const vector<Shape*>& shapes, const bool isVerbose)
 {
-  this->verbode = isVerbose;
+  this->verbose = isVerbose;
   vector<BaseModel*> vs;
   for (auto shape : shapes)
   {
@@ -11,20 +11,17 @@ ShapeCollection::ShapeCollection(const vector<Shape*>& shapes, const bool isVerb
   this->items = vs;
 }
 
-ShapeCollection::ShapeCollection(const ShapeCollection& original)
-{
-  ShapeCollection(original.items, original.verbose);
-}
-
-unique_ptr<ModelCollection> ShapeCollection::clone(bool isVerbose) const
+unique_ptr<ModelCollection> ShapeCollection::clone() const
 {
   // Deep copy
   vector<BaseModel*> clonedVector;
   for (auto model : this->items)
   {
-    clonedVector.push_back(new Shape(*model));
+    auto shape = dynamic_cast<Shape*>(model);
+    clonedVector.push_back(new Shape(*shape));
   }
-  return {new ShapeCollection(clonedVector, isVerbose)};
+  unique_ptr<ModelCollection> newSet(new ShapeCollection(clonedVector, verbose));
+  return newSet;
 }
 
 unique_ptr<ModelCollection> ShapeCollection::normaliseScalingTranslation() const
@@ -39,7 +36,8 @@ unique_ptr<ModelCollection> ShapeCollection::normaliseScalingTranslation() const
     auto cdist    = shape->sumSquareDistanceToPoint(centroid);
     scaled.push_back(new Shape((*shape << centroid) * (1.0/cdist)));
   }
-  return {new ShapeCollection(scaled, verbose)};
+  unique_ptr<ModelCollection> newSet(new ShapeCollection(scaled, verbose));
+  return newSet;
 }
 
 unique_ptr<ModelCollection> ShapeCollection::translateBy(const Point2d &p) const
@@ -48,21 +46,22 @@ unique_ptr<ModelCollection> ShapeCollection::translateBy(const Point2d &p) const
   for (auto model : this->items)
   {
     Shape* shape = dynamic_cast<Shape*>(model);
-    tr.push_back(new Shape(shape >> p));
+    tr.push_back(new Shape(*shape >> p));
   }
-  return {new ShapeCollection(tr, verbose)};
+  unique_ptr<ModelCollection> newSet(new ShapeCollection(tr, verbose));
+  return newSet;
 }
 
 unique_ptr<ModelCollection> ShapeCollection::normaliseRotation() const
 {
   // Use the first shape as base rotation = 0
   Mat x0 = this->items[0]->getMat();
-  vector<Shape*> norml{ new Shape(x0); };
+  vector<Shape*> norml{ new Shape(x0) };
   
   for (auto shapeIter=this->items.begin()+1; shapeIter!=this->items.end(); shapeIter++)
   {
     // Compute SVD on xj•x0
-    Mat xj = shapeIter->getMat();
+    Mat xj = (*shapeIter)->getMat();
     Mat xx = xj.t() * x0;
     auto svd = SVD(xx, SVD::FULL_UV);
     auto u = svd.u;
@@ -79,12 +78,8 @@ unique_ptr<ModelCollection> ShapeCollection::normaliseRotation() const
     norml.push_back(new Shape((R * xj.t()).t()));
   }
 
-  return {new ShapeCollection(norml, verbose)};
-}
-
-vector<Shape*> ShapeCollection::getShapeItems() const
-{
-  return this->items;
+  unique_ptr<ModelCollection> newSet(new ShapeCollection(norml, verbose));
+  return newSet;
 }
 
 /**
@@ -93,13 +88,13 @@ vector<Shape*> ShapeCollection::getShapeItems() const
  */
 Mat ShapeCollection::toMat() const
 {
-  int M = this->items[0]->toMat().rows;
+  int M = this->items[0]->getMat().rows;
   int N = this->items.size();
   Mat m = Mat(N, M*2, CV_64FC1);
   int j = 0;
-  for (auto shape : this->items)
+  for (auto model : this->items)
   {
-    shape.toRowVector().row(0).copyTo(m.row(j));
+    model->toRowVector().row(0).copyTo(m.row(j));
     j++;
   }
   return m;
@@ -108,9 +103,10 @@ Mat ShapeCollection::toMat() const
 void ShapeCollection::renderShapeVariation(IO::GenericIO* io, Size sz, double scaleFactor, Point2d recentred) const
 {
   Mat canvas = Mat::zeros(sz, CV_8UC3);
-  for (auto shape : this->items)
+  for (auto model : this->items)
   {
-    canvas = shape.render(io, canvas, scaleFactor, recentred);
+    auto shape = dynamic_cast<Shape*>(model);
+    canvas = shape->render(io, canvas, scaleFactor, recentred);
     waitKey(100);
   }
 }

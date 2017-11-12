@@ -42,7 +42,7 @@ const double Shape::procrustesDistance(const BaseModel* that) const
 {
   double d       = 0.0;
   int N          = this->mat.rows;
-  auto thatShape = dynamic_cast<Shape*>(that);
+  const auto thatShape = dynamic_cast<const Shape*>(that);
   Mat thatMat    = thatShape->getMat();
   for (int j=0; j<N; j++)
   {
