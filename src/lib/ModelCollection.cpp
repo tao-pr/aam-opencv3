@@ -8,15 +8,20 @@ ModelCollection::~ModelCollection()
     cout << YELLOW << "Cleaning up ModelCollection " << cnt  << RESET << endl;
   }
 
-  for (auto item : this->items)
-  {
-    delete item;
-  }
+  clear();
 
   if (this->verbose) cout << "... ModelCollection cleared and destroyed." << endl;
 }
 
-unique_ptr<ModelCollection> ModelCollection::procrustesMeanSet(double tol, int maxIter) const
+void ModelCollection::clear()
+{
+  for (auto item : this->items)
+  {
+    delete item;
+  }
+}
+
+BaseModel* ModelCollection::procrustesMeanSet(double tol, int maxIter)
 {
   auto alignedSet  = this->clone();
   double lastError = 0;
@@ -33,8 +38,8 @@ unique_ptr<ModelCollection> ModelCollection::procrustesMeanSet(double tol, int m
   {
     auto mean  = alignedSet->items[0];
     if (verbose) cout << CYAN << "... Aligning iter# " << RESET << iter << endl;
-    // TAOTODO: Will following work with unique_ptr<> ?
-    alignedSet = alignedSet->clone()->normaliseRotation();
+    alignedSet = alignedSet->clone();
+    alignedSet->normaliseRotation();
     double err = alignedSet->sumProcrustesDistance(mean);
 
     if (verbose) cout << "... Error so far : " << err << endl;
@@ -46,7 +51,10 @@ unique_ptr<ModelCollection> ModelCollection::procrustesMeanSet(double tol, int m
   }
   if (verbose) cout << "... Alignment done" << endl;
 
-  return alignedSet->clone();
+  clear();
+  swap(this->items, alignedSet->items);
+
+  return this->items[0];// TAOREVIEW: Return proper mean object
 }
 
 double ModelCollection::sumProcrustesDistance(const BaseModel* targetModel) const
@@ -59,7 +67,7 @@ double ModelCollection::sumProcrustesDistance(const BaseModel* targetModel) cons
   return sumDist;
 }
 
-unique_ptr<ModelCollection> ModelCollection::normaliseRotation() const
+void ModelCollection::normaliseRotation()
 {
   cerr << RED << "ModelCollection::normaliseRotation is not implemented" << RESET << endl;
 }

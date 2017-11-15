@@ -24,11 +24,11 @@ unique_ptr<ModelCollection> ShapeCollection::clone() const
   return newSet;
 }
 
-unique_ptr<ModelCollection> ShapeCollection::normaliseScalingTranslation() const
+void ShapeCollection::normaliseScalingTranslation()
 {
   // Rescale each shape so the centroid size = 1
   // and translate to the centroid
-  vector<Shape*> scaled;
+  vector<BaseModel*> scaled;
   for (auto model : this->items)
   {
     auto shape = dynamic_cast<Shape*>(model);
@@ -36,27 +36,28 @@ unique_ptr<ModelCollection> ShapeCollection::normaliseScalingTranslation() const
     auto cdist    = shape->sumSquareDistanceToPoint(centroid);
     scaled.push_back(new Shape((*shape << centroid) * (1.0/cdist)));
   }
-  unique_ptr<ModelCollection> newSet(new ShapeCollection(scaled, verbose));
-  return newSet;
+  // Replace with new items
+  clear();
+  swap(this->items, scaled);
 }
 
-unique_ptr<ModelCollection> ShapeCollection::translateBy(const Point2d &p) const
+void ShapeCollection::translateBy(const Point2d &p)
 {
-  vector<Shape*> tr;
+  vector<BaseModel*> tr;
   for (auto model : this->items)
   {
     Shape* shape = dynamic_cast<Shape*>(model);
     tr.push_back(new Shape(*shape >> p));
   }
-  unique_ptr<ModelCollection> newSet(new ShapeCollection(tr, verbose));
-  return newSet;
+  clear();
+  swap(this->items, tr);
 }
 
-unique_ptr<ModelCollection> ShapeCollection::normaliseRotation() const
+void ShapeCollection::normaliseRotation()
 {
   // Use the first shape as base rotation = 0
   Mat x0 = this->items[0]->getMat();
-  vector<Shape*> norml{ new Shape(x0) };
+  vector<BaseModel*> norml{ new Shape(x0) };
   
   for (auto shapeIter=this->items.begin()+1; shapeIter!=this->items.end(); shapeIter++)
   {
@@ -78,8 +79,8 @@ unique_ptr<ModelCollection> ShapeCollection::normaliseRotation() const
     norml.push_back(new Shape((R * xj.t()).t()));
   }
 
-  unique_ptr<ModelCollection> newSet(new ShapeCollection(norml, verbose));
-  return newSet;
+  clear();
+  swap(this->items, norml);
 }
 
 /**

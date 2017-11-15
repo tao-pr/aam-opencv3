@@ -23,9 +23,9 @@ public:
   
   // ---------- Transformations ---------------
   unique_ptr<ModelCollection> clone() const;
-  unique_ptr<ModelCollection> normaliseScalingTranslation() const;
-  unique_ptr<ModelCollection> normaliseRotation() const;
-  unique_ptr<ModelCollection> translateBy(const Point2d &p) const;
+  void normaliseScalingTranslation();
+  void normaliseRotation();
+  void translateBy(const Point2d &p);
 
   // ---------- I/O ------------------
   void renderShapeVariation(IO::GenericIO* io, Size sz, double scaleFactor=1.0, Point2d recentred=Point2d(0,0)) const;

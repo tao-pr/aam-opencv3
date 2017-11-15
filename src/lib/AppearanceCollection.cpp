@@ -58,9 +58,9 @@ Mat AppearanceCollection::covariance(const BaseModel* mean) const
   return (1/(double)N) * cov;
 }
 
-unique_ptr<ModelCollection> AppearanceCollection::normaliseRotation() const
+void AppearanceCollection::normaliseRotation() const
 {
-  return this->clone();
+  cout << YELLOW << "AppearanceCollection::normaliseRotation is not implemented"  << RESET << endl;
 }
 
 unique_ptr<ModelCollection> AppearanceCollection::clone() const

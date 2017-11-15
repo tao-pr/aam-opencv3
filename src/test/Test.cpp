@@ -20,16 +20,16 @@ void testShape(char** argv)
   const int SHAPE_SIZE     = 7;
   const double TOL         = 1e-3;
   const int MAX_ALIGN_ITER = 10;
-  const ShapeCollection trainset = initialShapeCollection(TRAIN_SET_SIZE, SHAPE_SIZE);
+  unique_ptr<ShapeCollection> trainset = initialShapeCollection(TRAIN_SET_SIZE, SHAPE_SIZE);
 
   // Render each shape onto the same plane
   auto io = IO::WindowIO("shapes");
-  trainset.renderShapeVariation(&io, Size(CANVAS_SIZE, CANVAS_SIZE));
+  trainset->renderShapeVariation(&io, Size(CANVAS_SIZE, CANVAS_SIZE));
 
   // Remove translations & scalings
   auto ioNrm = IO::WindowIO("scaling + translated", Point(CANVAS_SIZE+10, 0));
-  auto scaledSet = trainset.normaliseScalingTranslation();
-  scaledSet.renderShapeVariation(
+  unique_ptr<ShapeCollection> scaledSet = trainset->normaliseScalingTranslation();
+  scaledSet->renderShapeVariation(
     &ioNrm, 
     Size(CANVAS_SIZE, CANVAS_SIZE),
     Aux::square(CANVAS_HALFSIZE), // scale the distance
@@ -45,7 +45,7 @@ void testShape(char** argv)
 
   // Remove rotations
   auto ioPc = IO::WindowIO("rotated", Point(CANVAS_SIZE+20, 0));
-  auto rotatedSet = scaledSet.normaliseRotation();
+  ShapeCollection rotatedSet = dynamic_cast<ShapeCollection&>(*scaledSet->normaliseRotation());
   rotatedSet.renderShapeVariation(
     &ioPc,
     Size(CANVAS_SIZE, CANVAS_SIZE),
@@ -63,9 +63,8 @@ void testShape(char** argv)
   // Find the mean shape by Procrustes Analysis
   // and align all shapes to that mean
   // NOTE: We don't use the rotated set above
-  auto meanAndAligned = scaledSet.procrustesMeanShape(TOL, MAX_ALIGN_ITER);
-  auto meanShape      = get<0>(meanAndAligned);
-  auto alignedSet     = get<1>(meanAndAligned);
+  auto alignedSet = scaledSet->procrustesMeanSet(TOL, MAX_ALIGN_ITER);
+  auto meanShape  = alignedSet->items[0];
   auto ioAl   = IO::WindowIO("aligned", Point(0, CANVAS_SIZE+25));
   auto ioMean = IO::WindowIO("mean", Point(CANVAS_SIZE+10, CANVAS_SIZE+25));
   
@@ -74,7 +73,7 @@ void testShape(char** argv)
     .recentreAndScale(Point2d(CANVAS_HALFSIZE, CANVAS_HALFSIZE), Aux::square(CANVAS_HALFSIZE))
     .render(&ioMean, Mat(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3, Scalar(80,20,5)));
   
-  alignedSet.renderShapeVariation(
+  alignedSet->renderShapeVariation(
     &ioAl,
     Size(CANVAS_SIZE, CANVAS_SIZE),
     Aux::square(CANVAS_HALFSIZE), // scale the distance
@@ -83,7 +82,7 @@ void testShape(char** argv)
   moveWindow("mean", 0, CANVAS_SIZE+50);
 
   // Calculate covariance
-  auto cov = alignedSet.covariance(meanShape);
+  auto cov = alignedSet->covariance(meanShape);
   Mat covResized;
   resize(cov, covResized, Size(CANVAS_SIZE, CANVAS_SIZE), INTER_LINEAR);
   normalize(covResized, covResized, 255, 0, NORM_L2);
@@ -91,7 +90,7 @@ void testShape(char** argv)
   moveWindow("covariance", (CANVAS_SIZE+10),(CANVAS_SIZE+50));
 
   // Calculate PCA shape
-  auto eigenShape = alignedSet.clone(true).pca(meanShape);
+  auto eigenShape = alignedSet->clone()->pca(meanShape);
 
   // Encode shapes with PCA and measure the estimation errors
   int i = 0;

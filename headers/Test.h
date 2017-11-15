@@ -28,11 +28,11 @@ inline MeshShape initialMesh(int shapeSize)
   return MeshShape(vs);
 }
 
-inline ShapeCollection initialShapeCollection(int num, int shapeSize)
+inline unique_ptr<ShapeCollection> initialShapeCollection(int num, int shapeSize)
 {
   cout << GREEN << "Generating initial shapes of size " << RESET 
     << num << " x " << shapeSize << endl;
-  vector<Shape> trainset;
+  vector<Shape*> trainset;
   srand(time(NULL));
   for (int i=0; i<num; i++)
   {
@@ -48,9 +48,10 @@ inline ShapeCollection initialShapeCollection(int num, int shapeSize)
       m.at<double>(n, 0) = x0 + n0 - n1;
       m.at<double>(n, 1) = y0 - n0 + n1;
     }
-    trainset.push_back(Shape(m));
+    trainset.push_back(new Shape(m));
   }
-  return ShapeCollection(trainset, VERBOSE);
+  unique_ptr<ShapeCollection> ptrTrainset(new ShapeCollection(trainset, VERBOSE));
+  return ptrTrainset;
 }
 
 inline Mat chessPattern(int stepSize, Size size)
