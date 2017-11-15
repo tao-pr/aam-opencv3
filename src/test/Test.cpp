@@ -28,8 +28,8 @@ void testShape(char** argv)
 
   // Remove translations & scalings
   auto ioNrm = IO::WindowIO("scaling + translated", Point(CANVAS_SIZE+10, 0));
-  unique_ptr<ShapeCollection> scaledSet = trainset->normaliseScalingTranslation();
-  scaledSet->renderShapeVariation(
+  trainset->normaliseScalingTranslation();
+  trainset->renderShapeVariation(
     &ioNrm, 
     Size(CANVAS_SIZE, CANVAS_SIZE),
     Aux::square(CANVAS_HALFSIZE), // scale the distance
@@ -45,8 +45,7 @@ void testShape(char** argv)
 
   // Remove rotations
   auto ioPc = IO::WindowIO("rotated", Point(CANVAS_SIZE+20, 0));
-  ShapeCollection rotatedSet = dynamic_cast<ShapeCollection&>(*scaledSet->normaliseRotation());
-  rotatedSet.renderShapeVariation(
+  trainset->renderShapeVariation(
     &ioPc,
     Size(CANVAS_SIZE, CANVAS_SIZE),
     Aux::square(CANVAS_HALFSIZE), // scale the distance
@@ -63,17 +62,18 @@ void testShape(char** argv)
   // Find the mean shape by Procrustes Analysis
   // and align all shapes to that mean
   // NOTE: We don't use the rotated set above
-  auto alignedSet = scaledSet->procrustesMeanSet(TOL, MAX_ALIGN_ITER);
-  auto meanShape  = alignedSet->items[0];
+  auto alignedSet = trainset->clone();
+  auto meanModel = alignedSet->procrustesMean(TOL, MAX_ALIGN_ITER);
   auto ioAl   = IO::WindowIO("aligned", Point(0, CANVAS_SIZE+25));
   auto ioMean = IO::WindowIO("mean", Point(CANVAS_SIZE+10, CANVAS_SIZE+25));
   
   // Re-scale and re-centre the mean shape before rendering
-  meanShape
-    .recentreAndScale(Point2d(CANVAS_HALFSIZE, CANVAS_HALFSIZE), Aux::square(CANVAS_HALFSIZE))
-    .render(&ioMean, Mat(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3, Scalar(80,20,5)));
+  Shape* meanShape = dynamic_cast<Shape*>(meanModel);
+  meanShape->recentreAndScale(Point2d(CANVAS_HALFSIZE, CANVAS_HALFSIZE), Aux::square(CANVAS_HALFSIZE));
+  meanShape->render(&ioMean, Mat(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3, Scalar(80,20,5)));
   
-  alignedSet->renderShapeVariation(
+  auto alignedShapeSet = dynamic_cast<ShapeCollection*>(alignedSet.get());
+  alignedShapeSet->renderShapeVariation(
     &ioAl,
     Size(CANVAS_SIZE, CANVAS_SIZE),
     Aux::square(CANVAS_HALFSIZE), // scale the distance
@@ -95,13 +95,14 @@ void testShape(char** argv)
   // Encode shapes with PCA and measure the estimation errors
   int i = 0;
   cout << GREEN << "[PCA-parameterised shapes]" << RESET << endl;
-  for (auto shape : alignedSet.getItems())
+  for (auto model : alignedSet->getItems())
   {
+    const Shape* shape = dynamic_cast<const Shape*>(model);
     cout << CYAN << "... Encoding shape # " << RESET << i << endl;
     auto param = eigenShape.encode(shape);
     cout << "... Decoding shape # " << i << endl;
     auto encodedShape = eigenShape.toShape(param);
-    double error = shape.procrustesDistance(encodedShape);
+    double error = shape->procrustesDistance(encodedShape);
     cout << "... Estimation error : " << error << endl;
     i++;
   }

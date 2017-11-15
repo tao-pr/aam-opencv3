@@ -21,7 +21,7 @@ void ModelCollection::clear()
   }
 }
 
-BaseModel* ModelCollection::procrustesMeanSet(double tol, int maxIter)
+BaseModel* ModelCollection::procrustesMean(double tol, int maxIter)
 {
   auto alignedSet  = this->clone();
   double lastError = 0;
