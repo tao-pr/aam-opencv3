@@ -41,7 +41,7 @@ Point2d Shape::centroid() const
 const double Shape::procrustesDistance(const BaseModel* that) const
 {
   #ifdef DEBUG
-  cout << "[DEBUG] ... Shape:;procrustesDistance" << endl;
+  cout << "[DEBUG] ... Shape::procrustesDistance" << endl;
   #endif
   double d       = 0.0;
   int N          = this->mat.rows;

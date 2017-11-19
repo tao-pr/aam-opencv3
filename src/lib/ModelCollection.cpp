@@ -39,10 +39,15 @@ BaseModel* ModelCollection::procrustesMean(double tol, int maxIter)
   if (verbose) cout << GREEN << "[Calculating Procrustes mean]" << RESET << endl;
   while (tl > tol && iter < maxIter)
   {
-    auto mean  = alignedSet->items[0];
     if (verbose) cout << CYAN << "... Aligning iter# " << RESET << iter << endl;
     if (verbose) cout << "... Normalising rotation" << endl;
     alignedSet->normaliseRotation();
+    auto mean  = alignedSet->items[0];
+    
+    // TAODEBUG:
+    cout << alignedSet->items.size() << endl;
+    cout << mean->getMat().size() << endl;
+
     if (verbose) cout << "... Calculating procrustes distance" << endl;
     double err = alignedSet->sumProcrustesDistance(mean);
 
@@ -55,10 +60,12 @@ BaseModel* ModelCollection::procrustesMean(double tol, int maxIter)
   }
   if (verbose) cout << "... Alignment done" << endl;
 
+  auto meanModel = alignedSet->items[0];
+
   clear();
   swap(this->items, alignedSet->items);
 
-  return this->items[0];// TAOREVIEW: Return proper mean object
+  return meanModel;
 }
 
 double ModelCollection::sumProcrustesDistance(const BaseModel* targetModel) const
