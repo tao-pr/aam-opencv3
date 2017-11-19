@@ -65,6 +65,9 @@ void AppearanceCollection::normaliseRotation() const
 
 unique_ptr<ModelCollection> AppearanceCollection::clone() const
 {
+  #ifdef DEBUG
+  cout << "[DEBUG] ... AppearanceCollection::clone" << endl;
+  #endif
   vector<BaseModel*> vs;
   for (auto model : this->items)
   {

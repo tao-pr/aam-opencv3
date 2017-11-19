@@ -9,6 +9,8 @@
 #include "MeshShape.h"
 #include "Texture.h"
 
+#define DEBUG
+
 const bool   VERBOSE         = true;
 const double CANVAS_SIZE     = 300.0;
 const double CANVAS_HALFSIZE = CANVAS_SIZE / 2.0;
