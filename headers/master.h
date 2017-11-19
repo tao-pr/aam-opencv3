@@ -18,6 +18,8 @@
 #include <stdio.h>
 #include <dirent.h>
 
+#define DEBUG // TAODEBUG:
+
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 

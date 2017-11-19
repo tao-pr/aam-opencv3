@@ -23,6 +23,9 @@ void ModelCollection::clear()
 
 BaseModel* ModelCollection::procrustesMean(double tol, int maxIter)
 {
+  #ifdef DEBUG
+  cout << "[DEBUG] ... ModelCollection::procrustesMean" << endl;
+  #endif
   auto alignedSet  = this->clone();
   double lastError = 0;
   double tl        = numeric_limits<double>::max();
