@@ -27,6 +27,7 @@ void Appearance::reinitTextures()
 
 const double Appearance::procrustesDistance(const BaseModel* that) const
 {
+  cout << "Appearance::procrustesDistance" << endl; // TAODEBUG:
   const auto thatApp = dynamic_cast<const Appearance*>(that);
   Mat thisMat  = this->toRowVector();
   Mat thatMat  = thatApp->toRowVector();

@@ -42,8 +42,10 @@ const double Shape::procrustesDistance(const BaseModel* that) const
 {
   double d       = 0.0;
   int N          = this->mat.rows;
-  const auto thatShape = dynamic_cast<const Shape*>(that);
+  auto thatShape = dynamic_cast<const Shape*>(that);
+  cout << "casted" << endl; // TAODEBUG:
   Mat thatMat    = thatShape->getMat();
+  cout << thatMat << endl; // TAODEBUG:
   for (int j=0; j<N; j++)
   {
     auto pThis = Point2d(this->mat.at<double>(j,0), this->mat.at<double>(j,1));

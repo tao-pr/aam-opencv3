@@ -38,8 +38,9 @@ BaseModel* ModelCollection::procrustesMean(double tol, int maxIter)
   {
     auto mean  = alignedSet->items[0];
     if (verbose) cout << CYAN << "... Aligning iter# " << RESET << iter << endl;
-    alignedSet = alignedSet->clone();
+    if (verbose) cout << "... Normalising rotation" << endl;
     alignedSet->normaliseRotation();
+    if (verbose) cout << "... Calculating procrustes distance" << endl;
     double err = alignedSet->sumProcrustesDistance(mean);
 
     if (verbose) cout << "... Error so far : " << err << endl;

@@ -23,6 +23,7 @@ void testShape(char** argv)
   unique_ptr<ShapeCollection> trainset = initialShapeCollection(TRAIN_SET_SIZE, SHAPE_SIZE);
 
   // Render each shape onto the same plane
+  cout << CYAN << "[#] Shape scaling & translation " << RESET << endl;
   auto io = IO::WindowIO("shapes");
   trainset->renderShapeVariation(&io, Size(CANVAS_SIZE, CANVAS_SIZE));
 
@@ -44,6 +45,7 @@ void testShape(char** argv)
   // }
 
   // Remove rotations
+  cout << CYAN << "[#] Shape rotation " << RESET << endl;
   auto ioPc = IO::WindowIO("rotated", Point(CANVAS_SIZE+20, 0));
   trainset->renderShapeVariation(
     &ioPc,
@@ -62,6 +64,7 @@ void testShape(char** argv)
   // Find the mean shape by Procrustes Analysis
   // and align all shapes to that mean
   // NOTE: We don't use the rotated set above
+  cout << CYAN << "[#] Shape procrustes mean " << RESET << endl;
   auto alignedSet = trainset->clone();
   auto meanModel = alignedSet->procrustesMean(TOL, MAX_ALIGN_ITER);
   auto ioAl   = IO::WindowIO("aligned", Point(0, CANVAS_SIZE+25));
@@ -82,6 +85,7 @@ void testShape(char** argv)
   moveWindow("mean", 0, CANVAS_SIZE+50);
 
   // Calculate covariance
+  cout << CYAN << "[#] Shape collection covariance " << RESET << endl;
   auto cov = alignedSet->covariance(meanShape);
   Mat covResized;
   resize(cov, covResized, Size(CANVAS_SIZE, CANVAS_SIZE), INTER_LINEAR);
@@ -90,6 +94,7 @@ void testShape(char** argv)
   moveWindow("covariance", (CANVAS_SIZE+10),(CANVAS_SIZE+50));
 
   // Calculate PCA shape
+  cout << CYAN << "[#] Shape PCA " << RESET << endl;
   auto eigenShape = alignedSet->clone()->pca(meanShape);
 
   // Encode shapes with PCA and measure the estimation errors
