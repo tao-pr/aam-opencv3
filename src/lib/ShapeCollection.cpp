@@ -1,6 +1,7 @@
 #include "ShapeCollection.h"
 
 ShapeCollection::ShapeCollection(const vector<Shape*>& shapes, const bool isVerbose)
+: ModelCollection(isVerbose)
 {
   this->verbose = isVerbose;
   vector<BaseModel*> vs;

@@ -1,30 +1,38 @@
 #include "ModelCollection.h"
 
+long long ModelCollection::generateUID()
+{
+  return static_cast<long long>(floor(time(NULL)));
+}
+
 ModelCollection::~ModelCollection()
 {
   if (this->verbose) 
   {
     auto cnt = fmt::format("({0} items)", this->items.size());
-    cout << YELLOW << "Cleaning up ModelCollection " << cnt  << RESET << endl;
+    cout << YELLOW << "Cleaning up ModelCollection @" << getUID() << cnt  << RESET << endl;
   }
 
   clear();
 
-  if (this->verbose) cout << "... ModelCollection cleared and destroyed." << endl;
+  if (this->verbose) cout << "... ModelCollection @" << getUID() << " cleared and destroyed." << endl;
 }
 
 void ModelCollection::clear()
 {
+  #ifdef DEBUG
+  cout << YELLOW << "[DEBUG] ... ModelCollection::clear @" << getUID() << RESET << endl;
+  #endif
   for (auto item : this->items)
   {
-    delete item;
+    delete item; // TAOTODO: Errors here
   }
 }
 
 BaseModel* ModelCollection::procrustesMean(double tol, int maxIter)
 {
   #ifdef DEBUG
-  cout << "[DEBUG] ... ModelCollection::procrustesMean" << endl;
+  cout << "[DEBUG] ... ModelCollection::procrustesMean @" << getUID() << endl;
   #endif
   auto alignedSet  = this->clone();
   double lastError = 0;

@@ -1,8 +1,9 @@
 #include "AppearanceCollection.h"
 
 AppearanceCollection::AppearanceCollection(const vector<Appearance*>& apps, bool isVerbose)
+: ModelCollection(isVerbose)
 {
-  this->verbose = isVerbose;
+  //this->verbose = isVerbose;
   vector<BaseModel*> vs;
   for (auto app : apps)
   {
@@ -12,8 +13,9 @@ AppearanceCollection::AppearanceCollection(const vector<Appearance*>& apps, bool
 }
 
 AppearanceCollection::AppearanceCollection(const AppearanceCollection& original)
+: ModelCollection(original.verbose)
 {
-  this->verbose = original.verbose;
+  //this->verbose = original.verbose;
   vector<BaseModel*> vs;
   for (auto model : original.items)
   {

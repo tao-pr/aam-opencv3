@@ -5,17 +5,18 @@
 #include "Params.h"
 #include "BaseModel.h"
 
-class ModelCollection;
-
 class ModelCollection 
 {
 private:
+  long long uid;
+  static long long generateUID();
 protected:
   bool verbose;
   vector<BaseModel*> items;
+  long long getUID() const { return this->uid; };
 public:
-  ModelCollection(bool verbose=false) : verbose(verbose) {};
-  ModelCollection(vector<BaseModel*> vs, bool verbose=false) : items(vs), verbose(verbose) {};
+  ModelCollection(bool verbose=false) : verbose(verbose), uid(ModelCollection::generateUID()) {};
+  ModelCollection(vector<BaseModel*> vs, bool verbose=false) : items(vs), verbose(verbose), uid(ModelCollection::generateUID()) {};
   virtual ~ModelCollection();
   virtual void clear();
 
