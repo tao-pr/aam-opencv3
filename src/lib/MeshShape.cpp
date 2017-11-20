@@ -64,17 +64,6 @@ vector<Triangle> MeshShape::getTriangles() const
   vector<Vec6f> triangles;
   this->subdiv.getTriangleList(triangles);
 
-  // Take only triangles of which edges are aligned 
-  // on or within the convex hull of the entire shape.
-  // TAODEBUG:
-  // auto hull = this->convexHull();
-
-  // Rect rect = boundingRect(hull);
-  // const Point* hulls[] = {hull.data()};
-  // const int counters[] = {(int)hull.size()};
-  // Mat hullFill = Mat::zeros(rect.height + rect.y, rect.width + rect.x, CV_8UC1);
-
-  // fillPoly(hullFill, hulls, counters, 1, Scalar(255), LINE_8);
   Mat hullFill = this->convexFill();
   vector<Triangle> output;
   for (auto tr:triangles)

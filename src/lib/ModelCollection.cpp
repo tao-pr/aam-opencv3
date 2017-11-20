@@ -52,10 +52,6 @@ BaseModel* ModelCollection::procrustesMean(double tol, int maxIter)
     alignedSet->normaliseRotation();
     auto mean  = alignedSet->items[0];
     
-    // TAODEBUG:
-    cout << alignedSet->items.size() << endl;
-    cout << mean->getMat().size() << endl;
-
     if (verbose) cout << "... Calculating procrustes distance" << endl;
     double err = alignedSet->sumProcrustesDistance(mean);
 
