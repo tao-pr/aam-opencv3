@@ -70,7 +70,6 @@ BaseModel* ModelCollection::procrustesMean(double tol, int maxIter)
 
   auto meanModel = alignedSet->items[0];
 
-  clear();
   swap(this->items, alignedSet->items);
 
   return meanModel;
