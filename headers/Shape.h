@@ -45,6 +45,7 @@ public:
   Shape operator >>(Point2d shift) const;  // Translating
   Shape operator <<(Point2d shift) const;  // Translating (negative)
   Shape recentreAndScale(Point2d t, double scaleFactor) const;
+  void addRandomNoise(const Point2d& maxDisplacement);
 };
 
 #endif

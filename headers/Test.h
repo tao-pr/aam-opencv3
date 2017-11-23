@@ -6,6 +6,7 @@
 #include "master.h"
 #include "AAM2D.h"
 #include "ShapeCollection.h"
+#include "AppearanceCollection.h"
 #include "MeshShape.h"
 #include "Texture.h"
 
@@ -62,4 +63,29 @@ inline Mat chessPattern(int stepSize, Size size)
   for (int i=0; i<size.width; i+=stepSize)
     line(mat, Point(i, 0), Point(i, size.height-1), Scalar(255,255,255), 1, CV_AA);
   return mat;
+}
+
+inline unique_ptr<AppearanceCollection> initialAppearanceCollection(int num, int shapeSize)
+{
+  cout << GREEN << "Generating initial appearances of size " << RESET 
+    << num << " x " << shapeSize << endl;
+
+  // Generate a base shape and texture
+  auto baseShape = MeshShape(initialMesh(shapeSize));
+  auto baseTexture = chessPattern(5, Size(CANVAS_SIZE, CANVAS_SIZE));
+
+  // Generate [n] random displacements on the base shape
+  auto noiseConstraint = Point2d(15.5, 5.5);
+  vector<Appearance*> appearances;
+  for (int n=0; n<num; n++)
+  {
+    auto shapeN = Shape(baseShape);
+    shapeN.addRandomNoise(noiseConstraint);
+    auto mesh = MeshShape(shapeN);
+    // Warp the base texture so it is aligned onto each shape
+    // TAOTODO:
+  }
+
+  
+  // TAOTODO:
 }

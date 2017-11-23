@@ -209,6 +209,21 @@ unique_ptr<BaseModel> Shape::clone() const
   return anotherCopy;
 }
 
+void Shape::addRandomNoise(const Point2d& maxDisplacement)
+{
+  int N = this->mat.rows;
+  srand(time(NULL));
+  for (int j=0; j<N; j++)
+  {
+    double nx1 = maxDisplacement.x/2 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
+    double ny1 = maxDisplacement.y/2 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
+    double nx2 = maxDisplacement.x/2 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
+    double ny2 = maxDisplacement.y/2 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
+    this->mat.at<double>(j,0) += nx1 - nx2;
+    this->mat.at<double>(j,1) += ny1 - ny2;
+  }
+}
+
 void Shape::save(const string path) const
 {
 
