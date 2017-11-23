@@ -60,7 +60,7 @@ Mat AppearanceCollection::covariance(const BaseModel* mean) const
   return (1/(double)N) * cov;
 }
 
-void AppearanceCollection::normaliseRotation() const
+void AppearanceCollection::normaliseRotation()
 {
   cout << YELLOW << "AppearanceCollection::normaliseRotation is not implemented"  << RESET << endl;
 }

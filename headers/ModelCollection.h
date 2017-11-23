@@ -15,8 +15,8 @@ protected:
   vector<BaseModel*> items;
   long long getUID() const { return this->uid; };
 public:
-  ModelCollection(bool verbose=false) : verbose(verbose), uid(ModelCollection::generateUID()) {};
-  ModelCollection(vector<BaseModel*> vs, bool verbose=false) : items(vs), verbose(verbose), uid(ModelCollection::generateUID()) {};
+  ModelCollection(bool verbose=false) : uid(ModelCollection::generateUID()), verbose(verbose) {};
+  ModelCollection(vector<BaseModel*> vs, bool verbose=false) : uid(ModelCollection::generateUID()), items(vs), verbose(verbose) {};
   virtual ~ModelCollection();
   virtual void clear();
 

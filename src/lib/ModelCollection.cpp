@@ -25,7 +25,7 @@ void ModelCollection::clear()
   #endif
   for (auto item : this->items)
   {
-    delete item; // TAOTODO: Errors here
+    delete item;
   }
 }
 

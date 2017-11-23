@@ -188,25 +188,25 @@ void testTexture(char** argv)
 
 void testAAM()
 {
-  // cout << "Initialising simple untrained AAMs" << endl;
-  // auto canvas = chessPattern(3, Size(CANVAS_SIZE, CANVAS_SIZE));
-  // auto canvasClone = canvas.clone();
+  cout << "Initialising simple untrained AAMs" << endl;
+  auto canvas = chessPattern(3, Size(CANVAS_SIZE, CANVAS_SIZE));
+  auto canvasClone = canvas.clone();
 
-  // // Initial a mesh shape
-  // int nVertices = 32;
-  // auto mesh = initialMesh(nVertices);
-  // IO::WindowIO ioMesh("mesh");
-  // mesh.render(&ioMesh, canvasClone);
+  // Initial a mesh shape
+  int nVertices = 32;
+  auto mesh = initialMesh(nVertices);
+  IO::WindowIO ioMesh("mesh");
+  mesh.render(&ioMesh, canvasClone);
 
-  // cout << "... Initialising Appearance model ... " << endl;
-  // auto appr = Appearance(mesh, &canvas);
-  // cout << "... Appearance model initialised" << endl;
+  cout << "... Initialising Appearance model ... " << endl;
+  auto appr = Appearance(mesh, &canvas);
+  cout << "... Appearance model initialised" << endl;
   
-  // IO::WindowIO ioAAM("aam");
-  // appr.render(&ioAAM, Mat::zeros(canvas.size(), canvas.type()));
+  IO::WindowIO ioAAM("aam");
+  appr.render(&ioAAM, Mat::zeros(canvas.size(), canvas.type()));
 
-  // moveWindow("aam", CANVAS_SIZE+15, 0);
-  // waitKey(300);
+  moveWindow("aam", CANVAS_SIZE+15, 0);
+  waitKey(300);
 
   // TAOTODO: Apply morphological actions and re-render AAM
 
@@ -219,27 +219,27 @@ int main(int argc, char** argv)
   cout << MAGENTA << " Mesh shape testing  "  << RESET << endl;
   cout << MAGENTA << "**********************" << RESET << endl;
 
-  testMeshShape(argv);
+  // testMeshShape(argv); TAODEBUG:
 
   cout << MAGENTA << "**********************" << RESET << endl;
   cout << MAGENTA << " Shape model testing  " << RESET << endl;
   cout << MAGENTA << "**********************" << RESET << endl;
 
-  testShape(argv);
+  // testShape(argv);
 
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to texture model testing " << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
-  waitKey(0);
-  destroyAllWindows();
+  // waitKey(0);
+  // destroyAllWindows();
 
-  testTexture(argv);
+  // testTexture(argv);
 
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to AAM testing " << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
-  waitKey(0);
-  destroyAllWindows();
+  // waitKey(0);
+  // destroyAllWindows();
   
   testAAM();
   waitKey(0);

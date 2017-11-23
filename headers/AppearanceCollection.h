@@ -21,7 +21,7 @@ public:
 
   // ---------- Analysis -------------
   Mat covariance(const BaseModel* mean) const;
-  void normaliseRotation() const;
+  void normaliseRotation();
   
   // ---------- I/O ------------------
   Mat toMat() const;
