@@ -79,11 +79,15 @@ inline unique_ptr<AppearanceCollection> initialAppearanceCollection(int num, int
   vector<Appearance*> appearances;
   for (int n=0; n<num; n++)
   {
-    auto shapeN = Shape(baseShape);
-    shapeN.addRandomNoise(noiseConstraint);
-    auto mesh = MeshShape(shapeN);
-    // Warp the base texture so it is aligned onto each shape
+    auto newShape = Shape(baseShape);
+    newShape.addRandomNoise(noiseConstraint);
+    auto newMesh = MeshShape(newShape);
+    
+    // Create an appearance on the base shape
+    // then warp it onto the new shape with random noise added
     // TAOTODO:
+    auto app = Appearance(baseShape, baseTexture);
+    app.realignTo(newMesh);
   }
 
   
