@@ -199,7 +199,7 @@ void testAAM()
   mesh.render(&ioMesh, canvasClone);
 
   cout << "... Initialising Appearance model ... " << endl;
-  auto appr = Appearance(mesh, &canvas);
+  auto appr = Appearance(mesh, canvas);
   cout << "... Appearance model initialised" << endl;
   
   IO::WindowIO ioAAM("aam");

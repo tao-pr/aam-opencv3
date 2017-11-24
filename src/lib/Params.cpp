@@ -9,7 +9,7 @@ Shape ModelEncoder::toShape(const ModelParameters &s) const
   return Shape(this->mean + (this->eigen * s.getParams()));
 }
 
-tuple<Appearance,Mat*> ModelEncoder::toAppearance(const ModelParameters &s, const MeshShape* meanShape) const
+Appearance ModelEncoder::toAppearance(const ModelParameters &s, const MeshShape* meanShape) const
 {
   // appearance = mean + (Eigen•params)
 
@@ -17,11 +17,11 @@ tuple<Appearance,Mat*> ModelEncoder::toAppearance(const ModelParameters &s, cons
   // Also round the floating points of pixel values to 8-bit ints
   auto bound  = meanShape->getBound();
   auto mtype  = this->mean.channels() == 3 ? CV_8UC3 : CV_8UC1;
-  Mat* spatial = new Mat(bound.size(), CV_8UC3, Scalar(0,0,0));
+  Mat spatial = Mat(bound.size(), CV_8UC3, Scalar(0,0,0));
 
-  this->mean.reshape(this->mean.channels(), bound.height).copyTo(*spatial);
+  this->mean.reshape(this->mean.channels(), bound.height).copyTo(spatial);
   auto app    = Appearance(*meanShape, spatial);
-  return make_tuple(app, spatial);
+  return app;
 }
 
 Mat ModelEncoder::encode(const BaseModel* m) const

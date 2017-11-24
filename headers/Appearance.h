@@ -14,14 +14,13 @@ class Appearance : public BaseModel
 {
 private:
 protected:
-  // TAOTOREVIEW: Make [imgRef] a [shared_ptr]
-  Mat* imgRef; // Reference to an appearance image (external variable)
+  Mat graphic;
   MeshShape mesh;
   vector<Texture> textureList;
 
   void reinitTextures();
 public:
-  Appearance(const MeshShape& shape, Mat* img);
+  Appearance(const MeshShape& shape, const Mat& img);
   Appearance(const Appearance& another);
   virtual inline ~Appearance(){};
 
@@ -37,6 +36,9 @@ public:
   // TAOTOREVIEW:
   virtual inline void save(const string path) const {};
   virtual inline void load(const string path) {};
+
+  //------- Transformation -----------
+  void realignTo(const MeshShape& newShape);
 };
 
 #endif

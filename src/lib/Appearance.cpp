@@ -2,15 +2,17 @@
 
 Appearance::Appearance(const Appearance& another)
 {
-  this->imgRef = another.imgRef;
+  this->graphic = Mat(another.graphic.size(), another.graphic.type());
   this->mesh = another.mesh;
+  another.graphic.copyTo(this->graphic);
   reinitTextures();
 }
 
-Appearance::Appearance(const MeshShape& shape, Mat* img)
+Appearance::Appearance(const MeshShape& shape, const Mat& img)
 {
-  this->imgRef = img;
+  this->graphic = Mat(img.size(), img.type());
   this->mesh = MeshShape(shape);
+  img.copyTo(this->graphic);
   reinitTextures();
 }
 
@@ -21,7 +23,7 @@ void Appearance::reinitTextures()
 
   for (auto triangle : triangles)
   {
-    this->textureList.push_back(Texture(triangle, this->imgRef));
+    this->textureList.push_back(Texture(triangle, &this->graphic));
   }
 }
 
@@ -63,9 +65,10 @@ unique_ptr<BaseModel> Appearance::clone() const
 Mat Appearance::toRowVector() const
 {
   auto roi = this->mesh.getBound();
-  Mat m = imgRef->operator()(roi).clone();
-  return m.reshape(imgRef->channels(), m.rows * m.cols); 
+  Mat m = this->graphic(roi).clone();
+  return m.reshape(this->graphic.channels(), m.rows * m.cols); 
 
+  // TAOTODO: Delete following
   // vector<Vec3b> series;
   // // Crop the texture inside the triangular boundary
   // // concatnate them into a 1-D vector
@@ -98,5 +101,10 @@ Mat Appearance::toColVector() const
 {
   auto rowVec = this->toRowVector();
   return rowVec.t();
+}
+
+void Appearance::realignTo(const MeshShape& newShape)
+{
+  // TAOTODO:
 }
 

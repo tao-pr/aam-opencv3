@@ -23,7 +23,7 @@ public:
   virtual ~ModelEncoder(){};
   
   Shape toShape(const ModelParameters &s) const;
-  tuple<Appearance,Mat*> toAppearance(const ModelParameters &s, const MeshShape* meanShape) const;
+  Appearance toAppearance(const ModelParameters &s, const MeshShape* meanShape) const;
   Mat encode(const BaseModel* m) const;
 };
 
