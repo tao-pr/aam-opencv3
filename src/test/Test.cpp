@@ -113,6 +113,30 @@ void testShape(char** argv)
   }
 }
 
+void testAAMCollection()
+{
+  const int TRAIN_SET_SIZE = 16;
+  const int SHAPE_SIZE     = 7;
+  auto aamCollection = initialAppearanceCollection(TRAIN_SET_SIZE, SHAPE_SIZE);
+
+  // Iterate through and render
+  Mat backCanvas = Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3);
+  auto ioApp = IO::WindowIO("element");
+  auto apps = aamCollection->getItems();
+  cout << "Collection size = " << apps.size() << endl; // TAODEBUG:
+  for (auto a : apps)
+  {
+    auto app = dynamic_cast<Appearance*>(a);
+    cout << "rendering ..." << endl; // TAODEBUG:
+    app->render(&ioApp, backCanvas);
+    waitKey(500);
+  }
+
+  waitKey(0);
+
+  // TAOTODO:
+}
+
 void testTexture(char** argv)
 {
   cout << GREEN << "Loading sample image" << RESET << endl;
@@ -186,9 +210,9 @@ void testTexture(char** argv)
   moveWindow("canvas", 750, 250);
 }
 
-void testAAM()
+void testAppearance()
 {
-  cout << "Initialising simple untrained AAMs" << endl;
+  cout << "Initialising simple untrained appearances" << endl;
   auto canvas = chessPattern(3, Size(CANVAS_SIZE, CANVAS_SIZE));
   auto canvasClone = canvas.clone();
 
@@ -207,10 +231,6 @@ void testAAM()
 
   moveWindow("aam", CANVAS_SIZE+15, 0);
   waitKey(300);
-
-  // TAOTODO: Apply morphological actions and re-render AAM
-
-
 }
 
 int main(int argc, char** argv)
@@ -236,11 +256,19 @@ int main(int argc, char** argv)
   // testTexture(argv);
 
   cout << MAGENTA << "***********************************************" << RESET << endl;
-  cout << MAGENTA << " Hit a key to proceed to AAM testing " << RESET << endl;
+  cout << MAGENTA << " Hit a key to proceed to appearance testing " << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
   // waitKey(0);
   // destroyAllWindows();
   
-  testAAM();
+  testAppearance();
+
+  cout << MAGENTA << "***********************************************" << RESET << endl;
+  cout << MAGENTA << " Hit a key to proceed to AAM collection test" << RESET << endl;
+  cout << MAGENTA << "***********************************************" << RESET << endl;
+  waitKey(0);
+  destroyAllWindows();
+
+  testAAMCollection();
   waitKey(0);
 }

@@ -85,11 +85,11 @@ inline unique_ptr<AppearanceCollection> initialAppearanceCollection(int num, int
     
     // Create an appearance on the base shape
     // then warp it onto the new shape with random noise added
-    // TAOTODO:
-    auto app = Appearance(baseShape, baseTexture);
-    app.realignTo(newMesh);
+    auto app = new Appearance(baseShape, baseTexture);
+    app->realignTo(newMesh);
+    appearances.push_back(app);
   }
 
-  
-  // TAOTODO:
+  unique_ptr<AppearanceCollection> list(new AppearanceCollection(appearances));
+  return list;
 }
