@@ -75,18 +75,18 @@ inline unique_ptr<AppearanceCollection> initialAppearanceCollection(int num, int
   auto baseTexture = chessPattern(5, Size(CANVAS_SIZE, CANVAS_SIZE));
 
   // Generate [n] random displacements on the base shape
-  auto noiseConstraint = Point2d(15.5, 5.5);
+  auto noiseConstraint = Point2d(25.5, 25.5);
+  srand(time(NULL));
   vector<Appearance*> appearances;
   for (int n=0; n<num; n++)
   {
-    auto newShape = Shape(baseShape);
+    auto newShape = MeshShape(baseShape);
     newShape.addRandomNoise(noiseConstraint);
-    auto newMesh = MeshShape(newShape);
-    
+
     // Create an appearance on the base shape
     // then warp it onto the new shape with random noise added
     auto app = new Appearance(baseShape, baseTexture);
-    app->realignTo(newMesh);
+    app->realignTo(newShape); // TAOTODO: Does this work?
     appearances.push_back(app);
   }
 

@@ -212,9 +212,9 @@ unique_ptr<BaseModel> Shape::clone() const
 void Shape::addRandomNoise(const Point2d& maxDisplacement)
 {
   int N = this->mat.rows;
-  srand(time(NULL));
   for (int j=0; j<N; j++)
   {
+    // TAOTODO: Call a funcion to move a vertex instead
     double nx1 = maxDisplacement.x/2 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
     double ny1 = maxDisplacement.y/2 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
     double nx2 = maxDisplacement.x/2 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
@@ -222,6 +222,7 @@ void Shape::addRandomNoise(const Point2d& maxDisplacement)
     this->mat.at<double>(j,0) += nx1 - nx2;
     this->mat.at<double>(j,1) += ny1 - ny2;
   }
+  // TAOTODO: Then adjust the triangulation on the fly (if it is an instance of a MeshShape)
 }
 
 void Shape::save(const string path) const
