@@ -123,13 +123,6 @@ void testAAMCollection()
   Mat backCanvas = Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3);
   auto ioApp = IO::WindowIO("element");
   auto apps = aamCollection->getItems();
-  for (auto a : apps)
-  {
-    auto app = dynamic_cast<Appearance*>(a);
-    cout << "rendering ..." << endl; // TAODEBUG:
-    app->render(&ioApp, backCanvas);
-    waitKey(500);
-  }
 
   // TAOTODO:
 }

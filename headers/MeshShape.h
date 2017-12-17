@@ -10,17 +10,10 @@
 #include "Shape.h"
 #include "Triangle.h"
 
-typedef tuple<int, Triangle> SumIndicesToTriangle;
-
-class SumIndicesCompare
-{
-public:
-  // Ascending order
-  inline bool operator()(SumIndicesToTriangle &a, SumIndicesToTriangle &b)
-  { 
-    return get<0>(a) > get<0>(b); 
-  }
-};
+/**
+ * Mapping from triangle [i] => associated group of vertices (by Ids in Mat)
+ */
+typedef vector<tuple<int,int,int>> SubdivPlan;
 
 class MeshShape : public Shape 
 {
@@ -30,9 +23,11 @@ private:
   const bool isInside(const Point2d& p) const;
 
 protected:
+  vector<Triangle> trianglesCache;
+  SubdivPlan divCache;
+  
   Subdiv2D subdiv;
   Rect bound;
-  map<int, vector<int>> vertexToTriangles;
 
 public:
   MeshShape() : Shape(){};

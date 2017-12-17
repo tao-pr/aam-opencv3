@@ -78,6 +78,9 @@ inline unique_ptr<AppearanceCollection> initialAppearanceCollection(int num, int
   auto noiseConstraint = Point2d(25.5, 25.5);
   srand(time(NULL));
   vector<Appearance*> appearances;
+
+  Mat backCanvas = Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3);
+  
   for (int n=0; n<num; n++)
   {
     auto newShape = MeshShape(baseShape);
@@ -86,6 +89,14 @@ inline unique_ptr<AppearanceCollection> initialAppearanceCollection(int num, int
     // Create an appearance on the base shape
     // then warp it onto the new shape with random noise added
     auto app = new Appearance(baseShape, baseTexture);
+
+    // TAODEBUG:
+    auto ioShape = IO::WindowIO("generated mesh");
+    auto ioDebug = IO::WindowIO("generated appearance");
+    newShape.render(&ioShape, backCanvas);
+    app->render(&ioDebug, backCanvas);
+    waitKey(0);
+
     app->realignTo(newShape); // TAOTODO: Does this work?
     appearances.push_back(app);
   }

@@ -5,6 +5,7 @@
 #include "IO.h"
 #include "aux.h"
 
+// TAOTODO: Should also hold "indices" for easier reference
 class Triangle
 {
 public:

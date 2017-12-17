@@ -31,9 +31,6 @@ const bool MeshShape::isInside(const Point2d& p) const
 
 void MeshShape::resubdiv()
 {
-  #ifdef DEBUG
-  cout << "MeshShape::resubdiv" << endl;
-  #endif
   double minX, minY, maxX, maxY;
   minMaxLoc(this->mat.col(0), &minX, &maxX);
   minMaxLoc(this->mat.col(1), &minY, &maxY);
@@ -43,12 +40,16 @@ void MeshShape::resubdiv()
     (int)floor(minY-margin), 
     (int)ceil(maxX-minX+margin*2), 
     (int)ceil(maxY-minY+margin*2));
+
+  #ifdef DEBUG
+  cout << "MeshShape::resubdiv ~ " << this->bound << endl;
+  #endif
+
   this->subdiv = Subdiv2D(bound);
 
   const int N = this->mat.rows;
   for (int j=0; j<N; j++)
   {
-    this->vertexToTriangles.insert(make_pair(j, vector<int>()));
     this->subdiv.insert(Point2f(
       (float)this->mat.at<double>(j,0), 
       (float)this->mat.at<double>(j,1)));
@@ -73,11 +74,12 @@ Mat MeshShape::convexFill() const
 
 const int MeshShape::findIndex(const Point2d& p) const
 {
+  const double PRECISION = 1e5;
   int rows = this->mat.rows;
   for (int j=0; j<rows; j++)
   {
-    if (this->mat.at<double>(j,0) == p.x &&
-      this->mat.at<double>(j,1) == p.y)
+    if (abs(this->mat.at<double>(j,0) - p.x) <= PRECISION &&
+      abs(this->mat.at<double>(j,1) - p.y) <= PRECISION)
       {
         return j;
       }
@@ -91,12 +93,19 @@ const int MeshShape::findIndex(const Point2d& p) const
 
 vector<Triangle> MeshShape::getTriangles() const
 {
+  if (this->trianglesCache.size() > 0)
+  {
+    return this->trianglesCache;
+  }
+
   vector<Vec6f> triangles;
   this->subdiv.getTriangleList(triangles);
 
+  // Regenerate subdiv plan if hasn't
+  bool toGenerateSubDivPlan = (this->div.size()==0);
+
   Mat hullFill = this->convexFill();
-  vector<Triangle> output;
-  priority_queue<SumIndicesToTriangle, vector<SumIndicesToTriangle>,SumIndicesCompare> q;
+  int ti = 0;
   for (auto tr:triangles)
   {
     auto a = Point2d(tr[0], tr[1]);
@@ -111,22 +120,22 @@ vector<Triangle> MeshShape::getTriangles() const
         hullFill.at<unsigned char>(c.y, c.x) > 0)
     {
       vector<Point2d> pairs = {a,b,c};
-      int ai = findIndex(a); // TAOTOREVIEW: This operation takes O(N) in the worst case
-      int bi = findIndex(b);
-      int ci = findIndex(c);
-      int sumIndices = ai + bi + ci;
-      q.push(make_tuple(sumIndices, Triangle(pairs)));
+      if (toGenerateSubDivPlan)
+      {
+        int ai = findIndex(a); // TAOTOREVIEW: This operation takes O(N) in the worst case
+        int bi = findIndex(b);
+        int ci = findIndex(c);
+        this->div.push_back(make_tuple(ai, bi, ci));
+        ++ti;
+      }
+      trianglesCache.push_back(Triangle(pairs));
     }
   }
 
-  // Convert the ordered triangles 
-  while (!q.empty())  
-  {
-    output.push_back(get<1>(q.top()));
-    q.pop();
-  }
-
-  return output;
+  #ifdef DEBUG
+  if (toGenerateSubDivPlan) cout << "Subdiv plan generated" << endl;
+  #endif
+  return trianglesCache;
 }
 
 Mat MeshShape::render(IO::GenericIO* io, Mat background, double scaleFactor, Point2d recentre) const
@@ -166,6 +175,16 @@ Mat MeshShape::render(IO::GenericIO* io, Mat background, double scaleFactor, Poi
 
 void MeshShape::addRandomNoise(const Point2d& maxDisplacement)
 {
+  // Make sure the cache of triangles are generated before applying the noise
+  getTriangleList();
+
   Shape::addRandomNoise(maxDisplacement);
-  resubdiv();
+  
+  // Re-update the positions of all triangle vertices
+  // NOTE: The subdiv plan cache won't change at all
+  for (auto t : trianglesCache)
+  { 
+    // TAOTODO:
+    
+  }
 }

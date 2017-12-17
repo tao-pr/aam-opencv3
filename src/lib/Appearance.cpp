@@ -18,6 +18,10 @@ Appearance::Appearance(const MeshShape& shape, const Mat& img)
 
 void Appearance::reinitTextures()
 {
+  #ifdef DEBUG
+  cout << "Appearance::reinitTextures" << endl;
+  #endif
+
   this->textureList.clear();  
   auto triangles = this->mesh.getTriangles();
 
@@ -47,6 +51,11 @@ Mat Appearance::render(IO::GenericIO* io, Mat background, bool withVertices, boo
   Size size = background.size();
   Mat canvas = Mat(size.height, size.width, CV_64FC3);
   background.copyTo(canvas);
+
+  #ifdef DEBUG
+  if (this->textureList.size()==0)
+    cout << YELLOW << "Texture list is empty, unable to render anything." << RESET << endl;
+  #endif
 
   for (auto texture : this->textureList)
   {
