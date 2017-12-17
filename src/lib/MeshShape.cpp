@@ -33,14 +33,17 @@ void MeshShape::resubdiv()
     (int)ceil(maxX-minX+margin*2), 
     (int)ceil(maxY-minY+margin*2));
   this->subdiv = Subdiv2D(bound);
+  this->vertexToTriangles.clear();
 
   const int N = this->mat.rows;
   for (int j=0; j<N; j++)
   {
+    this->vertexToTriangles.insert(make_pair(j, vector<int>()));
     this->subdiv.insert(Point2f(
       (float)this->mat.at<double>(j,0), 
       (float)this->mat.at<double>(j,1)));
   }
+  // TAOTODO: Show the mapping of vertex when on debug mode
 }
 
 int MeshShape::numTriangles() const
@@ -59,6 +62,18 @@ Mat MeshShape::convexFill() const
   return hullFill;
 }
 
+const int MeshShape::findIndex(const Point2d& p) const
+{
+  int rows = this->mat.rows;
+  for (int j=0; j<rows; j++)
+  {
+    if (this->mat.at<double>(j,0) == p.x &&
+      this->mat.at<double>(j,1) == p.y)
+      return j;
+  }
+  throw new domain_error("The point is not locatable inside the current shape");
+}
+
 vector<Triangle> MeshShape::getTriangles() const
 {
   vector<Vec6f> triangles;
@@ -66,6 +81,7 @@ vector<Triangle> MeshShape::getTriangles() const
 
   Mat hullFill = this->convexFill();
   vector<Triangle> output;
+  priority_queue<SumIndicesToTriangle, vector<SumIndicesToTriangle>,SumIndicesCompare> q;
   for (auto tr:triangles)
   {
     auto a = Point2d(tr[0], tr[1]);
@@ -76,13 +92,26 @@ vector<Triangle> MeshShape::getTriangles() const
         hullFill.at<unsigned char>(b.y, b.x) > 0 &&
         hullFill.at<unsigned char>(c.y, c.x) > 0)
     {
-      vector<Point2d> pairs = {
-        Point2d(a.x, a.y), 
-        Point2d(b.x, b.y), 
-        Point2d(c.x, c.y)};
-      output.push_back(Triangle(pairs));
+      vector<Point2d> pairs = {a,b,c};
+        // Point2d(a.x, a.y), 
+        // Point2d(b.x, b.y), 
+        // Point2d(c.x, c.y)};
+      //output.push_back(Triangle(pairs));
+      int ai = findIndex(a); // TAOTOREVIEW: This operation takes O(N) in the worst case
+      int bi = findIndex(b);
+      int ci = findIndex(c);
+      int sumIndices = ai + bi + ci;
+      q.push(make_tuple(sumIndices, Triangle(pairs)));
     }
   }
+
+  // Convert the ordered triangles 
+  while (!q.empty())  
+  {
+    output.push_back(get<1>(q.top()));
+    q.pop();
+  }
+
   return output;
 }
 
@@ -119,4 +148,12 @@ Mat MeshShape::render(IO::GenericIO* io, Mat background, double scaleFactor, Poi
   Draw::drawSpots(canvas, this->toPoints(), Scalar(0,240,255));
   io->render(canvas);
   return canvas;
+}
+
+void MeshShape::moveVertex(int i, const Point2d& displacement)
+{
+  auto oldVertex = Point2d(mat.at<double>(i,0), mat.at<double>(i,1));
+  Shape::moveVertex(i, displacement);
+  
+  // TAOTODO: Re-adjust the subdiv2d
 }
