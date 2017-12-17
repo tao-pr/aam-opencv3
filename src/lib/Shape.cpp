@@ -220,7 +220,6 @@ void Shape::addRandomNoise(const Point2d& maxDisplacement)
     double ny2 = maxDisplacement.y/2 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
     moveVertex(j, Point2d(nx1 - nx2, ny1 - ny2));
   }
-  // TAOTODO: Then adjust the triangulation on the fly (if it is an instance of a MeshShape)
 }
 
 void Shape::moveVertex(int i, const Point2d& displacement)

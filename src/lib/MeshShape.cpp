@@ -21,8 +21,19 @@ MeshShape::MeshShape(const Shape& shape)
   MeshShape(shape.mat); // resubdiv is called automatically
 }
 
+const bool MeshShape::isInside(const Point2d& p) const
+{
+  return p.x >= bound.x &&
+    p.x < bound.x + bound.width && 
+    p.y >= bound.y && 
+    p.y < bound.y + bound.height;
+}
+
 void MeshShape::resubdiv()
 {
+  #ifdef DEBUG
+  cout << "MeshShape::resubdiv" << endl;
+  #endif
   double minX, minY, maxX, maxY;
   minMaxLoc(this->mat.col(0), &minX, &maxX);
   minMaxLoc(this->mat.col(1), &minY, &maxY);
@@ -33,7 +44,6 @@ void MeshShape::resubdiv()
     (int)ceil(maxX-minX+margin*2), 
     (int)ceil(maxY-minY+margin*2));
   this->subdiv = Subdiv2D(bound);
-  this->vertexToTriangles.clear();
 
   const int N = this->mat.rows;
   for (int j=0; j<N; j++)
@@ -43,7 +53,6 @@ void MeshShape::resubdiv()
       (float)this->mat.at<double>(j,0), 
       (float)this->mat.at<double>(j,1)));
   }
-  // TAOTODO: Show the mapping of vertex when on debug mode
 }
 
 int MeshShape::numTriangles() const
@@ -69,8 +78,14 @@ const int MeshShape::findIndex(const Point2d& p) const
   {
     if (this->mat.at<double>(j,0) == p.x &&
       this->mat.at<double>(j,1) == p.y)
-      return j;
+      {
+        return j;
+      }
   }
+  #ifdef DEBUG
+  cout << RED << p << " can't be located in the following Matrix" << RESET << endl;
+  cout << this->mat << endl;
+  #endif
   throw new domain_error("The point is not locatable inside the current shape");
 }
 
@@ -88,15 +103,14 @@ vector<Triangle> MeshShape::getTriangles() const
     auto b = Point2d(tr[2], tr[3]);
     auto c = Point2d(tr[4], tr[5]);
     
-    if (hullFill.at<unsigned char>(a.y, a.x) > 0 && 
+    // NOTE: the vertex which lies outside of the visual boundary 
+    //      will not be taken into consideration
+    if (isInside(a) && isInside(b) && isInside(c) &&
+        hullFill.at<unsigned char>(a.y, a.x) > 0 && 
         hullFill.at<unsigned char>(b.y, b.x) > 0 &&
         hullFill.at<unsigned char>(c.y, c.x) > 0)
     {
       vector<Point2d> pairs = {a,b,c};
-        // Point2d(a.x, a.y), 
-        // Point2d(b.x, b.y), 
-        // Point2d(c.x, c.y)};
-      //output.push_back(Triangle(pairs));
       int ai = findIndex(a); // TAOTOREVIEW: This operation takes O(N) in the worst case
       int bi = findIndex(b);
       int ci = findIndex(c);
@@ -150,10 +164,8 @@ Mat MeshShape::render(IO::GenericIO* io, Mat background, double scaleFactor, Poi
   return canvas;
 }
 
-void MeshShape::moveVertex(int i, const Point2d& displacement)
+void MeshShape::addRandomNoise(const Point2d& maxDisplacement)
 {
-  auto oldVertex = Point2d(mat.at<double>(i,0), mat.at<double>(i,1));
-  Shape::moveVertex(i, displacement);
-  
-  // TAOTODO: Re-adjust the subdiv2d
+  Shape::addRandomNoise(maxDisplacement);
+  resubdiv();
 }

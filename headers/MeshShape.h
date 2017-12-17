@@ -27,6 +27,7 @@ class MeshShape : public Shape
 private:
   void resubdiv();
   const int findIndex(const Point2d& p) const;
+  const bool isInside(const Point2d& p) const;
 
 protected:
   Subdiv2D subdiv;
@@ -50,7 +51,7 @@ public:
   Mat render(IO::GenericIO* io, Mat background, double scaleFactor=1.0, Point2d recentre=Point2d(0,0)) const;
 
   //------ Operators --------
-  virtual void moveVertex(int i, const Point2d& displacement);
+  virtual void addRandomNoise(const Point2d& maxDisplacement);
 };
 
 #endif
