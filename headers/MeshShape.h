@@ -19,12 +19,13 @@ private:
 
 protected:
   vector<Triangle> trianglesCache; // Triangle[i]
-  vector<tuple<int,int,int>> divCache; // Triangle[i] => List of vertex ids 
+  vector<vector<int>> mapVertexToTriangles; // triangle id => List of associated triangle ID
 
   Subdiv2D subdiv;
   Rect bound;
 
   void repopulateCache();
+  void addVertexMap(int vi, int ti);
 
 public:
   MeshShape() : Shape(){};

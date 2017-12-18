@@ -15,7 +15,7 @@ MeshShape::MeshShape(const MeshShape& original)
   this->mat = original.mat.clone();
   this->subdiv = original.subdiv;
   this->trianglesCache = original.trianglesCache;
-  this->divCache = original.divCache;
+  this->mapVertexToTriangles = original.mapVertexToTriangles;
 }
 
 MeshShape::MeshShape(const Shape& shape)
@@ -90,6 +90,13 @@ const int MeshShape::findIndex(const Point2d& p) const
   throw new domain_error("The point is not locatable inside the current shape");
 }
 
+void MeshShape::addVertexMap(int vi, int ti)
+{
+  vector<int> empty;
+  while (this->mapVertexToTriangles.size()<=vi) this->mapVertexToTriangles.push_back(empty);
+  this->mapVertexToTriangles[vi].push_back(ti);
+}
+
 void MeshShape::repopulateCache()
 {
   #ifdef DEBUG
@@ -97,7 +104,7 @@ void MeshShape::repopulateCache()
   #endif
 
   this->trianglesCache.clear();
-  this->divCache.clear();
+  this->mapVertexToTriangles.clear();
 
   vector<Vec6f> triangles;
   this->subdiv.getTriangleList(triangles);
@@ -121,19 +128,27 @@ void MeshShape::repopulateCache()
       int ai = findIndex(a); // TAOTOREVIEW: This operation takes O(N) in the worst case
       int bi = findIndex(b);
       int ci = findIndex(c);
-      this->divCache.push_back(make_tuple(ai, bi, ci));
-      
-      // TAODEBUG:
-      cout << "[" << ti << "] : " << ai << "," << bi << "," << ci << endl;
-
       trianglesCache.push_back(Triangle(pairs, ai, bi, ci));
+      addVertexMap(ai, ti);
+      addVertexMap(bi, ti);
+      addVertexMap(ci, ti);
       ++ti;
     }
   }
 
   #ifdef DEBUG
-  cout << this->divCache.size() << " divisions stored in cache" << endl;
   cout << this->trianglesCache.size() << " triangles stored in cache" << endl;
+  cout << this->mapVertexToTriangles.size() << "vertices stored in cache" << endl;
+  cout << CYAN << "[Vertex -> Triangle]" << RESET << endl;
+  int n = 0;
+  for (auto vm : mapVertexToTriangles)
+  {
+    cout << "v# " << n  << " ~~ ";
+    for (auto v : vm) 
+      cout << v << ",";
+    cout << endl;
+    ++n;
+  }
   #endif
 }
 
@@ -177,30 +192,19 @@ Mat MeshShape::render(IO::GenericIO* io, Mat background, double scaleFactor, Poi
 
 void MeshShape::moveVertex(int i, const Point2d& displacement)
 {
+  assert(i < this->mapVertexToTriangles.size());
   Shape::moveVertex(i, displacement);
-  // Find out which triangles are affected by this movement
-  int n = 0;
-  for (auto tr : this->trianglesCache)
+  // Update affected triangles
+  for (auto ti : this->mapVertexToTriangles[i])
   {
-    int idx = -1;
-    for (int i=0; i<3; i++)
-      if ((int)(tr.vertices.at<double>(2,i))==i)
+    for (int k=0; k<3; k++)
+    {
+      if (this->trianglesCache[ti].ids.at<int>(k,0)==i)
       {
-        idx = i;
+        this->trianglesCache[ti].vertices.at<double>(k,0) += displacement.x;  
+        this->trianglesCache[ti].vertices.at<double>(k,1) += displacement.y; 
         break;
       }
-
-    if (idx != -1)
-    {
-      #ifdef DEBUG
-      cout << tr.vertices << endl;
-      //cout << "moveVertex [" << i << "] ~ triangle [" << n << "][" << idx << "]" << endl;
-      #endif
-
-      // TAOTODO:
-
     }
-
-    ++n;
   }
 }
