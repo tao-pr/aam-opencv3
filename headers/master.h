@@ -14,6 +14,7 @@
 #include <time.h>
 #include <math.h>
 #include <assert.h>
+#include <algorithm>
 #include <fmt/format.h>
 #include <stdio.h>
 #include <dirent.h>

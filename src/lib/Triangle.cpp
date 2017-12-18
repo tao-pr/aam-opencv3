@@ -1,13 +1,24 @@
 #include "Triangle.h"
 
-Triangle::Triangle(const vector<Point2d>& v)
+Triangle::Triangle(const vector<Point2d>& v, int a, int b, int c)
 {
   this->vertices = Mat(3, 2, CV_64FC1);
+  this->ids = Mat(3, 1, CV_8UC1);
+  int vids[3] = {a, b, c};
   for (int n=0; n<3; n++)
   {
     this->vertices.at<double>(n,0) = v[n].x;
     this->vertices.at<double>(n,1) = v[n].y;
+    this->ids.at<int>(n,0) = vids[n];
   }
+}
+
+Triangle::Triangle(const Mat& v, const Mat& id)
+{
+  this->vertices = Mat(3, 2, CV_64FC1);
+  this->ids = Mat(3, 1, CV_8UC1);
+  v.copyTo(this->vertices);
+  id.copyTo(this->ids);
 }
 
 Triangle Triangle::operator >>(const Point2d &displacement) const
@@ -18,7 +29,7 @@ Triangle Triangle::operator >>(const Point2d &displacement) const
     dist.at<double>(i,0) = displacement.x;
     dist.at<double>(i,1) = displacement.y;
   }
-  return Triangle(this->vertices + dist);
+  return Triangle(this->vertices + dist, this->ids);
 }
 
 Triangle Triangle::operator <<(const Point2d &displacement) const
@@ -28,8 +39,9 @@ Triangle Triangle::operator <<(const Point2d &displacement) const
   {
     dist.at<double>(i,0) = displacement.x;
     dist.at<double>(i,1) = displacement.y;
+    dist.at<double>(i,2) = 0;
   }
-  return Triangle(this->vertices - dist);
+  return Triangle(this->vertices - dist, this->ids);
 }
 
 void Triangle::boundary(double& minX, double& minY, double& maxX, double& maxY) const

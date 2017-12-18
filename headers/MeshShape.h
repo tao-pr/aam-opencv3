@@ -10,11 +10,6 @@
 #include "Shape.h"
 #include "Triangle.h"
 
-/**
- * Mapping from triangle [i] => associated group of vertices (by Ids in Mat)
- */
-typedef vector<tuple<int,int,int>> SubdivPlan;
-
 class MeshShape : public Shape 
 {
 private:
@@ -23,11 +18,13 @@ private:
   const bool isInside(const Point2d& p) const;
 
 protected:
-  vector<Triangle> trianglesCache;
-  SubdivPlan divCache;
-  
+  vector<Triangle> trianglesCache; // Triangle[i]
+  vector<tuple<int,int,int>> divCache; // Triangle[i] => List of vertex ids 
+
   Subdiv2D subdiv;
   Rect bound;
+
+  void repopulateCache();
 
 public:
   MeshShape() : Shape(){};
@@ -37,8 +34,8 @@ public:
   MeshShape(const Shape& shape);
   virtual inline ~MeshShape(){};
 
-  int numTriangles() const;
-  vector<Triangle> getTriangles() const;
+  inline int numTriangles() const { return this->trianglesCache.size(); };
+  inline const vector<Triangle>& getTriangles() const { return this->trianglesCache; };
   inline Rect getBound() const { return this->bound; };
   Mat convexFill() const;
 
@@ -46,7 +43,7 @@ public:
   Mat render(IO::GenericIO* io, Mat background, double scaleFactor=1.0, Point2d recentre=Point2d(0,0)) const;
 
   //------ Operators --------
-  virtual void addRandomNoise(const Point2d& maxDisplacement);
+  virtual void moveVertex(int i, const Point2d& displacement);
 };
 
 #endif
