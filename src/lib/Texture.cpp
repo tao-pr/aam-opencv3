@@ -12,16 +12,17 @@ void Texture::load(const string path)
 
 Mat Texture::render(IO::GenericIO* io, Mat background, bool withVertices, bool withEdges, double scaleFactor, Point2d recentre) const
 {
+  assert(this->vertexRef != nullptr);
   Mat canvas = background.clone();
   double a,b,c,d;
-  this->bound.boundary(a,b,c,d);
-  const vector<Point2d> vertices = this->bound.toVector();
+  this->bound.boundary(*this->vertexRef,a,b,c,d);
+  const vector<Point2d> vertices = this->bound.toVector(*this->vertexRef);
 
   Rect boundary((int)floor(a), (int)floor(b), (int)floor(c), (int)floor(d));
 
   // Draw the masking region
   auto triangle = new Point[3];
-  this->bound.toIntArray(triangle);
+  this->bound.toIntArray(triangle,*this->vertexRef);
   Mat mask = Mat::zeros(boundary.height, boundary.width, CV_8UC1);
   const int counters[] = {3};
   const Point* triangles[] = {&triangle[0], &triangle[0]+3};
@@ -52,19 +53,27 @@ Mat Texture::render(IO::GenericIO* io, Mat background, bool withVertices, bool w
  * Piece-wise affine transformation.
  * Warping the texture to a new triangular boundary.
  */
-Texture Texture::realignTo(const Triangle &newBound, Mat* dest) const
+Texture Texture::realignTo(const Triangle &newBound, Mat* newVertexRef, Mat* dest) const
 {
   assert(this->img->type() == dest->type());
   double minX, minY, maxX, maxY;
-  newBound.boundary(minX, minY, maxX, maxY);
+  newBound.boundary(*newVertexRef,minX, minY, maxX, maxY);
 
   Mat R( 2, 3, CV_64FC1 );
-  auto srcTriangle  = this->bound.toFloatVector();
-  auto destTriangle = newBound.toFloatVector();
+  auto srcTriangle  = this->bound.toFloatVector(*this->vertexRef);
+  auto destTriangle = newBound.toFloatVector(*newVertexRef);
   Rect srcRect      = boundingRect(srcTriangle);
   Rect destRect     = boundingRect(destTriangle);
   Size srcSize      = Size(srcRect.width, srcRect.height);
   Size destSize     = Size(destRect.width, destRect.height);
+
+  #ifdef DEBUG
+  cout << "[Re-aligning texture]" << endl;
+  cout << "... " << srcTriangle << endl;
+  cout << "[to]" << endl;
+  cout << "... " << destTriangle << endl << endl;
+  #endif
+
 
   // Crop the source by the bounding rectangle
   Mat im = *this->img;
@@ -112,5 +121,5 @@ Texture Texture::realignTo(const Triangle &newBound, Mat* dest) const
     }
 
   delete[] triangle;
-  return Texture(newBound, dest);
+  return Texture(newBound, newVertexRef, dest);
 }

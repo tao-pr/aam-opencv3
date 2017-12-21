@@ -19,7 +19,6 @@ private:
 
 protected:
   vector<Triangle> trianglesCache; // Triangle[i]
-  vector<vector<int>> mapVertexToTriangles; // triangle id => List of associated triangle ID
 
   Subdiv2D subdiv;
   Rect bound;

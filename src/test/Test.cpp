@@ -135,42 +135,35 @@ void testTexture(char** argv)
   Mat plane = original(crop);
 
   // Source triangle coordinates
-  vector<Point2d> A0
-  {
-    Point2d(0, 0),
-    Point2d(plane.cols-1, 0),
-    Point2d(0, plane.rows-1),
+  double sourceData[] = {
+    0, 0,            // triangle 1
+    (double)plane.cols-1, 0,
+    0, (double)plane.rows-1,
+    (double)plane.cols-1, 0, // triangle 2
+    (double)plane.cols-1, (double)plane.rows-1,
+    0, (double)plane.rows-1
   };
-  vector<Point2d> A1
-  {
-    Point2d(plane.cols-1, 0),
-    Point2d(plane.cols-1, plane.rows-1),
-    Point2d(0, plane.rows-1)
-  };
-  auto source = {A0, A1};
+  Mat source(6, 2, CV_64FC1, sourceData) ;
 
   // Destination triangle coordinates
-  const vector<Point2d> B0
-  {
-    Point2d(25, 25),
-    Point2d(200, 75),
-    Point2d(140, 350)
+  double destData[] = {
+    25, 25,   // triangle 1
+    200, 75,
+    140, 350,
+    200, 75,  // triangle 2
+    250, 350,
+    140, 350
   };
-  const vector<Point2d> B1
-  {
-    Point2d(200, 75),
-    Point2d(250, 350),
-    Point2d(140, 350)
-  };
-  vector<vector<Point2d>> dest = {B0, B1};
+  Mat dest(6, 2, CV_64FC1, destData);
 
   // Source texture to warp
   Mat p = plane;
   IO::WindowIO ioT("source");
   vector<Texture> textures;
-  for (auto t:source)
+  for (int n=0; n<2; n++)
   {
-    Texture tx(Triangle(t), &plane);
+    int vx[3] = {n*3, n*3+1, n*3+2};
+    Texture tx(Triangle(vx[0], vx[1], vx[2]), &source, &plane);
     p = tx.render(&ioT, p, true, true);
     textures.push_back(tx);
   }
@@ -181,15 +174,12 @@ void testTexture(char** argv)
 
   IO::WindowIO ioAligned("aligned");
   Mat background = Mat(sizeAligned, CV_8UC3, Scalar(0,10,60));
-  for (int i=0; i<dest.size(); i++)
+  for (int n=0; n<2; n++)
   {
-    Triangle destTriangle(dest[i]);
-    cout << "-------------------------" << endl;
-    cout << "Aligning #[" << i << "]" << endl;
-    cout << textures[i].bound.vertices << endl;
-    cout << "to => " << endl;
-    cout << destTriangle.vertices << endl;
-    auto texture_ = textures[i].realignTo(destTriangle, &canvas);
+    cout << "Drawing triangle #" << n << endl;
+    int vx[3] = {n*3, n*3+1, n*3+2};
+    Triangle destTriangle(vx[0], vx[1], vx[2]);
+    auto texture_ = textures[n].realignTo(destTriangle, &dest, &canvas);
     background = texture_.render(&ioAligned, background, true, true);
   }
 
@@ -243,13 +233,13 @@ int main(int argc, char** argv)
   // waitKey(0);
   // destroyAllWindows();
 
-  // testTexture(argv);
+  testTexture(argv);
 
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to appearance testing " << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
-  // waitKey(0);
-  // destroyAllWindows();
+  waitKey(0);
+  destroyAllWindows();
   
   testAppearance();
 

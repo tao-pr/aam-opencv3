@@ -27,7 +27,7 @@ void Appearance::reinitTextures()
 
   for (auto triangle : triangles)
   {
-    this->textureList.push_back(Texture(triangle, &this->graphic));
+    this->textureList.push_back(Texture(triangle, &mesh.mat, &this->graphic));
   }
 }
 

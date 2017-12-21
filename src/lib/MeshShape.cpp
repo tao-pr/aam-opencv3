@@ -15,7 +15,6 @@ MeshShape::MeshShape(const MeshShape& original)
   this->mat = original.mat.clone();
   this->subdiv = original.subdiv;
   this->trianglesCache = original.trianglesCache;
-  this->mapVertexToTriangles = original.mapVertexToTriangles;
 }
 
 MeshShape::MeshShape(const Shape& shape)
@@ -90,13 +89,6 @@ const int MeshShape::findIndex(const Point2d& p) const
   throw new domain_error("The point is not locatable inside the current shape");
 }
 
-void MeshShape::addVertexMap(int vi, int ti)
-{
-  vector<int> empty;
-  while (this->mapVertexToTriangles.size()<=vi) this->mapVertexToTriangles.push_back(empty);
-  this->mapVertexToTriangles[vi].push_back(ti);
-}
-
 void MeshShape::repopulateCache()
 {
   #ifdef DEBUG
@@ -104,7 +96,6 @@ void MeshShape::repopulateCache()
   #endif
 
   this->trianglesCache.clear();
-  this->mapVertexToTriangles.clear();
 
   vector<Vec6f> triangles;
   this->subdiv.getTriangleList(triangles);
@@ -124,32 +115,13 @@ void MeshShape::repopulateCache()
         hullFill.at<unsigned char>(b.y, b.x) > 0 &&
         hullFill.at<unsigned char>(c.y, c.x) > 0)
     {
-      vector<Point2d> pairs = {a,b,c};
       int ai = findIndex(a); // TAOTOREVIEW: This operation takes O(N) in the worst case
       int bi = findIndex(b);
       int ci = findIndex(c);
-      trianglesCache.push_back(Triangle(pairs, ai, bi, ci));
-      addVertexMap(ai, ti);
-      addVertexMap(bi, ti);
-      addVertexMap(ci, ti);
+      trianglesCache.push_back(Triangle(ai, bi, ci));
       ++ti;
     }
   }
-
-  #ifdef DEBUG
-  cout << this->trianglesCache.size() << " triangles stored in cache" << endl;
-  cout << this->mapVertexToTriangles.size() << "vertices stored in cache" << endl;
-  cout << CYAN << "[Vertex -> Triangle]" << RESET << endl;
-  int n = 0;
-  for (auto vm : mapVertexToTriangles)
-  {
-    cout << "v# " << n  << " ~~ ";
-    for (auto v : vm) 
-      cout << v << ",";
-    cout << endl;
-    ++n;
-  }
-  #endif
 }
 
 Mat MeshShape::render(IO::GenericIO* io, Mat background, double scaleFactor, Point2d recentre) const
@@ -168,7 +140,7 @@ Mat MeshShape::render(IO::GenericIO* io, Mat background, double scaleFactor, Poi
   // Render edges
   for (auto tr : triangles)
   {
-    const auto vec = tr.toVector();
+    const auto vec = tr.toVector(this->mat);
     const auto a = vec[0];
     const auto b = vec[1];
     const auto c = vec[2];
@@ -192,19 +164,5 @@ Mat MeshShape::render(IO::GenericIO* io, Mat background, double scaleFactor, Poi
 
 void MeshShape::moveVertex(int i, const Point2d& displacement)
 {
-  assert(i < this->mapVertexToTriangles.size());
   Shape::moveVertex(i, displacement);
-  // Update affected triangles
-  for (auto ti : this->mapVertexToTriangles[i])
-  {
-    for (int k=0; k<3; k++)
-    {
-      if (this->trianglesCache[ti].ids.at<int>(k,0)==i)
-      {
-        this->trianglesCache[ti].vertices.at<double>(k,0) += displacement.x;  
-        this->trianglesCache[ti].vertices.at<double>(k,1) += displacement.y; 
-        break;
-      }
-    }
-  }
 }

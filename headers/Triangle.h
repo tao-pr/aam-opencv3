@@ -5,31 +5,27 @@
 #include "IO.h"
 #include "aux.h"
 
-// TAOTODO: Should also hold "indices" for easier reference
+/**
+ * [Triangle] class only stores the vertex ids 
+ */
 class Triangle
 {
 public:
-  Mat vertices; // 3 x 2 : vertex coordinates
-  Mat ids; // 3 x 1 : vertex ids
+  int a, b, c;
 
-  Triangle(const vector<Point2d>& v, int a=-1, int b=-1, int c=-1);
-  Triangle(const Mat& v, const Mat& id);
+  inline Triangle(int v1, int v2, int v3) : a(v1), b(v2), c(v3) {};
   inline ~Triangle(){};
 
-  inline Point2d get(int i) const { return Point2d(vertices.at<double>(i,0), vertices.at<double>(i,1)); }
-  void boundary(double& minX, double& minY, double& maxX, double& maxY) const;
-  double minX() const;
-  double minY() const;
-  double maxX() const;
-  double maxY() const;
+  inline int get(int i) const { int w[3] = {a,b,c}; return w[i]; };
+  void boundary(const Mat &m, double& minX, double& minY, double& maxX, double& maxY) const;
 
-  vector<Point2f> toFloatVector() const;
-  vector<Point2d> toVector() const;
-  void toIntArray(Point* p) const;
-  Rect boundingRect() const;
+  vector<Point2f> toFloatVector(const Mat& mat) const;
+  vector<Point2d> toVector(const Mat& mat) const;
+  void toIntArray(Point* p, const Mat& mat) const;
+  Rect boundingRect(const Mat& m) const;
 
-  Triangle operator >>(const Point2d &displacement) const;
-  Triangle operator <<(const Point2d &displacement) const;
+  // Triangle operator >>(const Point2d &displacement) const;
+  // Triangle operator <<(const Point2d &displacement) const;
 };
 
 #endif

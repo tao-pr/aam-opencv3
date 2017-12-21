@@ -1,50 +1,29 @@
 #include "Triangle.h"
 
-Triangle::Triangle(const vector<Point2d>& v, int a, int b, int c)
-{
-  this->vertices = Mat(3, 2, CV_64FC1);
-  this->ids = Mat(3, 1, CV_8UC1);
-  int vids[3] = {a, b, c};
-  for (int n=0; n<3; n++)
-  {
-    this->vertices.at<double>(n,0) = v[n].x;
-    this->vertices.at<double>(n,1) = v[n].y;
-    this->ids.at<int>(n,0) = vids[n];
-  }
-}
+// Triangle Triangle::operator >>(const Point2d &displacement) const
+// {
+//   Mat dist = Mat(3, 2, CV_64FC1);
+//   for (int i=0; i<3; i++)
+//   {
+//     dist.at<double>(i,0) = displacement.x;
+//     dist.at<double>(i,1) = displacement.y;
+//   }
+//   return Triangle(this->vertices + dist, this->ids);
+// }
 
-Triangle::Triangle(const Mat& v, const Mat& id)
-{
-  this->vertices = Mat(3, 2, CV_64FC1);
-  this->ids = Mat(3, 1, CV_8UC1);
-  v.copyTo(this->vertices);
-  id.copyTo(this->ids);
-}
+// Triangle Triangle::operator <<(const Point2d &displacement) const
+// {
+//   Mat dist = Mat(3, 2, CV_64FC1);
+//   for (int i=0; i<3; i++)
+//   {
+//     dist.at<double>(i,0) = displacement.x;
+//     dist.at<double>(i,1) = displacement.y;
+//     dist.at<double>(i,2) = 0;
+//   }
+//   return Triangle(this->vertices - dist, this->ids);
+// }
 
-Triangle Triangle::operator >>(const Point2d &displacement) const
-{
-  Mat dist = Mat(3, 2, CV_64FC1);
-  for (int i=0; i<3; i++)
-  {
-    dist.at<double>(i,0) = displacement.x;
-    dist.at<double>(i,1) = displacement.y;
-  }
-  return Triangle(this->vertices + dist, this->ids);
-}
-
-Triangle Triangle::operator <<(const Point2d &displacement) const
-{
-  Mat dist = Mat(3, 2, CV_64FC1);
-  for (int i=0; i<3; i++)
-  {
-    dist.at<double>(i,0) = displacement.x;
-    dist.at<double>(i,1) = displacement.y;
-    dist.at<double>(i,2) = 0;
-  }
-  return Triangle(this->vertices - dist, this->ids);
-}
-
-void Triangle::boundary(double& minX, double& minY, double& maxX, double& maxY) const
+void Triangle::boundary(const Mat& m, double& minX, double& minY, double& maxX, double& maxY) const
 {
   minX = numeric_limits<double>::max();
   minY = numeric_limits<double>::max();
@@ -52,8 +31,8 @@ void Triangle::boundary(double& minX, double& minY, double& maxX, double& maxY) 
   maxX = -numeric_limits<double>::max();
   for (int i=0; i<3; i++)
   {
-    double x = this->vertices.at<double>(i,0);
-    double y = this->vertices.at<double>(i,1);
+    double x = m.at<double>(i,0);
+    double y = m.at<double>(i,1);
     minX = x < minX ? x : minX;
     minY = y < minY ? y : minY;
     maxX = x > maxX ? x : maxX;
@@ -61,71 +40,43 @@ void Triangle::boundary(double& minX, double& minY, double& maxX, double& maxY) 
   }
 }
 
-double Triangle::minX() const
+Rect Triangle::boundingRect(const Mat& mat) const
 {
   double a,b,c,d;
-  boundary(a,b,c,d);
-  return a;
-}
-
-double Triangle::minY() const
-{
-  double a,b,c,d;
-  boundary(a,b,c,d);
-  return b;
-}
-
-double Triangle::maxX() const
-{
-  double a,b,c,d;
-  boundary(a,b,c,d);
-  return c;
-}
-
-double Triangle::maxY() const
-{
-  double a,b,c,d;
-  boundary(a,b,c,d);
-  return d;
-}
-
-Rect Triangle::boundingRect() const
-{
-  double a,b,c,d;
-  boundary(a,b,c,d);
+  boundary(mat,a,b,c,d);
   return Rect(a,b,c-a,d-b);
 }
 
-vector<Point2f> Triangle::toFloatVector() const
+vector<Point2f> Triangle::toFloatVector(const Mat& mat) const
 {
   vector<Point2f> v;
   for (int i=0; i<3; i++)
   {
     // Enforce double => float implication
-    float x = vertices.at<double>(i,0);
-    float y = vertices.at<double>(i,1);
+    float x = mat.at<double>(i,0);
+    float y = mat.at<double>(i,1);
     v.push_back(Point2f(x, y));
   }
   return v;
 }
 
-vector<Point2d> Triangle::toVector() const
+vector<Point2d> Triangle::toVector(const Mat& mat) const
 {
   vector<Point2d> v;
   for (int i=0; i<3; i++)
   {
-    double x = vertices.at<double>(i,0);
-    double y = vertices.at<double>(i,1);
+    double x = mat.at<double>(i,0);
+    double y = mat.at<double>(i,1);
     v.push_back(Point2d(x, y));
   }
   return v;
 }
 
-void Triangle::toIntArray(Point* p) const
+void Triangle::toIntArray(Point* p, const Mat& mat) const
 {
   for (int i=0; i<3; i++)
   {
-    p[i].x = (int)vertices.at<double>(i,0);
-    p[i].y = (int)vertices.at<double>(i,1);
+    p[i].x = (int)mat.at<double>(i,0);
+    p[i].y = (int)mat.at<double>(i,1);
   }
 }
