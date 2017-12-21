@@ -50,11 +50,12 @@ Rect Triangle::boundingRect(const Mat& mat) const
 vector<Point2f> Triangle::toFloatVector(const Mat& mat) const
 {
   vector<Point2f> v;
+  int vx[3] = {a, b, c};
   for (int i=0; i<3; i++)
   {
     // Enforce double => float implication
-    float x = mat.at<double>(i,0);
-    float y = mat.at<double>(i,1);
+    float x = mat.at<double>(vx[i],0);
+    float y = mat.at<double>(vx[i],1);
     v.push_back(Point2f(x, y));
   }
   return v;
@@ -63,10 +64,11 @@ vector<Point2f> Triangle::toFloatVector(const Mat& mat) const
 vector<Point2d> Triangle::toVector(const Mat& mat) const
 {
   vector<Point2d> v;
+  int vx[3] = {a, b, c};
   for (int i=0; i<3; i++)
   {
-    double x = mat.at<double>(i,0);
-    double y = mat.at<double>(i,1);
+    double x = mat.at<double>(vx[i],0);
+    double y = mat.at<double>(vx[i],1);
     v.push_back(Point2d(x, y));
   }
   return v;
