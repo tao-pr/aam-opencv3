@@ -233,13 +233,13 @@ int main(int argc, char** argv)
   // waitKey(0);
   // destroyAllWindows();
 
-  testTexture(argv);
+  // testTexture(argv);
 
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to appearance testing " << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
-  waitKey(0);
-  destroyAllWindows();
+  // waitKey(0);
+  // destroyAllWindows();
   
   testAppearance();
 

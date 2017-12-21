@@ -18,7 +18,7 @@ Mat Texture::render(IO::GenericIO* io, Mat background, bool withVertices, bool w
   this->bound.boundary(*this->vertexRef,a,b,c,d);
   const vector<Point2d> vertices = this->bound.toVector(*this->vertexRef);
 
-  Rect boundary((int)floor(a), (int)floor(b), (int)floor(c), (int)floor(d));
+  Rect boundary((int)floor(a), (int)floor(b), (int)ceil(c), (int)ceil(d));
 
   // Draw the masking region
   auto triangle = new Point[3];

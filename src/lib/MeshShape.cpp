@@ -134,8 +134,9 @@ Mat MeshShape::render(IO::GenericIO* io, Mat background, double scaleFactor, Poi
 
   auto hull = this->convexHull();
 
-  // TAODEBUG:
-  cout << "Triangles size : " << triangles.size() << endl;
+  #ifdef DEBUG
+  cout << "MeshShape::render ~ num triangles = " << triangles.size() << endl;
+  #endif
 
   // Render edges
   for (auto tr : triangles)
