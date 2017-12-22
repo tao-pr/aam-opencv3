@@ -90,14 +90,13 @@ inline unique_ptr<AppearanceCollection> initialAppearanceCollection(int num, int
     // then warp it onto the new shape with random noise added
     auto app = new Appearance(baseShape, baseTexture);
 
-    // TAODEBUG:
     auto ioShape = IO::WindowIO("generated mesh");
     auto ioDebug = IO::WindowIO("generated appearance");
     newShape.render(&ioShape, backCanvas);
     app->render(&ioDebug, backCanvas);
-    waitKey(0);
+    waitKey(100);
 
-    app->realignTo(newShape); // TAOTODO: Does this work?
+    app->realignTo(newShape);
     appearances.push_back(app);
   }
 

@@ -95,17 +95,11 @@ void Appearance::realignTo(MeshShape& newShape)
   assert(this->textureList.size() == targetTriangles.size());
 
   // Warp the attached graphic onto the target
-  // TAOTODO:
-  cout << "bound : " << newShape.getBound().size() << endl;
   Mat warped = Mat::zeros(newShape.getBound().size(), CV_8UC3);
   for (int ti=0; ti<targetTriangles.size(); ti++)
   {
     this->textureList[ti].realignTo(targetTriangles[ti], &newShape.mat, &warped);
   }
-
-  imshow("warped", warped);
-  waitKey(0); // TAODEBUG:
-
 
   // Move all vertices to match their corresponding counterparts in new shape
   for (int n=0; n<originalVertices.size(); n++)
