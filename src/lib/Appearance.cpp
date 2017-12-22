@@ -95,7 +95,9 @@ void Appearance::realignTo(MeshShape& newShape)
   assert(this->textureList.size() == targetTriangles.size());
 
   // Warp the attached graphic onto the target
-  Mat warped = Mat::zeros(newShape.getBound().size(), CV_8UC3);
+  auto b = newShape.getBound();
+  Size newSize(b.x + b.width, b.y + b.height);
+  Mat warped = Mat::zeros(newSize, CV_8UC3);
   for (int ti=0; ti<targetTriangles.size(); ti++)
   {
     this->textureList[ti].realignTo(targetTriangles[ti], &newShape.mat, &warped);
@@ -108,5 +110,7 @@ void Appearance::realignTo(MeshShape& newShape)
     this->mesh.moveVertex(n, displacement);
   }
   
+  // Replace the graphic with the warped one
+  this->graphic = warped;
 }
 

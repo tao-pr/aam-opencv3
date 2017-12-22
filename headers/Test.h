@@ -18,12 +18,13 @@ const double NOISE_R         = 0.665;
 
 inline MeshShape initialMesh(int shapeSize)
 {
+  const double MARGIN = 40;
   srand(time(NULL));
   vector<Point2d> vs;
   for (int i=0; i<shapeSize; i++)
   {
-    double x = rand() % (int)CANVAS_SIZE;
-    double y = rand() % (int)CANVAS_SIZE;
+    double x = MARGIN + rand() % (int)(CANVAS_SIZE - MARGIN*2);
+    double y = MARGIN + rand() % (int)(CANVAS_SIZE - MARGIN*2);
     vs.push_back(Point2d(x, y));
   }
   return MeshShape(vs);
@@ -75,7 +76,7 @@ inline unique_ptr<AppearanceCollection> initialAppearanceCollection(int num, int
   auto baseTexture = chessPattern(5, Size(CANVAS_SIZE, CANVAS_SIZE));
 
   // Generate [n] random displacements on the base shape
-  auto noiseConstraint = Point2d(25.5, 25.5);
+  auto noiseConstraint = Point2d(35.5, 35.5);
   srand(time(NULL));
   vector<Appearance*> appearances;
 
@@ -93,11 +94,14 @@ inline unique_ptr<AppearanceCollection> initialAppearanceCollection(int num, int
     auto ioShape = IO::WindowIO("generated mesh");
     auto ioDebug = IO::WindowIO("generated appearance");
     newShape.render(&ioShape, backCanvas);
-    app->render(&ioDebug, backCanvas);
-    waitKey(100);
-
+    
     app->realignTo(newShape);
+    app->render(&ioDebug, backCanvas);
     appearances.push_back(app);
+
+    moveWindow("generated mesh", 15, 15);
+    moveWindow("generated appearance", CANVAS_SIZE+15, 15);
+    waitKey(700);
   }
 
   unique_ptr<AppearanceCollection> list(new AppearanceCollection(appearances));
