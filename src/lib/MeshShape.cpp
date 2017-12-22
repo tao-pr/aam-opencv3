@@ -14,6 +14,7 @@ MeshShape::MeshShape(const MeshShape& original)
 {
   this->mat = original.mat.clone();
   this->subdiv = original.subdiv;
+  this->bound = original.bound;
   this->trianglesCache = original.trianglesCache;
 }
 
@@ -100,6 +101,19 @@ void MeshShape::repopulateCache()
   vector<Vec6f> triangles;
   this->subdiv.getTriangleList(triangles);
 
+  struct CompareTripletIndex
+  {
+    // Ascending order
+    inline bool operator()(Triangle &t1, Triangle &t2)
+    { 
+      int k1 = t1.a * 1000 + t1.b * 666 + t1.c;
+      int k2 = t2.a * 1000 + t2.b * 666 + t2.c;
+      return k1 > k2;
+    }
+  };
+
+  priority_queue<Triangle, vector<Triangle>, CompareTripletIndex> q;
+
   Mat hullFill = this->convexFill();
   int ti = 0;
   for (auto tr:triangles)
@@ -118,9 +132,16 @@ void MeshShape::repopulateCache()
       int ai = findIndex(a); // TAOTOREVIEW: This operation takes O(N) in the worst case
       int bi = findIndex(b);
       int ci = findIndex(c);
-      trianglesCache.push_back(Triangle(ai, bi, ci));
+      q.push(Triangle(ai, bi, ci));
+      // trianglesCache.push_back(Triangle(ai, bi, ci));
       ++ti;
     }
+  }
+
+  while (!q.empty())
+  {
+    trianglesCache.push_back(q.top());
+    q.pop();
   }
 }
 

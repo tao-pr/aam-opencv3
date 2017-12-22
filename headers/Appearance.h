@@ -38,7 +38,7 @@ public:
   virtual inline void load(const string path) {};
 
   //------- Transformation -----------
-  void realignTo(const MeshShape& newShape);
+  void realignTo(MeshShape& newShape);
 };
 
 #endif

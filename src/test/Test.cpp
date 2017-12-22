@@ -241,13 +241,13 @@ int main(int argc, char** argv)
   // waitKey(0);
   // destroyAllWindows();
   
-  testAppearance();
+  // testAppearance();
 
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to AAM collection test" << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
-  waitKey(0);
-  destroyAllWindows();
+  // waitKey(0);
+  // destroyAllWindows();
 
   testAAMCollection();
   waitKey(0);
