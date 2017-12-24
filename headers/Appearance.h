@@ -32,6 +32,7 @@ public:
   unique_ptr<BaseModel> clone() const;
   Mat toRowVector() const;
   Mat toColVector() const;
+  MeshShape getShape() const { return this->mesh; };
 
   // TAOTOREVIEW:
   virtual inline void save(const string path) const {};

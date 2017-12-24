@@ -15,7 +15,7 @@ ShapeCollection::ShapeCollection(const vector<Shape*>& shapes, const bool isVerb
 unique_ptr<ModelCollection> ShapeCollection::clone() const
 {
   #ifdef DEBUG
-  cout << "[DEBUG] ... ShapeCollection::clone " << getUID() << endl;
+  cout << "BaseModelShapeCollection::clone " << getUID() << endl;
   #endif
   // Deep copy
   vector<BaseModel*> clonedVector;
@@ -31,7 +31,7 @@ unique_ptr<ModelCollection> ShapeCollection::clone() const
 void ShapeCollection::normaliseScalingTranslation()
 {
   #ifdef DEBUG
-  cout << "[DEBUG] ... ShapeCollection::normaliseScalingTranslation @" << getUID() << endl;
+  cout << "BaseModelShapeCollection::normaliseScalingTranslation @" << getUID() << endl;
   #endif
   // Rescale each shape so the centroid size = 1
   // and translate to the centroid

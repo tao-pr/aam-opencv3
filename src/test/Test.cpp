@@ -121,7 +121,6 @@ void testAAMCollection()
 
   // Iterate through and render
   Mat backCanvas = Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3);
-  auto ioApp = IO::WindowIO("element");
   auto apps = aamCollection->getItems();
 
   // TAOTODO:

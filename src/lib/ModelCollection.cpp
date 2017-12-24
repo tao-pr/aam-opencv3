@@ -21,7 +21,7 @@ ModelCollection::~ModelCollection()
 void ModelCollection::clear()
 {
   #ifdef DEBUG
-  cout << YELLOW << "[DEBUG] ... ModelCollection::clear @" << getUID() << RESET << endl;
+  cout << YELLOW << "BaseModelModelCollection::clear @" << getUID() << RESET << endl;
   #endif
   for (auto item : this->items)
   {
@@ -32,7 +32,7 @@ void ModelCollection::clear()
 BaseModel* ModelCollection::procrustesMean(double tol, int maxIter)
 {
   #ifdef DEBUG
-  cout << "[DEBUG] ... ModelCollection::procrustesMean @" << getUID() << endl;
+  cout << "BaseModelModelCollection::procrustesMean @" << getUID() << endl;
   #endif
   auto alignedSet  = this->clone();
   double lastError = 0;

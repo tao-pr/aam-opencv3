@@ -60,15 +60,50 @@ Mat AppearanceCollection::covariance(const BaseModel* mean) const
   return (1/(double)N) * cov;
 }
 
+unique_ptr<ModelCollection> AppearanceCollection::toShapeCollection() const
+{
+  vector<Shape*> listShapes;
+  for (auto iter : this->items)
+  {
+    Appearance* app = dynamic_cast<Appearance*>(iter);
+    auto shape = app->getShape();
+    listShapes.push_back(new MeshShape(shape));
+  }
+
+  unique_ptr<ModelCollection> ptr(new ShapeCollection(listShapes, verbose));
+  return ptr;
+}
+
 void AppearanceCollection::normaliseRotation()
 {
-  cout << YELLOW << "AppearanceCollection::normaliseRotation is not implemented"  << RESET << endl;
+  #ifdef DEBUG
+  cout << "AppearanceCollection::normaliseRotation"  << endl;
+  #endif
+
+  // Normalise the rotation of shapes first
+  auto shapes = this->toShapeCollection();
+  shapes->normaliseRotation();
+
+
+  // Then align the texture part over the aligned shapes
+
+  // TAOTODO:
+
+}
+
+double AppearanceCollection::sumProcrustesDistance(const BaseModel* targetModel) const
+{
+  #ifdef DEBUG
+  cout << "AppearanceCollection::sumProcrustesDistance" << endl;
+  #endif
+
+  // TAOTODO:
 }
 
 unique_ptr<ModelCollection> AppearanceCollection::clone() const
 {
   #ifdef DEBUG
-  cout << "[DEBUG] ... AppearanceCollection::clone @" << getUID() << endl;
+  cout << "BaseModelAppearanceCollection::clone @" << getUID() << endl;
   #endif
   vector<BaseModel*> vs;
   for (auto model : this->items)

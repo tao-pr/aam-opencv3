@@ -8,7 +8,9 @@
 #include "master.h"
 #include "Appearance.h"
 #include "BaseModel.h"
+#include "MeshShape.h"
 #include "ModelCollection.h"
+#include "ShapeCollection.h"
 #include "Params.h"
 
 class AppearanceCollection : public ModelCollection
@@ -22,10 +24,12 @@ public:
   // ---------- Analysis -------------
   Mat covariance(const BaseModel* mean) const;
   void normaliseRotation();
+  virtual double sumProcrustesDistance(const BaseModel* targetModel) const;
   
   // ---------- I/O ------------------
   Mat toMat() const;
   unique_ptr<ModelCollection> clone() const;
+  unique_ptr<ModelCollection> toShapeCollection() const;
 };
 
 #endif
