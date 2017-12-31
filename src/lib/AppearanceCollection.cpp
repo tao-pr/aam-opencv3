@@ -41,14 +41,29 @@ Mat AppearanceCollection::toMat() const
 
 Mat AppearanceCollection::covariance(const BaseModel* mean) const
 {
+  const Appearance* meanAppearance = static_cast<const Appearance*>(mean);
+
   Mat frontMat = this->items[0]->toRowVector();
-  int M = frontMat.cols;
-  int N = this->items.size();
+
+
+  // TAODEBUG:
+  cout << "size = " << frontMat.size() << endl;
+
+  int M = frontMat.rows;
+
+  // TAODEBUG:
+  cout << "M = " << M << endl;
+
+  int N = this->items.size(); 
   Mat cov = Mat::zeros(M, M, CV_32FC3);
   Mat meanVector = mean->toRowVector();
+
+  // TAOTODO: This somehow doesn't work
   for (auto item : this->items)
   {
-    auto app = dynamic_cast<Appearance*>(item);
+    cout << "iter ~" << endl; // TAODEBUG:
+
+    auto app = static_cast<Appearance*>(item);
     auto res = app->toRowVector() - meanVector;
     cov = cov + res * res.t();
   }

@@ -134,6 +134,24 @@ void testAAMCollection()
     waitKey(100);
   }
 
+  // Compute procrustes mean of the collection
+  auto meanAppearance = dynamic_cast<Appearance*>(aamCollection->procrustesMean());
+  auto ioMean = IO::WindowIO("mean");
+  meanAppearance->render(&ioMean, Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3));
+  moveWindow("mean", CANVAS_SIZE + 10, 0);
+  waitKey(400);
+
+  // Calculate covariance
+  cout << CYAN << "[#] Appearance collection covariance " << RESET << endl;
+  auto cov = aamCollection->covariance(meanAppearance);
+  Mat covResized;
+  resize(cov, covResized, Size(CANVAS_SIZE, CANVAS_SIZE), INTER_LINEAR);
+  normalize(covResized, covResized, 255, 0, NORM_L2);
+  imshow("covariance", covResized);
+  moveWindow("covariance", (CANVAS_SIZE+10),(CANVAS_SIZE+50));
+
+
+
   // TAOTODO:
 }
 
