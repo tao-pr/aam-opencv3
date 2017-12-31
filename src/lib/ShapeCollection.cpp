@@ -62,6 +62,10 @@ void ShapeCollection::translateBy(const Point2d &p)
 
 void ShapeCollection::normaliseRotation()
 {
+  #ifdef DEBUG
+  cout << "ShapeCollection::normaliseRotation" << endl;
+  #endif
+
   // Use the first shape as base rotation = 0
   Mat x0 = this->items[0]->getMat();
   vector<BaseModel*> norml{ new Shape(x0) };

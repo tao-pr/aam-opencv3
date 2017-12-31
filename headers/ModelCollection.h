@@ -23,7 +23,7 @@ public:
   inline void add(BaseModel* item){ this->items.push_back(item); };
   virtual unique_ptr<ModelCollection> clone() const = 0;
   virtual Mat toMat() const = 0;
-  inline const vector<BaseModel*> getItems() const { return this->items; };
+  inline const vector<BaseModel*> getItems() { return this->items; };
 
   // ------- Geometrical Analysis -------------
   virtual BaseModel* procrustesMean(double tol=1e-3, int maxIter=10);

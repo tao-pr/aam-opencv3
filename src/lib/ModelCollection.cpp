@@ -29,6 +29,7 @@ void ModelCollection::clear()
   }
 }
 
+
 BaseModel* ModelCollection::procrustesMean(double tol, int maxIter)
 {
   #ifdef DEBUG

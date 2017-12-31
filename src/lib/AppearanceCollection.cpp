@@ -83,9 +83,25 @@ void AppearanceCollection::normaliseRotation()
   // Normalise the rotation of shapes first
   auto shapes = this->toShapeCollection();
   shapes->normaliseRotation();
+  vector<BaseModel*> items = shapes->getItems();
 
+  // NOTE: The items are stored as [[Shape]], not a specific [[MeshShape]]
+  // so we have to create a new mesh shape on it manually
+  auto neutralShape = new MeshShape(*dynamic_cast<Shape*>(items.front()));
+
+  // TAODEBUG:
+  cout << "SHAPE CREATED" << endl;
+
+  auto io = IO::WindowIO("neutral rot");
+  neutralShape->render(&io, Mat::zeros(900, 900, CV_8UC3));
+  waitKey(0);
 
   // Then align the texture part over the aligned shapes
+  #ifdef DEBUG
+  cout << "Re-aligning texture on normalised shapes" << endl;
+  #endif
+
+
 
   // TAOTODO:
 

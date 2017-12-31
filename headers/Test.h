@@ -76,7 +76,7 @@ inline unique_ptr<AppearanceCollection> initialAppearanceCollection(int num, int
   auto baseTexture = chessPattern(5, Size(CANVAS_SIZE, CANVAS_SIZE));
 
   // Generate [n] random displacements on the base shape
-  auto noiseConstraint = Point2d(35.5, 35.5);
+  auto noiseConstraint = Point2d(9.5, 9.5);
   srand(time(NULL));
   vector<Appearance*> appearances;
 

@@ -117,11 +117,13 @@ void testAAMCollection()
 {
   const int TRAIN_SET_SIZE = 16;
   const int SHAPE_SIZE     = 7;
+  Mat backCanvas = Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3);
+
   auto aamCollection = initialAppearanceCollection(TRAIN_SET_SIZE, SHAPE_SIZE);
 
-  // Iterate through and render
-  Mat backCanvas = Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3);
-  auto apps = aamCollection->getItems();
+
+  // Normalise rotation of the entire collection
+  aamCollection->normaliseRotation();
 
   // TAOTODO:
 }
