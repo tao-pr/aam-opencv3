@@ -121,6 +121,7 @@ void testAAMCollection()
 
   auto aamCollection = initialAppearanceCollection(TRAIN_SET_SIZE, SHAPE_SIZE);
 
+  destroyAllWindows();
 
   // Normalise rotation of the entire collection
   aamCollection->normaliseRotation();

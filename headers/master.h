@@ -31,6 +31,9 @@
 
 using namespace cv;
 using namespace std;
+using namespace backward;
+
+extern StackTrace stacktrace;
 
 const std::string RED("\033[0;31m");
 const std::string GREEN("\033[1;32m");

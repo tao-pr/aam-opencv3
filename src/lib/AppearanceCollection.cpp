@@ -13,14 +13,12 @@ AppearanceCollection::AppearanceCollection(const vector<Appearance*>& apps, bool
 AppearanceCollection::AppearanceCollection(const AppearanceCollection& original)
 : ModelCollection(original.verbose)
 {
-  vector<BaseModel*> vs;
   for (auto model : original.items)
   {
     auto app = dynamic_cast<Appearance*>(model);
     BaseModel* cloned = new Appearance(*app);
-    vs.push_back(cloned);
+    this->items.push_back(cloned);
   }
-  this->items = vs;
 }
 
 Mat AppearanceCollection::toMat() const
@@ -96,31 +94,9 @@ void AppearanceCollection::normaliseRotation()
   int N = shapes->size();
   for (int n=0; n<N; n++)
   {
-    Appearance* original = static_cast<Appearance*>(items[n]);
-
-    // TAODEBUG:
-    cout << original->getTextures().size() << endl;
-    cout << original->getShape() << endl;
-
-    // TAODEBUG:
-    cout << original->getGraphicSize() << endl;
-    auto ioDebug = IO::WindowIO("appearance (original)");
-    original->render(&ioDebug, Mat::zeros(original->getGraphicSize(), CV_8UC3));
-    waitKey(0);
-
-
-
-    #ifdef DEBUG
-    cout << "... aligning texture [" << n << "]" << endl;
-    #endif
-    original->realignTo(neutralShape);
+    Appearance* original = static_cast<Appearance*>(this->items[n]);
+    original->realignTo(neutralShape);    
   }
-  
-
-
-
-  // TAOTODO:
-
 }
 
 double AppearanceCollection::sumProcrustesDistance(const BaseModel* targetModel) const

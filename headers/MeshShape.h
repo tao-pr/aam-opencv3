@@ -37,6 +37,7 @@ public:
   inline int numTriangles() const { return this->trianglesCache.size(); };
   inline const vector<Triangle>& getTriangles() const { return this->trianglesCache; };
   inline Rect getBound() const { return this->bound; };
+  inline Size getSpannedSize() const { return Size(this->bound.x + this->bound.width, this->bound.y + this->bound.height); };
   Mat convexFill() const;
 
   //------ I/O --------------
