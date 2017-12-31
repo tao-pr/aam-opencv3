@@ -11,6 +11,7 @@ Active Appearance Model for OpenCV3. No other dependencies required.
 - [x] OpenCV 3
 - [x] CMake 3.8+
 - [x] [Fmt](http://fmtlib.net/latest/usage.html#building-the-library)
+- [x] [Backward CPP](https://github.com/bombela/backward-cpp) ~ in case of debugging mode
 
 > NOTE: Even though the project is implemented with C++11, you don't have to install OpenCV3 with C++11 compatibility at all.
 

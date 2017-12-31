@@ -3,19 +3,16 @@
 AppearanceCollection::AppearanceCollection(const vector<Appearance*>& apps, bool isVerbose)
 : ModelCollection(isVerbose)
 {
-  //this->verbose = isVerbose;
   vector<BaseModel*> vs;
   for (auto app : apps)
   {
-    vs.push_back(app);
+    this->items.push_back(new Appearance(*app));
   }
-  this->items = vs;
 }
 
 AppearanceCollection::AppearanceCollection(const AppearanceCollection& original)
 : ModelCollection(original.verbose)
 {
-  //this->verbose = original.verbose;
   vector<BaseModel*> vs;
   for (auto model : original.items)
   {
@@ -80,20 +77,45 @@ void AppearanceCollection::normaliseRotation()
   cout << "AppearanceCollection::normaliseRotation"  << endl;
   #endif
 
-  // Normalise the rotation of shapes first
+  // Find the shape with neutral rotation
   auto shapes = this->toShapeCollection();
   shapes->normaliseRotation();
   vector<BaseModel*> items = shapes->getItems();
 
   // NOTE: The items are stored as [[Shape]], instead of expected [[MeshShape]]
   // so we have to create a new mesh shape on it manually
-  auto mean = dynamic_cast<Shape*>(items.front());
+  auto mean = dynamic_cast<Shape*>(items.front()); // TAOTOREVIEW: Find out why [[MeshShape]] doesn't work properly
   MeshShape neutralShape(*mean);
 
-  // Then align the texture part over the aligned shapes
+  // Then align the texture part onto the neutral shape
   #ifdef DEBUG
-  cout << "Re-aligning texture on normalised shapes" << endl;
+  cout << "Re-aligning appearance texture onto normalised shape" << endl;
   #endif
+
+  vector<Appearance*> alignedAppearances;
+  int N = shapes->size();
+  for (int n=0; n<N; n++)
+  {
+    Appearance* original = static_cast<Appearance*>(items[n]);
+
+    // TAODEBUG:
+    cout << original->getTextures().size() << endl;
+    cout << original->getShape() << endl;
+
+    // TAODEBUG:
+    cout << original->getGraphicSize() << endl;
+    auto ioDebug = IO::WindowIO("appearance (original)");
+    original->render(&ioDebug, Mat::zeros(original->getGraphicSize(), CV_8UC3));
+    waitKey(0);
+
+
+
+    #ifdef DEBUG
+    cout << "... aligning texture [" << n << "]" << endl;
+    #endif
+    original->realignTo(neutralShape);
+  }
+  
 
 
 

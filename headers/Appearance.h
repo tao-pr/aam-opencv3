@@ -33,6 +33,8 @@ public:
   Mat toRowVector() const;
   Mat toColVector() const;
   MeshShape getShape() const { return this->mesh; };
+  vector<Texture> getTextures() const { return this->textureList; };
+  const Size& getGraphicSize() const { return this->graphic.size(); };
 
   // TAOTOREVIEW:
   virtual inline void save(const string path) const {};

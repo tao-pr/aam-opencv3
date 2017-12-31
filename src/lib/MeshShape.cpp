@@ -13,10 +13,6 @@ MeshShape::MeshShape(const vector<Point2d>& vs) : Shape(vs)
 MeshShape::MeshShape(const Mat& mat) : Shape(mat)
 {
   resubdiv();
-  // TAODEBUG:
-  cout << "MeshShape::MeshShape(mat) -> " << endl;
-  cout << this->mat << endl;
-  cout << this->bound << endl;
 }
 
 MeshShape::MeshShape(const MeshShape& original)

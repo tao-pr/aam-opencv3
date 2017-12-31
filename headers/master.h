@@ -25,6 +25,10 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#ifdef DEBUG
+#include "backward.h"
+#endif
+
 using namespace cv;
 using namespace std;
 

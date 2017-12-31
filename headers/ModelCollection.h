@@ -24,6 +24,7 @@ public:
   virtual unique_ptr<ModelCollection> clone() const = 0;
   virtual Mat toMat() const = 0;
   inline const vector<BaseModel*> getItems() { return this->items; };
+  inline int size() const { return this->items.size(); };
 
   // ------- Geometrical Analysis -------------
   virtual BaseModel* procrustesMean(double tol=1e-3, int maxIter=10);
