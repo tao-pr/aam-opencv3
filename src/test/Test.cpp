@@ -126,6 +126,14 @@ void testAAMCollection()
   // Normalise rotation of the entire collection
   aamCollection->normaliseRotation();
 
+  auto ioApp = IO::WindowIO("aligned");
+  for (auto m : aamCollection->getItems())
+  {
+    Appearance* app = static_cast<Appearance*>(m);
+    app->render(&ioApp, Mat::zeros(app->getShape().getSpannedSize(), CV_8UC3));
+    waitKey(100);
+  }
+
   // TAOTODO:
 }
 
