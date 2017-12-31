@@ -1,5 +1,10 @@
 #include "Triangle.h"
 
+ostream &operator<<(ostream &os, Triangle const &m)
+{
+  return os << "index : [" << m.a << ", " << m.b << ", " << m.c ;
+}
+
 // Triangle Triangle::operator >>(const Point2d &displacement) const
 // {
 //   Mat dist = Mat(3, 2, CV_64FC1);

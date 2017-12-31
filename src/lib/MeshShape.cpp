@@ -1,5 +1,10 @@
 #include "MeshShape.h"
 
+ostream &operator<<(ostream &os, MeshShape const &m)
+{
+  return os << "[MeshShape] bound : " << m.getBound() << ", " << m.numTriangles() << " triangles";
+}
+
 MeshShape::MeshShape(const vector<Point2d>& vs) : Shape(vs)
 {
   resubdiv();
@@ -8,6 +13,10 @@ MeshShape::MeshShape(const vector<Point2d>& vs) : Shape(vs)
 MeshShape::MeshShape(const Mat& mat) : Shape(mat)
 {
   resubdiv();
+  // TAODEBUG:
+  cout << "MeshShape::MeshShape(mat) -> " << endl;
+  cout << this->mat << endl;
+  cout << this->bound << endl;
 }
 
 MeshShape::MeshShape(const MeshShape& original)
@@ -16,11 +25,6 @@ MeshShape::MeshShape(const MeshShape& original)
   this->subdiv = original.subdiv;
   this->bound = original.bound;
   this->trianglesCache = original.trianglesCache;
-}
-
-MeshShape::MeshShape(const Shape& shape)
-{
-  MeshShape(shape.mat); // resubdiv is called automatically
 }
 
 const bool MeshShape::isInside(const Point2d& p) const
@@ -106,8 +110,8 @@ void MeshShape::repopulateCache()
     // Ascending order
     inline bool operator()(Triangle &t1, Triangle &t2)
     { 
-      int k1 = t1.a * 1000 + t1.b * 666 + t1.c;
-      int k2 = t2.a * 1000 + t2.b * 666 + t2.c;
+      long k1 = t1.a * 1000 + t1.b * 666 + t1.c;
+      long k2 = t2.a * 1000 + t2.b * 666 + t2.c;
       return k1 > k2;
     }
   };
@@ -133,7 +137,6 @@ void MeshShape::repopulateCache()
       int bi = findIndex(b);
       int ci = findIndex(c);
       q.push(Triangle(ai, bi, ci));
-      // trianglesCache.push_back(Triangle(ai, bi, ci));
       ++ti;
     }
   }

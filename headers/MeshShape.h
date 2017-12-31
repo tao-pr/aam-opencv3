@@ -31,7 +31,7 @@ public:
   MeshShape(const vector<Point2d>& vs);
   MeshShape(const Mat& mat);
   MeshShape(const MeshShape& original);
-  MeshShape(const Shape& shape);
+  MeshShape(const Shape& shape) : MeshShape(shape.mat){}; // This will also trigger [resubdiv] automatically
   virtual inline ~MeshShape(){};
 
   inline int numTriangles() const { return this->trianglesCache.size(); };
@@ -45,5 +45,7 @@ public:
   //------ Operators --------
   virtual void moveVertex(int i, const Point2d& displacement);
 };
+
+ostream &operator<<(ostream &os, MeshShape const &m);
 
 #endif

@@ -28,4 +28,7 @@ public:
   // Triangle operator <<(const Point2d &displacement) const;
 };
 
+
+ostream &operator<<(ostream &os, Triangle const &m);
+
 #endif

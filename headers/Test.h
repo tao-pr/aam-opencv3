@@ -101,7 +101,7 @@ inline unique_ptr<AppearanceCollection> initialAppearanceCollection(int num, int
 
     moveWindow("generated mesh", 15, 15);
     moveWindow("generated appearance", CANVAS_SIZE+15, 15);
-    waitKey(700);
+    waitKey(250);
   }
 
   unique_ptr<AppearanceCollection> list(new AppearanceCollection(appearances));
