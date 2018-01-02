@@ -145,15 +145,30 @@ void testAAMCollection()
   cout << CYAN << "[#] Appearance collection covariance " << RESET << endl;
   auto cov = aamCollection->covariance(meanAppearance);
 
-  cout << "covariance computed..." << endl;// TAODEBUG:
-
   Mat covResized;
   resize(cov, covResized, Size(CANVAS_SIZE, CANVAS_SIZE), INTER_LINEAR);
   normalize(covResized, covResized, 255, 0, NORM_L2);
   imshow("covariance", covResized);
   moveWindow("covariance", (CANVAS_SIZE+10),(CANVAS_SIZE+50));
 
+  // Calculate PCA appearance
+  cout << CYAN << "[#] Appearance PCA " << RESET << endl;
+  auto eigenAppearance = aamCollection->clone()->pca(meanAppearance);
 
+  // Encode appearances with PCA and measure the estimation errors
+  int i = 0;
+  cout << GREEN << "[PCA-parameterised appearances]" << RESET << endl;
+  for (auto model : aamCollection->getItems())
+  {
+    const Appearance* appearance = dynamic_cast<const Appearance*>(model);
+    cout << CYAN << "... Encoding appearance # " << RESET << i << endl;
+    auto param = eigenAppearance.encode(appearance);
+    cout << "... Decoding appearance # " << i << endl;
+    auto encodedAppearance = eigenAppearance.toShape(param);
+    double error = appearance->procrustesDistance(&encodedAppearance);
+    cout << "... Estimation error : " << error << endl;
+    i++;
+  }
 
   // TAOTODO:
 }
