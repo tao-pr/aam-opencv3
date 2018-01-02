@@ -10,7 +10,8 @@ Appearance::Appearance(const Appearance& another)
 
 Appearance::Appearance(const MeshShape& shape, const Mat& img)
 {
-  this->graphic = Mat(img.size(), img.type());
+  auto bound = shape.getBound();
+  this->graphic = Mat(bound.size(), img.type());
   this->mesh = MeshShape(shape);
   img.copyTo(this->graphic);
   reinitTextures();
@@ -49,6 +50,7 @@ const double Appearance::procrustesDistance(const BaseModel* that) const
 Mat Appearance::render(IO::GenericIO* io, Mat background, bool withVertices, bool withEdges, double scaleFactor, Point2d recentre) const
 {
   Size size = background.size();
+  
   Mat canvas = Mat(size.height, size.width, CV_64FC3);
   background.copyTo(canvas);
 
@@ -73,9 +75,17 @@ unique_ptr<BaseModel> Appearance::clone() const
 
 Mat Appearance::toRowVector() const
 {
-  auto roi = this->mesh.getBound();
-  Mat m = this->graphic(roi).clone();
-  return m.reshape(this->graphic.channels(), m.rows * m.cols);
+  auto bound = this->mesh.getBound();
+  int w = this->graphic.cols;
+  int h = this->graphic.rows;
+  int N = (w-bound.x) * (h-bound.y);
+
+  Mat m(w-bound.x, h-bound.y, this->graphic.type());
+  
+  this->graphic(Rect(bound.x, bound.y, w-bound.x, h-bound.y)).copyTo(m);
+  Mat v = m.reshape(1, m.rows * m.cols);
+  v.convertTo(v, CV_64FC1);
+  return v;
 }
 
 Mat Appearance::toColVector() const 
@@ -95,8 +105,7 @@ void Appearance::realignTo(MeshShape& newShape)
   assert(this->textureList.size() == targetTriangles.size());
 
   // Warp the attached graphic onto the target
-  auto b = newShape.getBound();
-  Size newSize(b.x + b.width, b.y + b.height);
+  auto newSize = newShape.getSpannedSize();
   Mat warped = Mat::zeros(newSize, CV_8UC3);
   for (int ti=0; ti<targetTriangles.size(); ti++)
   {

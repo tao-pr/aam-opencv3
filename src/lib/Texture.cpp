@@ -74,6 +74,9 @@ Texture Texture::realignTo(const Triangle &newBound, Mat* newVertexRef, Mat* des
   cout << "... " << destTriangle << endl << endl;
   #endif
 
+  // Make sure the ROI is not exceeding the size of the image
+  srcRect.width = min(srcRect.width, this->img->cols - srcRect.x);
+  srcRect.height = min(srcRect.height, this->img->rows - srcRect.y);
 
   // Crop the source by the bounding rectangle
   Mat im = *this->img;

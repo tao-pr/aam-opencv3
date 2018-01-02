@@ -144,6 +144,9 @@ void testAAMCollection()
   // Calculate covariance
   cout << CYAN << "[#] Appearance collection covariance " << RESET << endl;
   auto cov = aamCollection->covariance(meanAppearance);
+
+  cout << "covariance computed..." << endl;// TAODEBUG:
+
   Mat covResized;
   resize(cov, covResized, Size(CANVAS_SIZE, CANVAS_SIZE), INTER_LINEAR);
   normalize(covResized, covResized, 255, 0, NORM_L2);

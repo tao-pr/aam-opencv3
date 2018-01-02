@@ -43,25 +43,18 @@ Mat AppearanceCollection::covariance(const BaseModel* mean) const
 {
   const Appearance* meanAppearance = static_cast<const Appearance*>(mean);
 
-  Mat frontMat = this->items[0]->toRowVector();
-
-
-  // TAODEBUG:
-  cout << "size = " << frontMat.size() << endl;
-
-  int M = frontMat.rows;
-
-  // TAODEBUG:
-  cout << "M = " << M << endl;
-
+  Mat meanVector = meanAppearance->toRowVector();
+  int M = meanVector.rows;
   int N = this->items.size(); 
-  Mat cov = Mat::zeros(M, M, CV_32FC3);
-  Mat meanVector = mean->toRowVector();
+  Mat cov = Mat::zeros(M, M, CV_64FC1);
 
-  // TAOTODO: This somehow doesn't work
+  int n = 0;
   for (auto item : this->items)
   {
-    cout << "iter ~" << endl; // TAODEBUG:
+    #ifdef DEBUG
+    cout << "... cov #" << n << " of " << N << endl;
+    n++;
+    #endif
 
     auto app = static_cast<Appearance*>(item);
     auto res = app->toRowVector() - meanVector;
@@ -109,6 +102,7 @@ void AppearanceCollection::normaliseRotation()
   int N = shapes->size();
   for (int n=0; n<N; n++)
   {
+    cout << n << " of " << N << endl; // TAODEBUG:
     Appearance* original = static_cast<Appearance*>(this->items[n]);
     original->realignTo(neutralShape);    
   }

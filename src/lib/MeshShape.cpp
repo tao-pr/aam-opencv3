@@ -37,7 +37,7 @@ void MeshShape::resubdiv()
   minMaxLoc(this->mat.col(0), &minX, &maxX);
   minMaxLoc(this->mat.col(1), &minY, &maxY);
 
-  const double margin = 8.0;
+  const double margin = 2.0;
   this->bound = Rect((int)floor(minX-margin), 
     (int)floor(minY-margin), 
     (int)ceil(maxX-minX+margin*2), 
