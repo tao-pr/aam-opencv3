@@ -1,7 +1,7 @@
 #include "AppearanceCollection.h"
 
-AppearanceCollection::AppearanceCollection(const vector<Appearance*>& apps, bool isVerbose)
-: ModelCollection(isVerbose)
+AppearanceCollection::AppearanceCollection(const vector<Appearance*>& apps)
+: ModelCollection()
 {
   vector<BaseModel*> vs;
   for (auto app : apps)
@@ -11,7 +11,7 @@ AppearanceCollection::AppearanceCollection(const vector<Appearance*>& apps, bool
 }
 
 AppearanceCollection::AppearanceCollection(const AppearanceCollection& original)
-: ModelCollection(original.verbose)
+: ModelCollection()
 {
   for (auto model : original.items)
   {
@@ -73,7 +73,7 @@ unique_ptr<ModelCollection> AppearanceCollection::toShapeCollection() const
     listShapes.push_back(new MeshShape(shape));
   }
 
-  unique_ptr<ModelCollection> ptr(new ShapeCollection(listShapes, verbose));
+  unique_ptr<ModelCollection> ptr(new ShapeCollection(listShapes));
   return ptr;
 }
 
@@ -129,6 +129,6 @@ unique_ptr<ModelCollection> AppearanceCollection::clone() const
     BaseModel* cloned = new Appearance(*app);
     vs.push_back(cloned);
   }
-  unique_ptr<ModelCollection> newSet(new AppearanceCollection(vs, this->verbose));
+  unique_ptr<ModelCollection> newSet(new AppearanceCollection(vs));
   return newSet;
 }

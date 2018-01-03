@@ -1,9 +1,8 @@
 #include "ShapeCollection.h"
 
-ShapeCollection::ShapeCollection(const vector<Shape*>& shapes, const bool isVerbose)
-: ModelCollection(isVerbose)
+ShapeCollection::ShapeCollection(const vector<Shape*>& shapes)
+: ModelCollection()
 {
-  this->verbose = isVerbose;
   vector<BaseModel*> vs;
   for (auto shape : shapes)
   {
@@ -24,7 +23,7 @@ unique_ptr<ModelCollection> ShapeCollection::clone() const
     auto shape = dynamic_cast<Shape*>(model);
     clonedVector.push_back(new Shape(*shape));
   }
-  unique_ptr<ModelCollection> newSet(new ShapeCollection(clonedVector, verbose));
+  unique_ptr<ModelCollection> newSet(new ShapeCollection(clonedVector));
   return newSet;
 }
 
@@ -80,11 +79,10 @@ void ShapeCollection::normaliseRotation()
     auto v = svd.vt.t();
     Mat R = v * u.t();
 
-    if (verbose)
-    {
-      double angle = acos(R.at<double>(0,0)) / M_PI;
-      cout << "... Compensating rotation of next shape (angle = " << angle << "π)" << endl;
-    }
+    #ifdef DEBUG
+    double angle = acos(R.at<double>(0,0)) / M_PI;
+    cout << "... Compensating rotation of next shape (angle = " << angle << "π)" << endl;
+    #endif
 
     // rotate shape by theta and store in norm<>
     norml.push_back(new Shape((R * xj.t()).t()));

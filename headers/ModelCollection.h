@@ -11,12 +11,11 @@ private:
   long long uid;
   static long long generateUID();
 protected:
-  bool verbose;
   vector<BaseModel*> items;
   long long getUID() const { return this->uid; };
 public:
-  ModelCollection(bool verbose=false) : uid(ModelCollection::generateUID()), verbose(verbose) {};
-  ModelCollection(vector<BaseModel*> vs, bool verbose=false) : uid(ModelCollection::generateUID()), items(vs), verbose(verbose) {};
+  ModelCollection() : uid(ModelCollection::generateUID()) {};
+  ModelCollection(vector<BaseModel*> vs) : uid(ModelCollection::generateUID()), items(vs) {};
   virtual ~ModelCollection();
   virtual void clear();
 

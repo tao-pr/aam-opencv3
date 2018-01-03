@@ -10,7 +10,6 @@
 #include "MeshShape.h"
 #include "Texture.h"
 
-const bool   VERBOSE         = true;
 const double CANVAS_SIZE     = 300.0;
 const double CANVAS_HALFSIZE = CANVAS_SIZE / 2.0;
 const double NOISE_T         = 15.0;
@@ -52,7 +51,7 @@ inline unique_ptr<ShapeCollection> initialShapeCollection(int num, int shapeSize
     }
     trainset.push_back(new Shape(m));
   }
-  unique_ptr<ShapeCollection> ptrTrainset(new ShapeCollection(trainset, VERBOSE));
+  unique_ptr<ShapeCollection> ptrTrainset(new ShapeCollection(trainset));
   return ptrTrainset;
 }
 

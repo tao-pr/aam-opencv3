@@ -153,12 +153,13 @@ void testAAMCollection()
 
   // Calculate PCA appearance
   cout << CYAN << "[#] Appearance PCA " << RESET << endl;
-  auto eigenAppearance = aamCollection->clone()->pca(meanAppearance);
+  auto eigenAppearance = aamCollection->pca(meanAppearance);
 
   // Encode appearances with PCA and measure the estimation errors
   int i = 0;
   cout << GREEN << "[PCA-parameterised appearances]" << RESET << endl;
-  for (auto model : aamCollection->getItems())
+  auto models = aamCollection->getItems();
+  for (auto model : models)
   {
     const Appearance* appearance = dynamic_cast<const Appearance*>(model);
     cout << CYAN << "... Encoding appearance # " << RESET << i << endl;

@@ -7,15 +7,16 @@ long long ModelCollection::generateUID()
 
 ModelCollection::~ModelCollection()
 {
-  if (this->verbose) 
-  {
-    auto cnt = fmt::format("({0} items)", this->items.size());
-    cout << YELLOW << "Cleaning up ModelCollection @" << getUID() << cnt  << RESET << endl;
-  }
+  #ifdef DEBUG 
+  auto cnt = fmt::format("({0} items)", this->items.size());
+  cout << YELLOW << "Cleaning up ModelCollection @" << getUID() << cnt  << RESET << endl;
+  #endif
 
   clear();
 
-  if (this->verbose) cout << "... ModelCollection @" << getUID() << " cleared and destroyed." << endl;
+  #ifdef DEBUG
+  cout << "... ModelCollection @" << getUID() << " cleared and destroyed." << endl;
+  #endif
 }
 
 void ModelCollection::clear()
@@ -45,25 +46,39 @@ BaseModel* ModelCollection::procrustesMean(double tol, int maxIter)
     return abs(e-e0)/min(e0,e);
   };
 
-  if (verbose) cout << GREEN << "[Calculating Procrustes mean]" << RESET << endl;
+  #ifdef DEBUG
+  cout << GREEN << "[Calculating Procrustes mean]" << RESET << endl;
+  #endif
+
   while (tl > tol && iter < maxIter)
   {
-    if (verbose) cout << CYAN << "... Aligning iter# " << RESET << iter << endl;
-    if (verbose) cout << "... Normalising rotation" << endl;
+    #ifdef DEBUG
+    cout << CYAN << "... Aligning iter# " << RESET << iter << endl;
+    cout << "... Normalising rotation" << endl;
+    #endif
+
     alignedSet->normaliseRotation();
     auto mean  = alignedSet->items[0];
     
-    if (verbose) cout << "... Calculating procrustes distance" << endl;
+    #ifdef DEBUG
+    cout << "... Calculating procrustes distance" << endl;
+    #endif
+
     double err = alignedSet->sumProcrustesDistance(mean);
 
-    if (verbose) cout << "... Error so far : " << err << endl;
-    if (verbose) cout << "... tol : " << tolerance(err, lastError) << endl;
+    #ifdef DEBUG
+    cout << "... Error so far : " << err << endl;
+    cout << "... tol : " << tolerance(err, lastError) << endl;
+    #endif
 
     iter++;
     tl = tolerance(err, lastError);
     lastError = err;
   }
-  if (verbose) cout << "... Alignment done" << endl;
+  
+  #ifdef DEBUG
+  cout << "... Alignment done" << endl;
+  #endif
 
   auto meanModel = alignedSet->items[0];
 
@@ -103,24 +118,28 @@ Mat ModelCollection::covariance(const BaseModel* mean) const
 
 ModelEncoder ModelCollection::pca(const BaseModel* mean) const
 {
-  if (verbose) cout << GREEN << "[Computing PCA]" << RESET << endl;
+  #ifdef DEBUG
+  cout << GREEN << "[Computing PCA]" << RESET << endl;
+  #endif
+
   Mat meanVector = mean->toRowVector();
   Mat data       = this->toMat();
-  if (verbose) 
-  {
-    cout << "... mean model size : " << meanVector.rows << " x " << meanVector.cols << endl;
-    cout << "... data size       : " << data.rows << " x " << data.cols << endl;
-  }
+
+  #ifdef DEBUG
+  cout << "... mean model size : " << meanVector.rows << " x " << meanVector.cols << endl;
+  cout << "... data size       : " << data.rows << " x " << data.cols << endl;
+  #endif
+
   auto pca = PCA(data, meanVector, CV_PCA_DATA_AS_ROW);
 
   // Collect lambdas
   // TAOTOREVIEW: Take only highest K lambda where K<N
   int N = pca.eigenvalues.rows;
-  if (verbose)
-  {
-    cout << "... eigenvalues  : " << N << endl;
-    cout << "... eigenvectors : " << pca.eigenvectors.rows << " x " << pca.eigenvectors.cols << endl;
-  }
+  
+  #ifdef DEBUG
+  cout << "... eigenvalues  : " << N << endl;
+  cout << "... eigenvectors : " << pca.eigenvectors.rows << " x " << pca.eigenvectors.cols << endl;
+  #endif
 
   // Compose a shape param set from eigenvalues
   return ModelEncoder(mean->toColVector(), pca.eigenvectors);

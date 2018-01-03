@@ -17,8 +17,8 @@ class AppearanceCollection : public ModelCollection
 {
 public:
   inline AppearanceCollection() : ModelCollection() {};
-  AppearanceCollection(const vector<BaseModel*>& models, bool isVerbose=false) : ModelCollection(models, isVerbose) {};
-  AppearanceCollection(const vector<Appearance*>& apps, bool isVerbose=false);
+  AppearanceCollection(const vector<BaseModel*>& models) : ModelCollection(models) {};
+  AppearanceCollection(const vector<Appearance*>& apps);
   AppearanceCollection(const AppearanceCollection& original);
 
   // ---------- Analysis -------------
