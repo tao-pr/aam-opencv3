@@ -72,16 +72,30 @@ unique_ptr<BaseModel> Appearance::clone() const
 Mat Appearance::toRowVector() const
 {
   auto bound = this->mesh.getBound();
-  int w = this->graphic.cols;
-  int h = this->graphic.rows;
-  int N = (w-bound.x) * (h-bound.y);
+  Mat convex = this->mesh.convexFill();
+  int M = countNonZero(convex);
 
-  Mat m(w-bound.x, h-bound.y, this->graphic.type());
+  cout << "M = " << M << endl; // TAODEBUG:
+
+  Mat m(1, M, CV_64FC1);
   
-  this->graphic(Rect(bound.x, bound.y, w-bound.x, h-bound.y)).copyTo(m);
-  Mat v = m.reshape(1, 1);
-  v.convertTo(v, CV_64FC1);
-  return v;
+  int n = 0;
+  for (int i=bound.x; i<bound.x+bound.width; i++)
+    for (int j=bound.y; j<bound.y+bound.height; j++)
+    {
+      if (convex.at<unsigned char>(j,i)>0)
+      {
+        auto v = this->graphic.at<Vec3b>(j,i);
+        unsigned char b = v[0];
+        unsigned char g = v[1];
+        unsigned char r = v[2];
+        m.at<double>(0,n) = (double)((r+g+b)/3); // TAOTOREVIEW: Find better gray scale formula for skin tone
+        ++n;  
+      }
+      if (n>=M) break;
+    }
+
+  return m;
 }
 
 Mat Appearance::toColVector() const 
