@@ -79,7 +79,7 @@ Mat Appearance::toRowVector() const
   Mat m(w-bound.x, h-bound.y, this->graphic.type());
   
   this->graphic(Rect(bound.x, bound.y, w-bound.x, h-bound.y)).copyTo(m);
-  Mat v = m.reshape(1, m.rows * m.cols);
+  Mat v = m.reshape(1, 1);
   v.convertTo(v, CV_64FC1);
   return v;
 }

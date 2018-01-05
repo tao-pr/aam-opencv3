@@ -67,13 +67,6 @@ Texture Texture::realignTo(const Triangle &newBound, Mat* newVertexRef, Mat* des
   Size srcSize      = Size(srcRect.width, srcRect.height);
   Size destSize     = Size(destRect.width, destRect.height);
 
-  #ifdef DEBUG
-  cout << "[Re-aligning texture]" << endl;
-  cout << "... " << srcTriangle << endl;
-  cout << "[to]" << endl;
-  cout << "... " << destTriangle << endl << endl;
-  #endif
-
   // Make sure the ROI is not exceeding the size of the image
   srcRect.width = min(srcRect.width, this->img->cols - srcRect.x);
   srcRect.height = min(srcRect.height, this->img->rows - srcRect.y);

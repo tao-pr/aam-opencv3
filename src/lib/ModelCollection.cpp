@@ -126,19 +126,19 @@ ModelEncoder ModelCollection::pca(const BaseModel* mean) const
   Mat data       = this->toMat();
 
   #ifdef DEBUG
-  cout << "... mean model size : " << meanVector.rows << " x " << meanVector.cols << endl;
-  cout << "... data size       : " << data.rows << " x " << data.cols << endl;
+  cout << "... mean model size : " << meanVector.size() << endl;
+  cout << "... data size       : " << data.size() << endl;
   #endif
 
+  // TAOTODO: FOr shape and appearance this [pca] it works differently ??
   auto pca = PCA(data, meanVector, CV_PCA_DATA_AS_ROW);
 
   // Collect lambdas
   // TAOTOREVIEW: Take only highest K lambda where K<N
-  int N = pca.eigenvalues.rows;
   
   #ifdef DEBUG
-  cout << "... eigenvalues  : " << N << endl;
-  cout << "... eigenvectors : " << pca.eigenvectors.rows << " x " << pca.eigenvectors.cols << endl;
+  cout << "... eigenvalues  : " << pca.eigenvalues.size() << endl;
+  cout << "... eigenvectors : " << pca.eigenvectors.size() << endl;
   #endif
 
   // Compose a shape param set from eigenvalues

@@ -16,7 +16,7 @@ void testMeshShape(char** argv)
 
 void testShape(char** argv)
 {
-  const int TRAIN_SET_SIZE = 16;
+  const int TRAIN_SET_SIZE = 32;
   const int SHAPE_SIZE     = 7;
   const double TOL         = 1e-3;
   const int MAX_ALIGN_ITER = 10;
@@ -86,7 +86,7 @@ void testShape(char** argv)
 
   // Calculate covariance
   cout << CYAN << "[#] Shape collection covariance " << RESET << endl;
-  auto cov = alignedSet->covariance(meanShape);
+  auto cov = alignedShapeSet->covariance(meanShape);
   Mat covResized;
   resize(cov, covResized, Size(CANVAS_SIZE, CANVAS_SIZE), INTER_LINEAR);
   normalize(covResized, covResized, 255, 0, NORM_L2);
@@ -95,12 +95,12 @@ void testShape(char** argv)
 
   // Calculate PCA shape
   cout << CYAN << "[#] Shape PCA " << RESET << endl;
-  auto eigenShape = alignedSet->clone()->pca(meanShape);
+  auto eigenShape = alignedShapeSet->clone()->pca(meanShape);
 
   // Encode shapes with PCA and measure the estimation errors
   int i = 0;
   cout << GREEN << "[PCA-parameterised shapes]" << RESET << endl;
-  for (auto model : alignedSet->getItems())
+  for (auto model : alignedShapeSet->getItems())
   {
     const Shape* shape = dynamic_cast<const Shape*>(model);
     cout << CYAN << "... Encoding shape # " << RESET << i << endl;
@@ -115,8 +115,8 @@ void testShape(char** argv)
 
 void testAAMCollection()
 {
-  const int TRAIN_SET_SIZE = 16;
-  const int SHAPE_SIZE     = 7;
+  const int TRAIN_SET_SIZE = 32;
+  const int SHAPE_SIZE     = 5;
   Mat backCanvas = Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3);
 
   auto aamCollection = initialAppearanceCollection(TRAIN_SET_SIZE, SHAPE_SIZE);
@@ -154,6 +154,9 @@ void testAAMCollection()
   // Calculate PCA appearance
   cout << CYAN << "[#] Appearance PCA " << RESET << endl;
   auto eigenAppearance = aamCollection->pca(meanAppearance);
+
+  // TAODEBUG:
+  cout << "PCA : " << endl;
 
   // Encode appearances with PCA and measure the estimation errors
   int i = 0;
@@ -272,7 +275,7 @@ int main(int argc, char** argv)
   cout << MAGENTA << " Shape model testing  " << RESET << endl;
   cout << MAGENTA << "**********************" << RESET << endl;
 
-  // testShape(argv);
+  testShape(argv);
 
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to texture model testing " << RESET << endl;

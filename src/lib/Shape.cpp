@@ -40,9 +40,6 @@ Point2d Shape::centroid() const
  */
 const double Shape::procrustesDistance(const BaseModel* that) const
 {
-  #ifdef DEBUG
-  cout << "BaseModelShape::procrustesDistance" << endl;
-  #endif
   double d       = 0.0;
   int N          = this->mat.rows;
   auto thatShape = dynamic_cast<const Shape*>(that);
@@ -187,15 +184,15 @@ Shape Shape::operator <<(Point2d shift) const
   return Shape(mat_);
 }
 
-Mat Shape::toRowVector() const
-{
-  return this->mat.reshape(1, 1);
-}
-
 Mat Shape::toColVector() const
 {
   int N = this->mat.rows;
-  return this->mat.reshape(1, N*2);
+  return this->mat.clone().reshape(1, N*2);
+}
+
+Mat Shape::toRowVector() const
+{
+  return this->mat.clone().reshape(1, 1);
 }
 
 Shape Shape::recentreAndScale(Point2d t, double scaleFactor) const

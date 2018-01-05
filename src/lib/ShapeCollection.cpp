@@ -98,9 +98,14 @@ void ShapeCollection::normaliseRotation()
  */
 Mat ShapeCollection::toMat() const
 {
-  int M = this->items[0]->getMat().rows;
   int N = this->items.size();
-  Mat m = Mat(N, M*2, CV_64FC1);
+  int M = this->items[0]->toRowVector().cols;
+  Mat m = Mat(N, M, CV_64FC1);
+
+  // TAODEBUG:
+  auto v  =this->items[0]->toRowVector();
+  cout << "v = " << v.rows << " x " << v.cols << endl;
+
   int j = 0;
   for (auto model : this->items)
   {
