@@ -75,15 +75,15 @@ Mat Appearance::toRowVector() const
   Mat convex = this->mesh.convexFill();
   int M = countNonZero(convex);
 
-  cout << "M = " << M << endl; // TAODEBUG:
-
+  // TAOTODO: Use some encoder feature
   Mat m(1, M, CV_64FC1);
-  
+
   int n = 0;
   for (int i=bound.x; i<bound.x+bound.width; i++)
     for (int j=bound.y; j<bound.y+bound.height; j++)
     {
-      if (convex.at<unsigned char>(j,i)>0)
+      if (i>=0 && j>=0 && i<this->graphic.cols && j<this->graphic.rows &&
+        convex.at<unsigned char>(j,i)>0)
       {
         auto v = this->graphic.at<Vec3b>(j,i);
         unsigned char b = v[0];
@@ -133,3 +133,32 @@ void Appearance::realignTo(MeshShape& newShape)
   this->graphic = warped;
 }
 
+void Appearance::resizeTo(double newScale)
+{
+  auto centre = this->mesh.centroid();
+
+  // Find the current scale
+  auto points = this->mesh.toPoints();
+  double maxDist = 0;
+  for (auto p : points)
+  {
+    double dist = Aux::sqrt(Aux::squareDistance(p, centre));
+    maxDist = max(dist, maxDist);
+  }
+
+  double ratio = newScale / Aux::sqrt(maxDist);
+
+  #ifdef DEBUG
+  cout << "Appearance::resizeTo : from " << maxDist << " -> " << newScale << " (scale = " << ratio << ")" << endl;
+  #endif
+
+
+  // Resize shape without translation
+  this->mesh = MeshShape(this->mesh * ratio);
+
+
+  // Resize texture without translation
+  auto bound = this->mesh.getBound();
+  Size newSize(bound.x + bound.width, bound.y + bound.height);
+  resize(this->graphic, this->graphic, newSize, 0, 0, INTER_NEAREST);
+}

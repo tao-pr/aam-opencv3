@@ -261,6 +261,18 @@ void testAppearance()
 
   moveWindow("aam", CANVAS_SIZE+15, 0);
   waitKey(300);
+
+  // Resize
+  int newSize = 500;
+  cout << "... Resizing Appearance model ..." << endl;
+  appr.resizeTo(newSize);
+  IO::WindowIO ioResized("resized");
+  Mat canvasResized = Mat::zeros(newSize, newSize, CV_8UC3);
+  rectangle(canvasResized, appr.getShape().getBound(), Scalar(240,200,000), 1);
+  appr.render(&ioResized, canvasResized);
+
+  moveWindow("resized", (CANVAS_SIZE+15)*2, 0);
+  waitKey(300);
 }
 
 int main(int argc, char** argv)
@@ -275,7 +287,7 @@ int main(int argc, char** argv)
   cout << MAGENTA << " Shape model testing  " << RESET << endl;
   cout << MAGENTA << "**********************" << RESET << endl;
 
-  testShape(argv);
+  // testShape(argv);
 
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to texture model testing " << RESET << endl;
@@ -291,13 +303,13 @@ int main(int argc, char** argv)
   // waitKey(0);
   // destroyAllWindows();
   
-  // testAppearance();
+  testAppearance();
 
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to AAM collection test" << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
   // waitKey(0);
-  // destroyAllWindows();
+  destroyAllWindows();
 
   testAAMCollection();
   waitKey(0);

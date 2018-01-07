@@ -22,7 +22,6 @@ public:
   Mat *vertexRef; // The memory block refers to the shared vertex mat
   Triangle bound;
 
-  // TAOTODO: Should have a weak binding to vertex mat 
   inline Texture(const Triangle& bound, Mat* v, Mat* a) : img(a), vertexRef(v), bound(bound) {};
   inline Texture(const Texture& original) : img(original.img), vertexRef(original.vertexRef), bound(original.bound) {};
   virtual inline ~Texture(){};
