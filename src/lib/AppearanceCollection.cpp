@@ -65,6 +65,21 @@ Mat AppearanceCollection::covariance(const BaseModel* mean) const
   return (1/(double)N) * cov;
 }
 
+unique_ptr<ModelCollection> AppearanceCollection::resizeTo(double newScale) const
+{
+  vector<Appearance*> newApps;
+  for (auto iter : this->items)
+  {
+    Appearance* app = dynamic_cast<Appearance*>(iter);
+    Appearance* newApp = new Appearance(*app);
+    newApp->resizeTo(newScale);
+    newApps.push_back(newApp);
+  }
+
+  unique_ptr<ModelCollection> ptr(new AppearanceCollection(newApps));
+  return ptr;
+}
+
 unique_ptr<ModelCollection> AppearanceCollection::toShapeCollection() const
 {
   vector<Shape*> listShapes;

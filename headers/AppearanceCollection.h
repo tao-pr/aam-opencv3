@@ -30,6 +30,7 @@ public:
   Mat toMat() const;
   unique_ptr<ModelCollection> clone() const;
   unique_ptr<ModelCollection> toShapeCollection() const;
+  unique_ptr<ModelCollection> resizeTo(double newScale) const;
 };
 
 #endif

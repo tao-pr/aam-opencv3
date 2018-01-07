@@ -134,8 +134,13 @@ void testAAMCollection()
     waitKey(100);
   }
 
+  // Reducing the size
+  int size = 500;
+  cout << CYAN << "[#] Reducing the size to ~ " << RESET << size << endl;
+  auto aamCollectionResized = aamCollection->resizeTo(size);
+
   // Compute procrustes mean of the collection
-  auto meanAppearance = dynamic_cast<Appearance*>(aamCollection->procrustesMean());
+  auto meanAppearance = dynamic_cast<Appearance*>(aamCollectionResized->procrustesMean());
   auto ioMean = IO::WindowIO("mean");
   meanAppearance->render(&ioMean, Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3));
   moveWindow("mean", CANVAS_SIZE + 10, 0);
@@ -143,28 +148,27 @@ void testAAMCollection()
 
   // Calculate covariance
   cout << CYAN << "[#] Appearance collection covariance " << RESET << endl;
-  auto cov = aamCollection->covariance(meanAppearance);
+  auto cov = aamCollectionResized->covariance(meanAppearance);
 
   Mat covResized;
   resize(cov, covResized, Size(CANVAS_SIZE, CANVAS_SIZE), INTER_LINEAR);
   normalize(covResized, covResized, 255, 0, NORM_L2);
   imshow("covariance", covResized);
   moveWindow("covariance", (CANVAS_SIZE+10),(CANVAS_SIZE+50));
+  
 
   // Calculate PCA appearance
   cout << CYAN << "[#] Appearance PCA " << RESET << endl;
-  auto eigenAppearance = aamCollection->pca(meanAppearance);
-
-  // TAODEBUG:
-  cout << "PCA : " << endl;
+  auto eigenAppearance = aamCollectionResized->pca(meanAppearance);
 
   // Encode appearances with PCA and measure the estimation errors
   int i = 0;
   cout << GREEN << "[PCA-parameterised appearances]" << RESET << endl;
-  auto models = aamCollection->getItems();
+  auto models = aamCollectionResized->getItems();
   for (auto model : models)
   {
     const Appearance* appearance = dynamic_cast<const Appearance*>(model);
+        
     cout << CYAN << "... Encoding appearance # " << RESET << i << endl;
     auto param = eigenAppearance.encode(appearance);
     cout << "... Decoding appearance # " << i << endl;
@@ -292,7 +296,7 @@ int main(int argc, char** argv)
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to texture model testing " << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
-  // waitKey(0);
+  // waitKey(2000);
   // destroyAllWindows();
 
   // testTexture(argv);
@@ -300,7 +304,7 @@ int main(int argc, char** argv)
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to appearance testing " << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
-  // waitKey(0);
+  // waitKey(2000);
   // destroyAllWindows();
   
   testAppearance();
@@ -308,7 +312,7 @@ int main(int argc, char** argv)
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to AAM collection test" << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
-  // waitKey(0);
+  waitKey(2000);
   destroyAllWindows();
 
   testAAMCollection();
