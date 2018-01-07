@@ -291,13 +291,13 @@ int main(int argc, char** argv)
   cout << MAGENTA << " Shape model testing  " << RESET << endl;
   cout << MAGENTA << "**********************" << RESET << endl;
 
-  // testShape(argv);
+  testShape(argv);
 
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to texture model testing " << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
-  // waitKey(2000);
-  // destroyAllWindows();
+  waitKey(2000);
+  destroyAllWindows();
 
   // testTexture(argv);
 
