@@ -71,12 +71,14 @@ unique_ptr<BaseModel> Appearance::clone() const
 
 Mat Appearance::toRowVector() const
 {
+  /**
+   * NOTE: assume the matrix contains 3 channels
+   */
   auto bound = this->mesh.getBound();
   Mat convex = this->mesh.convexFill();
   int M = countNonZero(convex);
 
-  // TAOTODO: Use some encoder feature
-  Mat m(1, M, CV_64FC1);
+  Mat m(1, M*3, CV_64FC1);
 
   int n = 0;
   for (int i=bound.x; i<bound.x+bound.width; i++)
@@ -89,10 +91,17 @@ Mat Appearance::toRowVector() const
         unsigned char b = v[0];
         unsigned char g = v[1];
         unsigned char r = v[2];
-        m.at<double>(0,n) = (double)((r+g+b)/3); // TAOTOREVIEW: Find better gray scale formula for skin tone
-        ++n;  
+        m.at<double>(0,n) = (double)(r);
+        m.at<double>(0,n+M) = (double)(g);
+        m.at<double>(0,n+M*2) = (double)(b);
+        ++n;
       }
-      if (n>=M) break;
+      if (n>=M) 
+      {
+        // TAODEBUG:
+        cout << RED << "pixels exceed expected range" << RESET << endl;
+        break;
+      }
     }
 
   return m;

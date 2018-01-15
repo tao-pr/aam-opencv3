@@ -25,6 +25,7 @@ public:
   Mat covariance(const BaseModel* mean) const;
   void normaliseRotation();
   virtual double sumProcrustesDistance(const BaseModel* targetModel) const;
+  virtual ModelEncoder pca(const BaseModel* mean) const;
   
   // ---------- I/O ------------------
   Mat toMat() const;

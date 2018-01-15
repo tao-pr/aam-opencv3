@@ -130,7 +130,6 @@ ModelEncoder ModelCollection::pca(const BaseModel* mean) const
   cout << "... data size       : " << data.size() << endl;
   #endif
 
-  // TAOTODO: FOr shape and appearance this [pca] it works differently ??
   auto pca = PCA(data, meanVector, CV_PCA_DATA_AS_ROW);
 
   // Collect lambdas

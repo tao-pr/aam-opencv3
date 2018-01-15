@@ -134,6 +134,41 @@ double AppearanceCollection::sumProcrustesDistance(const BaseModel* targetModel)
   // TAOTODO:
 }
 
+ModelEncoder AppearanceCollection::pca(const BaseModel* mean) const
+{
+  #ifdef DEBUG
+  cout << GREEN << "[Computing Appearance::PCA]" << RESET << endl;
+  #endif
+
+  // TAOTODO:
+  // Compute smaller version of zigma matrix which conforms:
+  // Zigma = (1/s) * (G_T . G)
+  //
+  // where G = [(g1 - mean) ... (gN - mean)]
+
+  Mat meanVector = mean->toRowVector();
+  Mat data       = this->toMat();
+
+  #ifdef DEBUG
+  cout << "... mean model size : " << meanVector.size() << endl;
+  cout << "... data size       : " << data.size() << endl;
+  #endif
+
+  // TAOTODO: alter this given the equation : zigma = ...
+  auto pca = PCA(data, meanVector, CV_PCA_DATA_AS_ROW);
+
+  // Collect lambdas
+  // TAOTOREVIEW: Take only highest K lambda where K<N
+  
+  #ifdef DEBUG
+  cout << "... eigenvalues  : " << pca.eigenvalues.size() << endl;
+  cout << "... eigenvectors : " << pca.eigenvectors.size() << endl;
+  #endif
+
+  // Compose a shape param set from eigenvalues
+  return ModelEncoder(mean->toColVector(), pca.eigenvectors);
+}
+
 unique_ptr<ModelCollection> AppearanceCollection::clone() const
 {
   #ifdef DEBUG
