@@ -67,7 +67,7 @@ Mat MeshShape::convexFill() const
   const Point* hulls[] = {hull.data()};
   const int counters[] = {(int)hull.size()};
   Mat hullFill = Mat::zeros(rect.height + rect.y, rect.width + rect.x, CV_8UC1);
-  fillPoly(hullFill, hulls, counters, 1, Scalar(255), LINE_8);  
+  fillPoly(hullFill, hulls, counters, 1, Scalar(255), LINE_8);
   return hullFill;
 }
 

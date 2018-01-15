@@ -75,36 +75,14 @@ Mat Appearance::toRowVector() const
    * NOTE: assume the matrix contains 3 channels
    */
   auto bound = this->mesh.getBound();
-  Mat convex = this->mesh.convexFill();
-  int M = countNonZero(convex);
+  auto N = bound.width * bound.height;
+  auto row = this->graphic(bound).clone().reshape(1,1).t(); 
 
-  Mat m(1, M*3, CV_64FC1);
+  // TAODEBUG:
+  cout << "graphic before reshape : " << bound.size() << endl;
+  cout << "graphic after reshape  : " << row.size() << endl;
 
-  int n = 0;
-  for (int i=bound.x; i<bound.x+bound.width; i++)
-    for (int j=bound.y; j<bound.y+bound.height; j++)
-    {
-      if (i>=0 && j>=0 && i<this->graphic.cols && j<this->graphic.rows &&
-        convex.at<unsigned char>(j,i)>0)
-      {
-        auto v = this->graphic.at<Vec3b>(j,i);
-        unsigned char b = v[0];
-        unsigned char g = v[1];
-        unsigned char r = v[2];
-        m.at<double>(0,n) = (double)(r);
-        m.at<double>(0,n+M) = (double)(g);
-        m.at<double>(0,n+M*2) = (double)(b);
-        ++n;
-      }
-      if (n>=M) 
-      {
-        // TAODEBUG:
-        cout << RED << "pixels exceed expected range" << RESET << endl;
-        break;
-      }
-    }
-
-  return m;
+  return row;
 }
 
 Mat Appearance::toColVector() const 
