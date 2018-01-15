@@ -76,13 +76,15 @@ Mat Appearance::toRowVector() const
    */
   auto bound = this->mesh.getBound();
   auto N = bound.width * bound.height;
-  auto row = this->graphic(bound).clone().reshape(1,1).t(); 
+  Mat row = this->graphic(bound).clone().reshape(1,1);
+  Mat rowDouble = Mat(row.size(), CV_64FC1);
+  row.convertTo(rowDouble, CV_64FC1);
 
   // TAODEBUG:
   cout << "graphic before reshape : " << bound.size() << endl;
   cout << "graphic after reshape  : " << row.size() << endl;
 
-  return row;
+  return rowDouble;
 }
 
 Mat Appearance::toColVector() const 

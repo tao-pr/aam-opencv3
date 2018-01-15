@@ -30,11 +30,15 @@ Mat AppearanceCollection::toMat() const
   int M = frontMat.cols;
   auto type = frontMat.type();
 
+  // TAODEBUG:
+  cout << "row mat : " << frontMat.rows << " x " << frontMat.cols << endl;
+
   Mat m = Mat(N, M, type);
 
   int j = 0;
   for (auto item : this->items)
   {
+    // TAOTODO: Maybe this is flawed
     item->toRowVector().row(0).copyTo(m.row(j));
     ++j;
   }
@@ -60,6 +64,7 @@ Mat AppearanceCollection::covariance(const BaseModel* mean) const
 
     auto app = static_cast<Appearance*>(item);
     auto res = app->toRowVector() - meanVector;
+
     cov = cov + res * res.t();
   }
   return (1/(double)N) * cov;
@@ -140,9 +145,11 @@ ModelEncoder AppearanceCollection::pca(const BaseModel* mean) const
   cout << GREEN << "[Computing Appearance::PCA]" << RESET << endl;
   #endif
 
-  // TAOTODO:
   // Compute smaller version of zigma matrix which conforms:
+  //
   // Zigma = (1/s) * (G_T . G)
+  //
+  //        *instead of zigma = (1/s) * (G . G_T) which is dimentionally large
   //
   // where G = [(g1 - mean) ... (gN - mean)]
 
