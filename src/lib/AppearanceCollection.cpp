@@ -30,15 +30,11 @@ Mat AppearanceCollection::toMat() const
   int M = frontMat.cols;
   auto type = frontMat.type();
 
-  // TAODEBUG:
-  cout << "row mat : " << frontMat.rows << " x " << frontMat.cols << endl;
-
   Mat m = Mat(N, M, type);
 
   int j = 0;
   for (auto item : this->items)
   {
-    // TAOTODO: Maybe this is flawed
     item->toRowVector().row(0).copyTo(m.row(j));
     ++j;
   }
@@ -161,19 +157,25 @@ ModelEncoder AppearanceCollection::pca(const BaseModel* mean) const
   cout << "... data size       : " << data.size() << endl;
   #endif
 
-  // TAOTODO: alter this given the equation : zigma = ...
-  auto pca = PCA(data, meanVector, CV_PCA_DATA_AS_ROW);
+  int N = data.rows;
+  int M = data.cols;
 
-  // Collect lambdas
-  // TAOTOREVIEW: Take only highest K lambda where K<N
+  Mat eigenvalues(M, 1, CV_64FC1);
+  Mat eigenvectors(M, M, CV_64FC1);
+
   
+  Mat covar( N, N, CV_64FC1 );
+  int fl = COVAR_SCRAMBLED | COVAR_USE_AVG | COVAR_ROWS;
+  calcCovarMatrix( data, covar, meanVector, fl, CV_64FC1 );
+  eigen( covar, eigenvalues, eigenvectors );
+
   #ifdef DEBUG
-  cout << "... eigenvalues  : " << pca.eigenvalues.size() << endl;
-  cout << "... eigenvectors : " << pca.eigenvectors.size() << endl;
+  cout << "... eigenvalues  : " << eigenvalues.size() << endl;
+  cout << "... eigenvectors : " << eigenvectors.size() << endl;
   #endif
 
   // Compose a shape param set from eigenvalues
-  return ModelEncoder(mean->toColVector(), pca.eigenvectors);
+  return ModelEncoder(mean->toColVector(), eigenvectors);
 }
 
 unique_ptr<ModelCollection> AppearanceCollection::clone() const

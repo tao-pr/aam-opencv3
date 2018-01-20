@@ -80,10 +80,6 @@ Mat Appearance::toRowVector() const
   Mat rowDouble = Mat(row.size(), CV_64FC1);
   row.convertTo(rowDouble, CV_64FC1);
 
-  // TAODEBUG:
-  cout << "graphic before reshape : " << bound.size() << endl;
-  cout << "graphic after reshape  : " << row.size() << endl;
-
   return rowDouble;
 }
 
