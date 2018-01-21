@@ -141,11 +141,11 @@ ModelEncoder AppearanceCollection::pca(const BaseModel* mean) const
   cout << GREEN << "[Computing Appearance::PCA]" << RESET << endl;
   #endif
 
-  // Compute smaller version of zigma matrix which conforms:
+  // Compute covariance with scrambled method
   //
-  // Zigma = (1/s) * (G_T . G)
-  //
-  //        *instead of zigma = (1/s) * (G . G_T) which is dimentionally large
+  // instead of Cov  = (1/s) * (G . G_T) which is dimentionally large
+  // 
+  // We compute Cov' = (1/s) * (G_T . G)
   //
   // where G = [(g1 - mean) ... (gN - mean)]
 
@@ -161,10 +161,9 @@ ModelEncoder AppearanceCollection::pca(const BaseModel* mean) const
   int M = data.cols;
 
   Mat eigenvalues(M, 1, CV_64FC1);
-  Mat eigenvectors(M, M, CV_64FC1);
-
-  
+  Mat eigenvectors(N, N, CV_64FC1);
   Mat covar( N, N, CV_64FC1 );
+
   int fl = COVAR_SCRAMBLED | COVAR_USE_AVG | COVAR_ROWS;
   calcCovarMatrix( data, covar, meanVector, fl, CV_64FC1 );
   eigen( covar, eigenvalues, eigenvectors );
