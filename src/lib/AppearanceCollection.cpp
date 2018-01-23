@@ -160,21 +160,48 @@ ModelEncoder AppearanceCollection::pca(const BaseModel* mean) const
   int N = data.rows;
   int M = data.cols;
 
-  Mat eigenvalues(M, 1, CV_64FC1);
+  Mat eigenvalues(N, 1, CV_64FC1);
   Mat eigenvectors(N, N, CV_64FC1);
-  Mat covar( N, N, CV_64FC1 );
 
-  int fl = COVAR_SCRAMBLED | COVAR_USE_AVG | COVAR_ROWS;
-  calcCovarMatrix( data, covar, meanVector, fl, CV_64FC1 );
-  eigen( covar, eigenvalues, eigenvectors );
+  Mat G(N, M, CV_64FC1);
+  Mat phi(N, N, CV_64FC1);
+  Mat covar(N, N, CV_64FC1);
+
+  // NOTE: also scale down the magnitudes to (0~1)
+  for (int n=0; n<N; n++)
+  {
+    G.row(n) = (data.row(n) - meanVector)/255.0f;
+  }
+
+  covar = (G * G.t());
+  cout << "... covariance : " << covar.size() << endl;
+
+  // double det = determinant(covar);
+  // cout << "... det cov : " << det << endl; // TAODEBUG:
+  // covar = covar.mul(1/det);
+
+  eigen(covar, eigenvalues, eigenvectors);
 
   #ifdef DEBUG
   cout << "... eigenvalues  : " << eigenvalues.size() << endl;
   cout << "... eigenvectors : " << eigenvectors.size() << endl;
-  #endif
+  #endif  
+  
+  phi = G * eigenvectors; // [N x N] x [N x N]
+
+  cout << "... phi : " << phi.size() << endl; // TAODEBUG:
+
+  // Normalise each column of phi by eigen values
+  for (int i=0; i<N; i++)
+  {
+    double lambda = eigenvalues.at<double>(i,0);
+    phi.row(i) = phi.row(i).mul(1/lambda);
+  }
+
+  cout << "... phi : " << phi.size() << endl; // TAODEBUG:
 
   // Compose a shape param set from eigenvalues
-  return ModelEncoder(mean->toColVector(), eigenvectors);
+  return ModelEncoder(mean->toColVector(), phi);
 }
 
 unique_ptr<ModelCollection> AppearanceCollection::clone() const
