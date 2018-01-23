@@ -141,13 +141,16 @@ ModelEncoder AppearanceCollection::pca(const BaseModel* mean) const
   cout << GREEN << "[Computing Appearance::PCA]" << RESET << endl;
   #endif
 
-  // Compute covariance with scrambled method
-  //
-  // instead of Cov  = (1/s) * (G . G_T) which is dimentionally large
-  // 
-  // We compute Cov' = (1/s) * (G_T . G)
-  //
-  // where G = [(g1 - mean) ... (gN - mean)]
+  /*
+
+  Compute covariance with scrambled method
+
+  instead of Cov  = (1/s) * (G . G_T) which is dimentionally large
+
+  We compute Cov' = (1/s) * (G_T . G)
+          where G = [(g1 - mean) ... (gN - mean)]
+  
+  */
 
   Mat meanVector = mean->toRowVector();
   Mat data       = this->toMat();
@@ -164,16 +167,17 @@ ModelEncoder AppearanceCollection::pca(const BaseModel* mean) const
   Mat eigenvectors(N, N, CV_64FC1);
 
   Mat G(N, M, CV_64FC1);
-  Mat phi(M, 1, CV_64FC1);
   Mat covar(N, N, CV_64FC1);
+  Mat phi(M, N, CV_64FC1);
+  Mat lambda(M, 1, CV_64FC1);
 
   // NOTE: also scale down the magnitudes to (0~1)
   for (int n=0; n<N; n++)
   {
     G.row(n) = (data.row(n) - meanVector)/255.0f;
   }
-
-  covar = (G * G.t());
+  Mat Gt = G.t();
+  covar = (G * Gt);
   eigen(covar, eigenvalues, eigenvectors);
 
   #ifdef DEBUG
@@ -182,16 +186,24 @@ ModelEncoder AppearanceCollection::pca(const BaseModel* mean) const
   cout << "... eigenvectors : " << eigenvectors.size() << endl;
   #endif
 
-  // Project the eigenvalues of size [N] 
-  // to eigenvalues of size [M] (original)
-  phi = G.t() * eigenvalues; // [M x N] x [N x 1] => [M x 1]
+  // Project the eigenvectors of size [N] 
+  // to eigenvectors of size [M] (original)  
+  phi = Gt * eigenvectors;   // [M x N] x [N x N] => [M x N]
+  lambda = Gt * eigenvalues; // [M x N] x [N x 1] => [M x 1]
 
   #ifdef DEBUG
   cout << "... phi : " << phi.size() << endl;
   #endif
 
+  // Scale the projected eigenvectors by associated eigenvalues
+  for (int m=0; m<M; m++)
+  {
+    double lm = lambda.at<double>(m,0);
+    phi.row(m) = phi.row(m).mul(1/Aux::sqrt(lm));
+  }
+
   // Compose a shape param set from eigenvalues
-  return ModelEncoder(mean->toColVector(), phi);
+  return ModelEncoder(meanVector.t(), phi);
 }
 
 unique_ptr<ModelCollection> AppearanceCollection::clone() const
