@@ -165,10 +165,11 @@ ModelEncoder AppearanceCollection::pca(const BaseModel* mean) const
 
   Mat eigenvalues(N, 1, CV_64FC1);
   Mat eigenvectors(N, N, CV_64FC1);
+  Mat eigenvectorsPadded = Mat::zeros(N, M, CV_64FC1);
 
   Mat G(N, M, CV_64FC1);
   Mat covar(N, N, CV_64FC1);
-  Mat phi(M, N, CV_64FC1);
+  Mat phi(M, M, CV_64FC1);
   Mat lambda(M, 1, CV_64FC1);
 
   // NOTE: also scale down the magnitudes to (0~1)
@@ -186,9 +187,15 @@ ModelEncoder AppearanceCollection::pca(const BaseModel* mean) const
   cout << "... eigenvectors : " << eigenvectors.size() << endl;
   #endif
 
+  // Copy eigenvectors to the padded space
+  for (int n=0; n<N; n++)
+  {
+    eigenvectorsPadded.col(n) = eigenvectors.col(n);
+  }
+
   // Project the eigenvectors of size [N] 
   // to eigenvectors of size [M] (original)  
-  phi = Gt * eigenvectors;   // [M x N] x [N x N] => [M x N]
+  phi = Gt * eigenvectorsPadded;   // [M x N] x [N x M] => [M x M]
   lambda = Gt * eigenvalues; // [M x N] x [N x 1] => [M x 1]
 
   #ifdef DEBUG
@@ -196,14 +203,20 @@ ModelEncoder AppearanceCollection::pca(const BaseModel* mean) const
   #endif
 
   // Scale the projected eigenvectors by associated eigenvalues
-  for (int m=0; m<M; m++)
+  // (Take only upto N elements)
+  Mat outEigenVectors(N, N, CV_64FC1);
+  for (int m=0; m<N; m++)
   {
     double lm = lambda.at<double>(m,0);
-    phi.row(m) = phi.row(m).mul(1/Aux::sqrt(lm));
+    outEigenVectors.row(m) = phi.row(m).mul(1/Aux::sqrt(lm));
   }
 
+  #ifdef DEBUG
+  cout << "... projected eigenvectors : " << outEigenVectors.size() << endl;
+  #endif
+
   // Compose a shape param set from eigenvalues
-  return ModelEncoder(meanVector.t(), phi);
+  return ModelEncoder(meanVector.t(), outEigenVectors);
 }
 
 unique_ptr<ModelCollection> AppearanceCollection::clone() const
