@@ -167,17 +167,18 @@ ModelEncoder AppearanceCollection::pca(const BaseModel* mean) const
   #endif
 
   auto pca = PCA(data, meanVector, CV_PCA_DATA_AS_ROW);
-
-  // Collect lambdas
-  // TAOTOREVIEW: Take only highest K lambda where K<N
+  
+  // Pad eigenvectors from [NxM] => [MxM]
+  Mat paddedEigenVectors = Mat::zeros(maxSize, maxSize, CV_64FC1);
+  pca.eigenvectors.copyTo(paddedEigenVectors);
   
   #ifdef DEBUG
   cout << "... eigenvalues  : " << pca.eigenvalues.size() << endl;
-  cout << "... eigenvectors : " << pca.eigenvectors.size() << endl;
+  cout << "... eigenvectors : " << paddedEigenVectors.size() << endl;
   #endif
 
   // Compose a shape param set from eigenvalues
-  return ModelEncoder(mean->toColVector(), pca.eigenvectors);
+  return ModelEncoder(meanVector.t(), paddedEigenVectors);
 }
 
 unique_ptr<ModelCollection> AppearanceCollection::clone() const

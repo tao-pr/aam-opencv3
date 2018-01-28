@@ -19,12 +19,15 @@ protected:
   Mat eigen;
   Mat eigen_1; // Invert of eigen matrix (NxN)
 public:
-  ModelEncoder(Mat mean, Mat eigen) : mean(mean), eigen(eigen), eigen_1(eigen.inv()) {};
+  //ModelEncoder(Mat mean, Mat eigen) : mean(mean), eigen(eigen), eigen_1(eigen.inv()) {};
+  ModelEncoder(Mat mean, Mat eigen) : mean(mean), eigen(eigen), eigen_1(ModelEncoder::safeInverse(eigen)) {};
   virtual ~ModelEncoder(){};
   
   Shape toShape(const ModelParameters &s) const;
   Appearance toAppearance(const ModelParameters &s, const MeshShape* meanShape) const;
   Mat encode(const BaseModel* m) const;
+
+  static Mat safeInverse(const Mat& m);
 };
 
 /**

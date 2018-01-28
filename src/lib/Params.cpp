@@ -1,5 +1,19 @@
 #include "Params.h"
 
+Mat ModelEncoder::safeInverse(const Mat& m)
+{
+  if (m.cols == m.rows) return m.inv();
+  else 
+  {
+    int n = min(m.cols, m.rows);
+    Mat m_ = m(Rect(0,0,n,n));
+    #ifdef DEBUG
+    cout << "safeInverse : instead of " << m.size() << ", this computes " << m_.size() << endl;
+    #endif
+    return m_.inv();
+  }
+}
+
 /**
  * Convert a parameter set to a shape
  */
