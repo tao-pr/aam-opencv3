@@ -29,6 +29,7 @@ public:
   
   // ---------- I/O ------------------
   Mat toMat() const;
+  Mat toMatReduced(int maxSize) const;
   unique_ptr<ModelCollection> clone() const;
   unique_ptr<ModelCollection> toShapeCollection() const;
   unique_ptr<ModelCollection> resizeTo(double newScale) const;

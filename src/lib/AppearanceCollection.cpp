@@ -41,6 +41,21 @@ Mat AppearanceCollection::toMat() const
   return m;
 }
 
+Mat AppearanceCollection::toMatReduced(int maxSize) const
+{
+  int N = this->items.size();
+  Mat m = Mat(N, maxSize, CV_64FC1);
+
+  int j = 0;
+  for (auto item : this->items)
+  {
+    Appearance* app = dynamic_cast<Appearance*>(item);
+    app->toRowVectorReduced(maxSize).row(0).copyTo(m.row(j));
+    ++j;
+  }
+  return m;
+}
+
 Mat AppearanceCollection::covariance(const BaseModel* mean) const
 {
   const Appearance* meanAppearance = static_cast<const Appearance*>(mean);
@@ -141,82 +156,28 @@ ModelEncoder AppearanceCollection::pca(const BaseModel* mean) const
   cout << GREEN << "[Computing Appearance::PCA]" << RESET << endl;
   #endif
 
-  /*
-
-  Compute covariance with scrambled method
-
-  instead of Cov  = (1/s) * (G . G_T) which is dimentionally large
-
-  We compute Cov' = (1/s) * (G_T . G)
-          where G = [(g1 - mean) ... (gN - mean)]
-  
-  */
-
-  Mat meanVector = mean->toRowVector();
-  Mat data       = this->toMat();
+  // Reduce the size of the texture
+  const int maxSize  = 100; // TAOTODO: make this configurable through class
+  Mat meanVector = (dynamic_cast<const Appearance*>(mean))->toRowVectorReduced(maxSize);
+  Mat data       = this->toMatReduced(maxSize);
 
   #ifdef DEBUG
   cout << "... mean model size : " << meanVector.size() << endl;
   cout << "... data size       : " << data.size() << endl;
   #endif
 
-  int N = data.rows;
-  int M = data.cols;
+  auto pca = PCA(data, meanVector, CV_PCA_DATA_AS_ROW);
 
-  Mat eigenvalues(N, 1, CV_64FC1);
-  Mat eigenvectors(N, N, CV_64FC1);
-  Mat eigenvectorsPadded = Mat::zeros(N, M, CV_64FC1);
-
-  Mat G(N, M, CV_64FC1);
-  Mat covar(N, N, CV_64FC1);
-  Mat phi(M, M, CV_64FC1);
-  Mat lambda(M, 1, CV_64FC1);
-
-  // NOTE: also scale down the magnitudes to (0~1)
-  for (int n=0; n<N; n++)
-  {
-    G.row(n) = (data.row(n) - meanVector)/255.0f;
-  }
-  Mat Gt = G.t();
-  covar = (G * Gt);
-  eigen(covar, eigenvalues, eigenvectors);
-
+  // Collect lambdas
+  // TAOTOREVIEW: Take only highest K lambda where K<N
+  
   #ifdef DEBUG
-  cout << "... covariance : " << covar.size() << endl;
-  cout << "... eigenvalues  : " << eigenvalues.size() << endl;
-  cout << "... eigenvectors : " << eigenvectors.size() << endl;
-  #endif
-
-  // Copy eigenvectors to the padded space
-  for (int n=0; n<N; n++)
-  {
-    eigenvectorsPadded.col(n) = eigenvectors.col(n);
-  }
-
-  // Project the eigenvectors of size [N] 
-  // to eigenvectors of size [M] (original)  
-  phi = Gt * eigenvectorsPadded;   // [M x N] x [N x M] => [M x M]
-  lambda = Gt * eigenvalues; // [M x N] x [N x 1] => [M x 1]
-
-  #ifdef DEBUG
-  cout << "... phi : " << phi.size() << endl;
-  #endif
-
-  // Scale the projected eigenvectors by associated eigenvalues
-  // (Take only upto N elements)
-  Mat outEigenVectors(N, N, CV_64FC1);
-  for (int m=0; m<N; m++)
-  {
-    double lm = lambda.at<double>(m,0);
-    outEigenVectors.row(m) = phi.row(m).mul(1/Aux::sqrt(lm));
-  }
-
-  #ifdef DEBUG
-  cout << "... projected eigenvectors : " << outEigenVectors.size() << endl;
+  cout << "... eigenvalues  : " << pca.eigenvalues.size() << endl;
+  cout << "... eigenvectors : " << pca.eigenvectors.size() << endl;
   #endif
 
   // Compose a shape param set from eigenvalues
-  return ModelEncoder(meanVector.t(), outEigenVectors);
+  return ModelEncoder(mean->toColVector(), pca.eigenvectors);
 }
 
 unique_ptr<ModelCollection> AppearanceCollection::clone() const

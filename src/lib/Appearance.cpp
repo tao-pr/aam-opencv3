@@ -83,6 +83,14 @@ Mat Appearance::toRowVector() const
   return rowDouble;
 }
 
+Mat Appearance::toRowVectorReduced(int maxSize) const 
+{
+  Mat rowVec = toRowVector();
+  Mat reduced(1, maxSize, CV_64FC1);
+  resize(rowVec, reduced, Size(1, maxSize));
+  return reduced;
+}
+
 Mat Appearance::toColVector() const 
 {
   auto rowVec = this->toRowVector();

@@ -31,6 +31,7 @@ public:
   Mat getMat() const { return this->toRowVector(); };
   unique_ptr<BaseModel> clone() const;
   Mat toRowVector() const;
+  Mat toRowVectorReduced(int maxSize) const;
   Mat toColVector() const;
   MeshShape getShape() const { return this->mesh; };
   vector<Texture> getTextures() const { return this->textureList; };
