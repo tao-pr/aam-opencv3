@@ -95,7 +95,7 @@ void testShape(char** argv)
 
   // Calculate PCA shape
   cout << CYAN << "[#] Shape PCA " << RESET << endl;
-  auto eigenShape = alignedShapeSet->clone()->pca(meanShape);
+  auto eigenShape = alignedShapeSet->clone()->pca(meanShape, -1);
 
   // Encode shapes with PCA and measure the estimation errors
   int i = 0;
@@ -117,6 +117,8 @@ void testAAMCollection()
 {
   const int TRAIN_SET_SIZE = 32;
   const int SHAPE_SIZE     = 5;
+  const int MAX_TEXTURE_SIZE = 32;
+
   Mat backCanvas = Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3);
 
   auto aamCollection = initialAppearanceCollection(TRAIN_SET_SIZE, SHAPE_SIZE);
@@ -159,7 +161,7 @@ void testAAMCollection()
 
   // Calculate PCA appearance
   cout << CYAN << "[#] Appearance PCA " << RESET << endl;
-  auto eigenAppearance = aamCollectionResized->pca(meanAppearance);
+  auto eigenAppearance = aamCollectionResized->pca(meanAppearance, MAX_TEXTURE_SIZE);
 
   // Encode appearances with PCA and measure the estimation errors
   int i = 0;

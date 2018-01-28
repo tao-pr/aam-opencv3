@@ -25,11 +25,11 @@ public:
   Mat covariance(const BaseModel* mean) const;
   void normaliseRotation();
   virtual double sumProcrustesDistance(const BaseModel* targetModel) const;
-  virtual ModelEncoder pca(const BaseModel* mean) const;
+  virtual ModelEncoder pca(const BaseModel* mean, int maxDimension) const;
   
   // ---------- I/O ------------------
   Mat toMat() const;
-  Mat toMatReduced(int maxSize) const;
+  Mat toMatReduced(int maxDimension) const;
   unique_ptr<ModelCollection> clone() const;
   unique_ptr<ModelCollection> toShapeCollection() const;
   unique_ptr<ModelCollection> resizeTo(double newScale) const;

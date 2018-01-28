@@ -116,7 +116,10 @@ Mat ModelCollection::covariance(const BaseModel* mean) const
   return cov * (1/M);
 }
 
-ModelEncoder ModelCollection::pca(const BaseModel* mean) const
+/**
+ * NOTE: In general, [maxDimension] argument is ignore for the generic model collection
+ */
+ModelEncoder ModelCollection::pca(const BaseModel* mean, int maxDimension) const
 {
   #ifdef DEBUG
   cout << GREEN << "[Computing PCA]" << RESET << endl;

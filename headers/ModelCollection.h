@@ -30,7 +30,7 @@ public:
   virtual double sumProcrustesDistance(const BaseModel* targetModel) const;
   virtual void normaliseRotation();
   virtual Mat covariance(const BaseModel* mean) const;
-  virtual ModelEncoder pca(const BaseModel* mean) const;
+  virtual ModelEncoder pca(const BaseModel* mean, int maxDimension) const;
 
 };
 
