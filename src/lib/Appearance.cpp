@@ -87,7 +87,7 @@ Mat Appearance::toRowVectorReduced(int maxSize) const
 {
   Mat rowVec = toRowVector();
   Mat reduced(1, maxSize, CV_64FC1);
-  resize(rowVec, reduced, Size(1, maxSize));
+  resize(rowVec, reduced, reduced.size());
   return reduced;
 }
 
