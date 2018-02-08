@@ -117,7 +117,7 @@ void testAAMCollection()
 {
   const int TRAIN_SET_SIZE = 32;
   const int SHAPE_SIZE     = 5;
-  const int MAX_TEXTURE_SIZE = 32;
+  const int MAX_TEXTURE_SIZE = 128;
 
   Mat backCanvas = Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3);
 
@@ -309,13 +309,13 @@ int main(int argc, char** argv)
   // waitKey(2000);
   // destroyAllWindows();
   
-  testAppearance();
+  // testAppearance();
 
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to AAM collection test" << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
-  waitKey(2000);
-  destroyAllWindows();
+  // waitKey(2000);
+  // destroyAllWindows();
 
   testAAMCollection();
   waitKey(0);

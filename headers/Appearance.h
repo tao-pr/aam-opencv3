@@ -14,6 +14,7 @@ class Appearance : public BaseModel
 {
 private:
 protected:
+  
   Mat graphic;
   MeshShape mesh;
   vector<Texture> textureList;

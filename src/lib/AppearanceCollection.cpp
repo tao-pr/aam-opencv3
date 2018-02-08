@@ -150,14 +150,15 @@ double AppearanceCollection::sumProcrustesDistance(const BaseModel* targetModel)
   // TAOTODO:
 }
 
-ModelEncoder AppearanceCollection::pca(const BaseModel* mean, int maxDimension) const
+ModelPCA* AppearanceCollection::pca(const BaseModel* mean, int maxDimension) const
 {
   #ifdef DEBUG
   cout << GREEN << "[Computing Appearance::PCA]" << RESET << endl;
   #endif
 
   // Reduce the size of the texture
-  Mat meanVector = (dynamic_cast<const Appearance*>(mean))->toRowVectorReduced(maxDimension);
+  auto meanApp   = dynamic_cast<const Appearance*>(mean);
+  Mat meanVector = meanApp->toRowVectorReduced(maxDimension);
   Mat data       = this->toMatReduced(maxDimension);
 
   #ifdef DEBUG
@@ -168,16 +169,16 @@ ModelEncoder AppearanceCollection::pca(const BaseModel* mean, int maxDimension) 
   auto pca = PCA(data, meanVector, CV_PCA_DATA_AS_ROW);
   
   // Pad eigenvectors from [NxM] => [MxM]
-  Mat paddedEigenVectors = Mat::zeros(maxDimension, maxDimension, CV_64FC1);
-  pca.eigenvectors.copyTo(paddedEigenVectors);
+  // Mat paddedEigenVectors = Mat::zeros(maxDimension, maxDimension, CV_64FC1);
+  // pca.eigenvectors.copyTo(paddedEigenVectors);
   
   #ifdef DEBUG
   cout << "... eigenvalues  : " << pca.eigenvalues.size() << endl;
-  cout << "... eigenvectors : " << paddedEigenVectors.size() << endl;
+  cout << "... eigenvectors : " << pca.eigenvectors.size() << endl;
   #endif
 
   // Compose a shape param set from eigenvalues
-  return ModelEncoder(meanVector.t(), paddedEigenVectors);
+  return new AppearanceModelPCA(pca, meanApp->getShape());
 }
 
 unique_ptr<ModelCollection> AppearanceCollection::clone() const

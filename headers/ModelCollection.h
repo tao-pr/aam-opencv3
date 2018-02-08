@@ -4,6 +4,7 @@
 #include "master.h"
 #include "Params.h"
 #include "BaseModel.h"
+#include "ModelPCA.h"
 
 class ModelCollection 
 {
@@ -30,7 +31,7 @@ public:
   virtual double sumProcrustesDistance(const BaseModel* targetModel) const;
   virtual void normaliseRotation();
   virtual Mat covariance(const BaseModel* mean) const;
-  virtual ModelEncoder pca(const BaseModel* mean, int maxDimension) const;
+  virtual ModelPCA* pca(const BaseModel* mean, int maxDimension) const;
 
 };
 

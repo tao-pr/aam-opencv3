@@ -12,6 +12,7 @@
 #include "ModelCollection.h"
 #include "ShapeCollection.h"
 #include "Params.h"
+#include "ModelPCA.h"
 
 class AppearanceCollection : public ModelCollection
 {
@@ -25,7 +26,7 @@ public:
   Mat covariance(const BaseModel* mean) const;
   void normaliseRotation();
   virtual double sumProcrustesDistance(const BaseModel* targetModel) const;
-  virtual ModelEncoder pca(const BaseModel* mean, int maxDimension) const;
+  virtual ModelPCA* pca(const BaseModel* mean, int maxDimension) const;
   
   // ---------- I/O ------------------
   Mat toMat() const;

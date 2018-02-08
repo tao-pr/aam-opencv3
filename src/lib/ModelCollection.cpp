@@ -119,7 +119,7 @@ Mat ModelCollection::covariance(const BaseModel* mean) const
 /**
  * NOTE: In general, [maxDimension] argument is ignore for the generic model collection
  */
-ModelEncoder ModelCollection::pca(const BaseModel* mean, int maxDimension) const
+ModelPCA* ModelCollection::pca(const BaseModel* mean, int maxDimension) const
 {
   #ifdef DEBUG
   cout << GREEN << "[Computing PCA]" << RESET << endl;
@@ -143,6 +143,6 @@ ModelEncoder ModelCollection::pca(const BaseModel* mean, int maxDimension) const
   cout << "... eigenvectors : " << pca.eigenvectors.size() << endl;
   #endif
 
-  // Compose a shape param set from eigenvalues
-  return ModelEncoder(mean->toColVector(), pca.eigenvectors);
+  // Create a Shape model PCA by default
+  return new ShapeModelPCA(pca);
 }

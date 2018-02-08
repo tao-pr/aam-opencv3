@@ -12,22 +12,23 @@ class ModelParameters;
  * Common encoder for the model.
  * Multiple models may share the same [[ModelEncoder]].
  */
-class ModelEncoder
+class ModelEncoder // TAOTODO: Store [[PCA]] object here instead
 {
 protected:
   Mat mean; // Mean column vector
   Mat eigen;
   Mat eigen_1; // Invert of eigen matrix (NxN)
+  PCA pca;
 public:
-  //ModelEncoder(Mat mean, Mat eigen) : mean(mean), eigen(eigen), eigen_1(eigen.inv()) {};
-  ModelEncoder(Mat mean, Mat eigen) : mean(mean), eigen(eigen), eigen_1(ModelEncoder::safeInverse(eigen)) {};
+  ModelEncoder(PCA& p) : pca(p) {};
+  //ModelEncoder(Mat mean, Mat eigen) : mean(mean), eigen(eigen), eigen_1(ModelEncoder::safeInverse(eigen)) {};
   virtual ~ModelEncoder(){};
   
   Shape toShape(const ModelParameters &s) const;
   Appearance toAppearance(const ModelParameters &s, const MeshShape* meanShape) const;
   Mat encode(const BaseModel* m) const;
 
-  static Mat safeInverse(const Mat& m);
+  // static Mat safeInverse(const Mat& m);
 };
 
 /**
