@@ -6,6 +6,7 @@
 #include "Shape.h"
 #include "Appearance.h"
 
+// TAOTODO: Deprecate this module
 class ModelParameters;
 
 /**

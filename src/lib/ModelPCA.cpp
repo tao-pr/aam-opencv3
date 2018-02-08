@@ -1,6 +1,6 @@
 #include "ModelPCA.h"
 
-Mat ModelPCA::toParam(BaseModel* m) const
+Mat ModelPCA::toParam(const BaseModel* m) const
 {
   Mat vec = m->toRowVector();
   return this->pca.project(vec);
@@ -8,12 +8,17 @@ Mat ModelPCA::toParam(BaseModel* m) const
 
 BaseModel* ShapeModelPCA::mean() const
 {
-  return new Shape(this->pca.mean);
+  return new MeshShape(this->pca.mean);
 }
 
 BaseModel* ShapeModelPCA::toModel(const Mat& param) const 
 {
-  return new Shape(this->pca.backProject(param));
+  return toShape(param);
+}
+
+MeshShape* ShapeModelPCA::toShape(const Mat& param) const
+{
+  return new MeshShape(this->pca.backProject(param));
 }
 
 BaseModel* AppearanceModelPCA::mean() const
@@ -28,6 +33,11 @@ BaseModel* AppearanceModelPCA::mean() const
 
 BaseModel* AppearanceModelPCA::toModel(const Mat& param) const
 {
+  return toAppearance(param);
+}
+
+Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
+{
   auto bound  = meanShape.getBound();
   Mat spatial = Mat(bound.size(), CV_8UC3, Scalar(0,0,0));
 
@@ -36,3 +46,5 @@ BaseModel* AppearanceModelPCA::toModel(const Mat& param) const
   // TAOTODO: Backproject param
   return new Appearance(meanShape, spatial);
 }
+
+

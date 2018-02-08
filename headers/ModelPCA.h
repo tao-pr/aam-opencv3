@@ -19,7 +19,7 @@ public:
   inline virtual ~ModelPCA() {};
 
   // Encode a model to a parameter set (row vector)
-  virtual Mat toParam(BaseModel* m) const;
+  virtual Mat toParam(const BaseModel* m) const;
   virtual BaseModel* mean() const = 0;
   virtual BaseModel* toModel(const Mat& param) const = 0;
 };
@@ -30,6 +30,7 @@ public:
   ShapeModelPCA(PCA& p) : ModelPCA(p) {};
   BaseModel* mean() const; 
   BaseModel* toModel(const Mat& param) const;
+  MeshShape* toShape(const Mat& param) const;
 };
 
 class AppearanceModelPCA : public ModelPCA 
@@ -40,6 +41,7 @@ public:
   AppearanceModelPCA(PCA& p, MeshShape mean) : ModelPCA(p) { this->meanShape = mean; };
   BaseModel* mean() const;
   BaseModel* toModel(const Mat& param) const;
+  Appearance* toAppearance(const Mat& param) const;
 };
 
 

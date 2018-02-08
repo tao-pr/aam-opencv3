@@ -95,7 +95,7 @@ void testShape(char** argv)
 
   // Calculate PCA shape
   cout << CYAN << "[#] Shape PCA " << RESET << endl;
-  auto eigenShape = alignedShapeSet->clone()->pca(meanShape, -1);
+  auto eigenShape = dynamic_cast<ShapeModelPCA*>(alignedShapeSet->clone()->pca(meanShape, -1));
 
   // Encode shapes with PCA and measure the estimation errors
   int i = 0;
@@ -104,10 +104,10 @@ void testShape(char** argv)
   {
     const Shape* shape = dynamic_cast<const Shape*>(model);
     cout << CYAN << "... Encoding shape # " << RESET << i << endl;
-    auto param = eigenShape.encode(shape);
+    auto param = eigenShape->toParam(shape);
     cout << "... Decoding shape # " << i << endl;
-    auto encodedShape = eigenShape.toShape(param);
-    double error = shape->procrustesDistance(&encodedShape);
+    auto encodedShape = eigenShape->toShape(param);
+    double error = shape->procrustesDistance(encodedShape);
     cout << "... Estimation error : " << error << endl;
     i++;
   }
@@ -161,7 +161,7 @@ void testAAMCollection()
 
   // Calculate PCA appearance
   cout << CYAN << "[#] Appearance PCA " << RESET << endl;
-  auto eigenAppearance = aamCollectionResized->pca(meanAppearance, MAX_TEXTURE_SIZE);
+  auto eigenAppearance = dynamic_cast<AppearanceModelPCA*>(aamCollectionResized->pca(meanAppearance, MAX_TEXTURE_SIZE));
 
   // Encode appearances with PCA and measure the estimation errors
   int i = 0;
@@ -172,10 +172,10 @@ void testAAMCollection()
     const Appearance* appearance = dynamic_cast<const Appearance*>(model);
         
     cout << CYAN << "... Encoding appearance # " << RESET << i << endl;
-    auto param = eigenAppearance.encode(appearance);
+    auto param = eigenAppearance->toParam(appearance);
     cout << "... Decoding appearance # " << i << endl;
-    auto encodedAppearance = eigenAppearance.toShape(param);
-    double error = appearance->procrustesDistance(&encodedAppearance);
+    auto encodedAppearance = eigenAppearance->toAppearance(param);
+    double error = appearance->procrustesDistance(encodedAppearance);
     cout << "... Estimation error : " << error << endl;
     i++;
   }
