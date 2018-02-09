@@ -18,7 +18,8 @@ BaseModel* ShapeModelPCA::toModel(const Mat& param) const
 
 MeshShape* ShapeModelPCA::toShape(const Mat& param) const
 {
-  return new MeshShape(this->pca.backProject(param));
+  Mat shapeParam = this->pca.backProject(param).reshape(1, param.cols/2);
+  return new MeshShape(shapeParam);
 }
 
 BaseModel* AppearanceModelPCA::mean() const
