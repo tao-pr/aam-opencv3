@@ -76,7 +76,19 @@ Mat Appearance::toRowVector() const
    */
   auto bound = this->mesh.getBound();
   auto N = bound.width * bound.height;
-  Mat row = this->graphic(bound).clone().reshape(1,1);
+
+  Mat channels[3];
+  split(this->graphic(bound), channels);
+  Mat row(1, N*3, CV_8UC1);
+
+  // Concatenate all row vectors
+  Mat channelRows[3];
+  for (int i=0; i<3; i++)
+  {
+    channelRows[i] = channels[i].reshape(1,1);
+    channelRows[i].copyTo(row(Rect(N*i, 0, N, 1)));
+  }
+
   Mat rowDouble = Mat(row.size(), CV_64FC1);
   row.convertTo(rowDouble, CV_64FC1);
 
@@ -85,9 +97,24 @@ Mat Appearance::toRowVector() const
 
 Mat Appearance::toRowVectorReduced(int maxSize) const 
 {
+  assert(maxSize % 3 == 0);
   Mat rowVec = toRowVector();
+  int N = rowVec.cols/3;
+  int K = maxSize/3;
+
+  // Chop original vector into 3 different channels,
+  // Then shrink each of them before concatenating the results.
   Mat reduced(1, maxSize, CV_64FC1);
-  resize(rowVec, reduced, reduced.size());
+  Mat rowComponents[3];
+  Mat reducedComponents[3];
+  for (int i=0; i<3; i++)
+  {
+    rowComponents[i] = rowVec(Rect(i*N, 0, N, 1));
+    reducedComponents[i] = Mat(1, K, CV_64FC1);
+    resize(rowComponents[i], reducedComponents[i], reducedComponents[i].size());
+    reducedComponents[i].copyTo(reduced(Rect(i*K, 0, K, 1)));
+  }
+
   return reduced;
 }
 

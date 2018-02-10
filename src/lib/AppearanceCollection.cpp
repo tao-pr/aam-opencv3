@@ -178,7 +178,11 @@ ModelPCA* AppearanceCollection::pca(const BaseModel* mean, int maxDimension) con
   #endif
 
   // Compose a shape param set from eigenvalues
-  return new AppearanceModelPCA(pca, meanApp->getShape());
+  auto size = meanApp->getSize();
+  // TAODEBUG:
+  cout << "... original size : " << size << endl;
+  
+  return new AppearanceModelPCA(pca, meanApp->getShape(), size);
 }
 
 unique_ptr<ModelCollection> AppearanceCollection::clone() const

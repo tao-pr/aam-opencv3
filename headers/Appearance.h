@@ -37,6 +37,7 @@ public:
   MeshShape getShape() const { return this->mesh; };
   vector<Texture> getTextures() const { return this->textureList; };
   const Mat& getGraphic() const { return this->graphic; };
+  const Size getSize() const { return this->mesh.getBound().size(); };
 
   // TAOTOREVIEW:
   virtual inline void save(const string path) const {};

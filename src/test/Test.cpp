@@ -124,7 +124,7 @@ void testAAMCollection()
 {
   const int TRAIN_SET_SIZE = 32;
   const int SHAPE_SIZE     = 5;
-  const int MAX_TEXTURE_SIZE = 128;
+  const int MAX_TEXTURE_SIZE = 64*3;
 
   Mat backCanvas = Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3);
 
@@ -300,13 +300,13 @@ int main(int argc, char** argv)
   cout << MAGENTA << " Shape model testing  " << RESET << endl;
   cout << MAGENTA << "**********************" << RESET << endl;
 
-  testShape(argv);
+  // testShape(argv);
 
   cout << MAGENTA << "***********************************************" << RESET << endl;
   cout << MAGENTA << " Hit a key to proceed to texture model testing " << RESET << endl;
   cout << MAGENTA << "***********************************************" << RESET << endl;
-  waitKey(2000);
-  destroyAllWindows();
+  // waitKey(2000);
+  // destroyAllWindows();
 
   // testTexture(argv);
 

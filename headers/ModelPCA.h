@@ -36,9 +36,10 @@ public:
 class AppearanceModelPCA : public ModelPCA 
 { 
 protected:
+  Size originalBound;
   MeshShape meanShape;
 public: 
-  AppearanceModelPCA(PCA& p, MeshShape mean) : ModelPCA(p) { this->meanShape = mean; };
+  AppearanceModelPCA(PCA& p, MeshShape mean, Size& size) : ModelPCA(p), originalBound(size) { this->meanShape = mean; };
   BaseModel* mean() const;
   BaseModel* toModel(const Mat& param) const;
   Appearance* toAppearance(const Mat& param) const;
