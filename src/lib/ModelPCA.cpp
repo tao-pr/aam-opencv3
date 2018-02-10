@@ -54,16 +54,30 @@ BaseModel* AppearanceModelPCA::toModel(const Mat& param) const
 
 Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
 {
-  auto bound  = meanShape.getBound();
-  Mat spatial = Mat(bound.size(), CV_8UC3, Scalar(0,0,0));
+  auto bound = meanShape.getBound();
+  auto N = bound.width * bound.height;
+  auto K = pca.mean.cols/3;
 
-  // TAODEBUG:
-  cout << "bound size : " << bound.size() << endl;
+  // Backprojection of appearance params
+  Mat backPrj = this->pca.backProject(param);
 
-  Mat projected = this->pca.backProject(param);
-  this->pca.mean.clone().reshape(3, bound.height).copyTo(spatial);
-  // TAOTODO: Backproject param
-  return new Appearance(meanShape, spatial);
+  // Reshape the row vector into a spatial graphic for the appearance
+  Mat graphic = Mat(bound.height + bound.y, bound.width + bound.x, CV_8UC3, Scalar(0,0,0)); 
+  
+  // Split backprojected vector into 3 channels, scale them to the expected size
+  vector<Mat> bpjChannels;
+  Mat bpjGraphic;
+  for (int i=0; i<3; i++)
+  {
+    Mat m = backPrj(Rect(i*K, 0, K, 1)).clone();
+    Mat c = Mat(1, N, CV_64FC1);
+    resize(m, c, Size(N, 1));
+    Mat meanCh = Mat(Size(N, 1), CV_8UC1);
+    c.convertTo(meanCh, CV_8UC1);
+    bpjChannels.push_back(meanCh);
+  }
+  merge(bpjChannels, bpjGraphic);
+  return new Appearance(meanShape, bpjGraphic);
 }
 
 
