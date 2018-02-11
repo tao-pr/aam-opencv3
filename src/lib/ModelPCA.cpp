@@ -44,7 +44,9 @@ BaseModel* AppearanceModelPCA::mean() const
     meanChannels.push_back(meanCh.reshape(1, bound.height));
   }
   merge(meanChannels, meanGraphic);
-  return new Appearance(meanShape, meanGraphic);
+  meanGraphic.copyTo(graphic(Rect(bound)));
+
+  return new Appearance(meanShape, graphic);
 }
 
 BaseModel* AppearanceModelPCA::toModel(const Mat& param) const
@@ -56,13 +58,11 @@ Mat AppearanceModelPCA::toParam(const BaseModel* m) const
 {
   const Appearance* app = dynamic_cast<const Appearance*>(m);
   Mat vec = app->toRowVectorReduced(this->pca.mean.cols);
-  cout << "vec = " << vec.size() << endl; // TAODEBUG:
   return this->pca.project(vec);
 }
 
 Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
 {
-  // TAOTODO: DEBUG this
   auto bound = meanShape.getBound();
   auto N = bound.width * bound.height;
   auto K = pca.mean.cols/3;
@@ -86,7 +86,9 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
     bpjChannels.push_back(meanCh.reshape(1, bound.height));
   }
   merge(bpjChannels, bpjGraphic);
-  return new Appearance(meanShape, bpjGraphic);
+  bpjGraphic.copyTo(graphic(Rect(bound)));
+
+  return new Appearance(meanShape, graphic);
 }
 
 

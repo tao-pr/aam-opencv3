@@ -124,7 +124,7 @@ void testAAMCollection()
 {
   const int TRAIN_SET_SIZE = 32;
   const int SHAPE_SIZE     = 5;
-  const int MAX_TEXTURE_SIZE = 64*3;
+  const int MAX_TEXTURE_SIZE = 2048*3;
 
   Mat backCanvas = Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3);
 
@@ -183,10 +183,10 @@ void testAAMCollection()
     cout << "... Decoding appearance # " << i << endl;
     auto encodedAppearance = eigenAppearance->toAppearance(param);
 
-    // TAODEBUG:
     auto ioB = IO::WindowIO("encoded App");
     encodedAppearance->render(&ioB, Mat::zeros(encodedAppearance->getShape().getSpannedSize(), CV_8UC3));
-    waitKey(0);
+    moveWindow("encoded App", 0, (CANVAS_SIZE+50));
+    waitKey(400);
 
     double error = appearance->procrustesDistance(encodedAppearance);
     cout << "... Estimation error : " << error << endl;
