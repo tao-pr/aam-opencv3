@@ -6,16 +6,34 @@
 #define APP_COLLECTION
 
 #include "master.h"
+#include "Appearance.h"
+#include "BaseModel.h"
+#include "MeshShape.h"
+#include "ModelCollection.h"
+#include "ShapeCollection.h"
+#include "ModelPCA.h"
 
-class AppearanceCollection 
+// TAOTODO: Create a constructor which converts from RowVector to [[Appearance]]
+class AppearanceCollection : public ModelCollection
 {
-private:
-protected:
-  vector<Mat> items;
 public:
-  inline AppearanceCollection(){};
-  AppearanceCollection(const vector<Mat>& apps);
+  inline AppearanceCollection() : ModelCollection() {};
+  AppearanceCollection(const vector<BaseModel*>& models) : ModelCollection(models) {};
+  AppearanceCollection(const vector<Appearance*>& apps);
   AppearanceCollection(const AppearanceCollection& original);
+
+  // ---------- Analysis -------------
+  Mat covariance(const BaseModel* mean) const;
+  void normaliseRotation();
+  virtual double sumProcrustesDistance(const BaseModel* targetModel) const;
+  virtual ModelPCA* pca(const BaseModel* mean, int maxDimension) const;
+  
+  // ---------- I/O ------------------
+  Mat toMat() const;
+  Mat toMatReduced(int maxDimension) const;
+  unique_ptr<ModelCollection> clone() const;
+  unique_ptr<ModelCollection> toShapeCollection() const;
+  unique_ptr<ModelCollection> resizeTo(double newScale) const;
 };
 
 #endif

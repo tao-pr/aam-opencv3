@@ -2,16 +2,18 @@
 
 Shape::Shape(const vector<Point2d>& vs)
 {
-  this->mat = Mat(vs.size(), 2, CV_64FC1);
-  for (int j=0; j<vs.size(); j++)
+  const int N = vs.size();
+  this->mat = Mat(N, 2, CV_64FC1);
+  for (int j=0; j<N; j++)
   {
-    this->mat.at<double>(j,0) = vs[0].x;
-    this->mat.at<double>(j,1) = vs[0].y;
+    this->mat.at<double>(j,0) = vs[j].x;
+    this->mat.at<double>(j,1) = vs[j].y;
   }
 }
 
 Shape::Shape(const Mat &_mat)
 {
+  this->mat = Mat(_mat.rows, _mat.cols, _mat.type());
   _mat.copyTo(this->mat);
 }
 
@@ -28,7 +30,7 @@ vector<Point2d> Shape::toPoints() const
 
 Point2d Shape::centroid() const
 {
-  Mat m;
+  Mat m = Mat::zeros(1, 2, CV_64FC1);
   reduce(this->mat, m, 0, CV_REDUCE_AVG); // Mean by row
   return Point2d(m.at<double>(0,0), m.at<double>(0,1));
 }
@@ -36,14 +38,16 @@ Point2d Shape::centroid() const
 /**
  * Compute the sum of square distance to another shape.
  */
-const double Shape::procrustesDistance(const Shape& that) const
+const double Shape::procrustesDistance(const BaseModel* that) const
 {
-  double d = 0.0;
-  int N = this->mat.rows;
+  double d       = 0.0;
+  int N          = this->mat.rows;
+  auto thatShape = dynamic_cast<const Shape*>(that);
+  Mat thatMat    = thatShape->getMat();
   for (int j=0; j<N; j++)
   {
     auto pThis = Point2d(this->mat.at<double>(j,0), this->mat.at<double>(j,1));
-    auto pThat = Point2d(that.mat.at<double>(j,0), that.mat.at<double>(j,1));
+    auto pThat = Point2d(thatMat.at<double>(j,0), thatMat.at<double>(j,1));
     d += Aux::squareDistance(pThis, pThat);
   }
   return d;
@@ -77,10 +81,51 @@ Mat Shape::render(IO::GenericIO* io, Mat background, double scaleFactor, Point2d
   return canvas;
 }
 
-vector<Point2d> Shape::convexHull() const
+vector<Point> Shape::convexHull() const
 {
-  vector<Point2d> hull;
-  cv::convexHull(Mat(this->toPoints()), hull, false);
+  const auto points = this->toPoints();
+
+  struct PolarPoint
+  {
+    double angle;
+    Point2d p;
+    PolarPoint(double a, Point2d p) : angle(a), p(p) {};
+    bool operator < (const PolarPoint& that) const
+    {
+      return angle > that.angle; // CCW order
+    }
+  };
+
+  const Point2d mean = this->centroid();
+
+  // Sort the points CCW
+  list<PolarPoint> polars;
+  for (auto p : points)
+  {
+    double angle = atan2(p.y - mean.y, p.x - mean.x);
+    polars.push_back(PolarPoint(angle, p));
+  }
+  polars.sort();
+
+  // Draw each spots CCW, one by one
+  // Mat canvas = Mat::zeros(500, 500, CV_8UC3);
+  // for (auto p : polars)
+  // {
+  //   Draw::drawSpot(canvas, p.p, Scalar(0,255,128));
+  //   imshow("ccw", canvas);
+  //   cout << "P : " << p.p << endl;
+  //   waitKey(1000);
+  // }
+  // waitKey(0);
+
+  vector<Point> boundPoints;
+  for (auto elem : polars)
+  {
+    boundPoints.push_back(Aux::point2dToInt(elem.p));
+  }
+
+  vector<Point> hull(boundPoints.size());
+  cv::convexHull(Mat(boundPoints), hull, false);
   return hull;
 }
 
@@ -139,20 +184,46 @@ Shape Shape::operator <<(Point2d shift) const
   return Shape(mat_);
 }
 
-Mat Shape::toRowVector() const
-{
-  return this->mat.reshape(1, 1);
-}
-
 Mat Shape::toColVector() const
 {
   int N = this->mat.rows;
-  return this->mat.reshape(1, N*2);
+  return this->mat.clone().reshape(1, N*2);
+}
+
+Mat Shape::toRowVector() const
+{
+  return this->mat.clone().reshape(1, 1);
 }
 
 Shape Shape::recentreAndScale(Point2d t, double scaleFactor) const
 {
   return (*this * scaleFactor) >> t;
+}
+
+unique_ptr<BaseModel> Shape::clone() const
+{
+  unique_ptr<BaseModel> anotherCopy(new Shape(*this));
+  return anotherCopy;
+}
+
+void Shape::addRandomNoise(const Point2d& maxDisplacement)
+{
+  int N = this->mat.rows;
+  for (int j=0; j<N; j++)
+  {
+    double nx1 = maxDisplacement.x/2 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
+    double ny1 = maxDisplacement.y/2 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
+    double nx2 = maxDisplacement.x/2 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
+    double ny2 = maxDisplacement.y/2 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
+    moveVertex(j, Point2d(nx1 - nx2, ny1 - ny2));
+  }
+}
+
+void Shape::moveVertex(int i, const Point2d& displacement)
+{
+  assert(i>=0 && i<this->mat.rows);
+  this->mat.at<double>(i,0) += displacement.x;
+  this->mat.at<double>(i,1) += displacement.y;
 }
 
 void Shape::save(const string path) const

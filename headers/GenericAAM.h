@@ -6,6 +6,7 @@
 #define GENERIC_AAM
 
 #include "master.h"
+#include "MeshShape.h"
 #include "Shape.h"
 #include "FaceLocaliser.h"
 #include "ShapeCollection.h"
@@ -19,6 +20,8 @@ class GenericAAM
 private:
 protected:
   FaceLocaliser* faceFinder;
+  MeshShape shape;
+  vector<Texture> textures;
 
 public:
   inline GenericAAM(FaceLocaliser* faceDetector) { this->faceFinder = faceDetector; }
@@ -28,22 +31,25 @@ public:
   virtual void saveToFile(const string& modelFileName) const = 0;
   virtual void loadFromFile(const string& modelFileName) = 0;
   virtual void trainFromFileList(const vector<string>& filelist) = 0;
+
+  inline MeshShape getShape() const { return this->shape; };
+  inline vector<Texture> getTextures() const { return this->textures; };
 };
 
 /**
  * Trainset collection for the AAM
  */
-class GenericTrainset
-{
-private:
-protected:
-  ShapeCollection shapeEntries;
-  AppearanceCollection appEntries;
-public:
-  GenericTrainset(const ShapeCollection &annotations, const AppearanceCollection &appearances);
-  virtual inline ~GenericTrainset(){};
-  virtual GenericAAM train(bool verbose) const = 0;
-};
+// class GenericTrainset
+// {
+// private:
+// protected:
+//   ShapeCollection shapeEntries;
+//   AppearanceCollection appEntries;
+// public:
+//   GenericTrainset(const ShapeCollection &annotations, const AppearanceCollection &appearances);
+//   virtual inline ~GenericTrainset(){};
+//   virtual GenericAAM train(bool verbose) const = 0;
+// };
 
 
 #endif

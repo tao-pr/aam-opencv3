@@ -83,7 +83,7 @@ int main(int argc, char** argv)
 
     waitKey(0);
 
-    // TAOTODO: Save the annotation
+    // TAOTOREVIEW: Save the annotation
 
     // Clear iterative stages
     currentAnnotation.clear();

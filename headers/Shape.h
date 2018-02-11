@@ -6,10 +6,11 @@
 #define SHAPE_MODEL
 
 #include "master.h"
+#include "BaseModel.h"
 #include "IO.h"
 #include "aux.h"
 
-class Shape
+class Shape : public BaseModel
 {
 private:
 public:
@@ -22,14 +23,16 @@ public:
   inline virtual ~Shape(){};
 
   //----- General properties ------
+  Mat getMat() const { return this->mat; };
   Mat toRowVector() const;
   Mat toColVector() const;
   Point2d centroid() const;
-  vector<Point2d> convexHull() const;
+  vector<Point> convexHull() const;
   const double sumSquareDistanceToPoint(const Point2d& p) const;
-  const double procrustesDistance(const Shape& that) const;
+  const double procrustesDistance(const BaseModel* that) const;
 
   //------ I/O ------
+  unique_ptr<BaseModel> clone() const;
   virtual void save(const string path) const;
   virtual void load(const string path);
   vector<Point2d> toPoints() const;
@@ -42,6 +45,8 @@ public:
   Shape operator >>(Point2d shift) const;  // Translating
   Shape operator <<(Point2d shift) const;  // Translating (negative)
   Shape recentreAndScale(Point2d t, double scaleFactor) const;
+  virtual void addRandomNoise(const Point2d& maxDisplacement);
+  virtual void moveVertex(int i, const Point2d& displacement);
 };
 
 #endif

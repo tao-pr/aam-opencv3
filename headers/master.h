@@ -14,15 +14,26 @@
 #include <time.h>
 #include <math.h>
 #include <assert.h>
+#include <algorithm>
 #include <fmt/format.h>
 #include <stdio.h>
 #include <dirent.h>
+#include <chrono>
+
+#define DEBUG
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#ifdef DEBUG
+#include "backward.h"
+#endif
+
 using namespace cv;
 using namespace std;
+using namespace backward;
+
+extern StackTrace stacktrace;
 
 const std::string RED("\033[0;31m");
 const std::string GREEN("\033[1;32m");

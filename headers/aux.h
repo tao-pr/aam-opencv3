@@ -6,6 +6,11 @@
 
 namespace Aux
 {
+  Point inline point2dToInt(const Point2d& p)
+  {
+    return Point((int)floor(p.x), (int)floor(p.y));
+  }
+
   Mat inline scaler(const Mat& m, double multiplier)
   {
     if (multiplier == 1.0) return m;
@@ -28,20 +33,24 @@ namespace Aux
    * Check whether the point [c]
    * is located inside the shape which has [vertices]
    */
-  bool inline isInsideShape(const vector<Point2d>& vertices, Point2d c)
+  template<typename T> bool inline isInsideShape(const vector<Point_<T>>& vertices, Point_<T> c)
   {
     if (vertices.empty() || vertices.size()<=2)
+    {
+      cout << "[WARNING] isInsideShape only operates on a shape of at least 3 vertices." << endl;
       return false;
-    auto v0 = vertices.front();
+    }
+    auto v0 = vertices.back();
     int numIntersection = 0;
     for (auto v : vertices)
     {
       // Horizontal line test
 
       // Check if an edge intersects with the horizontal line starting from [c]
-      if ((v0.x > c.x || v.x > c.x) && 
-        (min(v0.y, v.y) <= c.y) &&
-        (max(v0.y, v.y) >= c.y))
+      if (min(v0.x, v.x) <= c.x &&
+          max(v0.x, v.x) >= c.x &&
+          min(v0.y, v.y) <= c.y &&
+          max(v0.y, v.y) >= c.y) 
       {
         ++numIntersection;
       }
@@ -136,9 +145,17 @@ namespace Draw
     line(canvas, a, c, color, thickness, mode);
   }
 
-  inline static void drawSpot(Mat& canvas, Point2d p, Scalar color)
+  inline static void drawSpot(Mat& canvas, const Point2d p, Scalar color)
   {
     circle(canvas, p, 3, color, CV_FILLED, CV_AA);
+  }
+
+  inline static void drawSpots(Mat& canvas, const vector<Point2d>& ps, Scalar color)
+  {
+    for (auto p : ps)
+    {
+      drawSpot(canvas, p, color);
+    }
   }
 }
 
