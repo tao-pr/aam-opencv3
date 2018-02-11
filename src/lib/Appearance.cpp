@@ -35,11 +35,16 @@ void Appearance::reinitTextures()
 const double Appearance::procrustesDistance(const BaseModel* that) const
 {
   #ifdef DEBUG
-  cout << "BaseModelAppearance::procrustesDistance" << endl;
+  cout << "Appearance::procrustesDistance" << endl;
   #endif
   const auto thatApp = dynamic_cast<const Appearance*>(that);
   Mat thisMat  = this->toRowVector();
   Mat thatMat  = thatApp->toRowVector();
+
+  // TAODEBUG:
+  cout << "thisMat : " << thisMat.size() << endl;
+  cout << "thatMat : " << thatMat.size() << endl;
+
   return Aux::sqrt(Aux::square(sum(thisMat - thatMat)[0]));
 }
 

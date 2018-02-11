@@ -182,6 +182,12 @@ void testAAMCollection()
     auto param = eigenAppearance->toParam(appearance);
     cout << "... Decoding appearance # " << i << endl;
     auto encodedAppearance = eigenAppearance->toAppearance(param);
+
+    // TAODEBUG:
+    auto ioB = IO::WindowIO("encoded App");
+    encodedAppearance->render(&ioB, Mat::zeros(encodedAppearance->getShape().getSpannedSize(), CV_8UC3));
+    waitKey(0);
+
     double error = appearance->procrustesDistance(encodedAppearance);
     cout << "... Estimation error : " << error << endl;
     i++;
