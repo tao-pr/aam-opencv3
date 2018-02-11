@@ -41,10 +41,6 @@ const double Appearance::procrustesDistance(const BaseModel* that) const
   Mat thisMat  = this->toRowVector();
   Mat thatMat  = thatApp->toRowVector();
 
-  // TAODEBUG:
-  cout << "thisMat : " << thisMat.size() << endl;
-  cout << "thatMat : " << thatMat.size() << endl;
-
   return Aux::sqrt(Aux::square(sum(thisMat - thatMat)[0]));
 }
 

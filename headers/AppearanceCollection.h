@@ -11,7 +11,6 @@
 #include "MeshShape.h"
 #include "ModelCollection.h"
 #include "ShapeCollection.h"
-#include "Params.h"
 #include "ModelPCA.h"
 
 // TAOTODO: Create a constructor which converts from RowVector to [[Appearance]]

@@ -135,7 +135,6 @@ void AppearanceCollection::normaliseRotation()
   int N = shapes->size();
   for (int n=0; n<N; n++)
   {
-    cout << n << " of " << N << endl; // TAODEBUG:
     Appearance* original = static_cast<Appearance*>(this->items[n]);
     original->realignTo(neutralShape);    
   }
@@ -179,9 +178,6 @@ ModelPCA* AppearanceCollection::pca(const BaseModel* mean, int maxDimension) con
 
   // Compose a shape param set from eigenvalues
   auto size = meanApp->getSize();
-  // TAODEBUG:
-  cout << "... original size : " << size << endl;
-  
   return new AppearanceModelPCA(pca, meanApp->getShape(), size);
 }
 

@@ -8,7 +8,6 @@
 #include "IO.h"
 #include "master.h"
 #include "Shape.h"
-#include "Params.h"
 #include "BaseModel.h"
 #include "ModelCollection.h"
 
