@@ -2,7 +2,6 @@
 #define GENERIC_COLLECTION
 
 #include "master.h"
-#include "Params.h"
 #include "BaseModel.h"
 #include "ModelPCA.h"
 

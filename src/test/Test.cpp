@@ -192,8 +192,6 @@ void testAAMCollection()
     cout << "... Estimation error : " << error << endl;
     i++;
   }
-
-  // TAOTODO:
 }
 
 void testTexture(char** argv)
