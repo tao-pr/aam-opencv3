@@ -47,5 +47,11 @@ public:
   virtual FittedState fit(Mat sample);
 };
 
+class AppearanceFitter : public ModelFitter
+{
+protected:
+  virtual double measureError(const Mat &sample);
+  virtual FittedState fitIterNext(Mat sample, FittedState& fitState);
+};
 
 #endif

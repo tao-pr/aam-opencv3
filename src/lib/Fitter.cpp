@@ -20,3 +20,8 @@ FittedState ModelFitter::fit(Mat sample)
 
   return state;
 }
+
+FittedState AppearanceFitter::fitIterNext(Mat sample, FittedState& fitState)
+{
+  // TAOTODO:
+}
