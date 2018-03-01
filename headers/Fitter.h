@@ -29,7 +29,7 @@ struct FittedState
   {
     if (oldError == error)
       return 0;
-    else if (oldError == 0 || error == 0)
+    else if (oldError == 0)
       return numeric_limits<double>::max();
     else
       return abs(error - oldError)/oldError;
