@@ -14,25 +14,30 @@ struct FittedState
 {
   int iters;
   double error;
-  ModelPCA *state;
+  ShapeModelPCA stateShape;
+  AppearanceModelPCA stateAppearance;
 
-  double eps(double newError)
+  double eps(double oldError)
   {
-    if (newError == error)
+    if (oldError == error)
       return 0;
-    else if (newError == 0 || error == 0)
+    else if (oldError == 0 || error == 0)
       return numeric_limits<double>::max();
     else
-      return abs(error - newError)/error;
+      return abs(error - oldError)/oldError;
   }
 
-  bool isValid() const { return state != nullptr; };
+  static FittedState create(const ShapeModelPCA& pcaShape, const AppearanceModelPCA& pcaAppearance)
+  {
+    double maxError = numeric_limits<double>::max();
+    return FittedState{ 0, maxError, pcaShape, pcaAppearance };
+  };
 };
 
 /**
- * Model parameter optimiser
+ * Basic model parameter optimiser
  */
-class ModelFitter 
+class AAMFitter 
 {
 private:
 protected:
@@ -41,17 +46,10 @@ protected:
 
   virtual FittedState fitIterNext(Mat sample, FittedState& fitState) = 0;
 public:
-  inline ModelFitter(int maxIter, double eps = 1e-3) : maxIter(maxIter), eps(eps) {};
-  inline virtual ~ModelFitter() {};
+  inline AAMFitter(int maxIter, double eps = 1e-3) : maxIter(maxIter), eps(eps) {};
+  inline virtual ~AAMFitter() {};
 
-  virtual FittedState fit(Mat sample);
-};
-
-class AppearanceFitter : public ModelFitter
-{
-protected:
-  virtual double measureError(const Mat &sample);
-  virtual FittedState fitIterNext(Mat sample, FittedState& fitState);
+  virtual FittedState fit(Mat sample, const ShapeModelPCA& pcaShape, const AppearanceModelPCA& pcaAppearance);
 };
 
 #endif

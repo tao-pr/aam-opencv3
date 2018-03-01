@@ -1,17 +1,20 @@
 #include "Fitter.h"
 
-FittedState ModelFitter::fit(Mat sample)
+FittedState AAMFitter::fit(Mat sample, const ShapeModelPCA& pcaShape, const AppearanceModelPCA& pcaAppearance)
 {
   // Repeatedly fit the model until it reaches the stopping criterion
   bool stopping = false;
-  FittedState state = { 0, numeric_limits<double>::max(), nullptr };
+  FittedState state = FittedState::create(pcaShape, pcaAppearance);
   while (!stopping)
   {
+    double prevError = state.error;
     #ifdef DEBUG
     cout << CYAN << "[Fitting model] " << RESET << "iter #" << state.iters << ", error = " << state.error << endl;
     #endif
     
     state = fitIterNext(sample, state);
+
+    stopping = state.iters >= this->maxIter || state.eps(prevError) <= eps;
   }
 
   #ifdef DEBUG
@@ -21,7 +24,11 @@ FittedState ModelFitter::fit(Mat sample)
   return state;
 }
 
-FittedState AppearanceFitter::fitIterNext(Mat sample, FittedState& fitState)
+FittedState AAMFitter::fitIterNext(Mat sample, FittedState& fitState)
 {
   // TAOTODO:
+
+
+  fitState.iters ++;
+  return fitState;
 }
