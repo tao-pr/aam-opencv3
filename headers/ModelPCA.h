@@ -22,6 +22,8 @@ public:
   virtual Mat toParam(const BaseModel* m) const;
   virtual BaseModel* mean() const = 0;
   virtual BaseModel* toModel(const Mat& param) const = 0;
+
+  const int dimension() const { return this->pca.eigenvalues.cols; };
 };
 
 class ShapeModelPCA : public ModelPCA 
@@ -44,6 +46,7 @@ public:
   Mat toParam(const BaseModel* m) const;
   BaseModel* toModel(const Mat& param) const;
   Appearance* toAppearance(const Mat& param) const;
+  void overrideMeanShape(const MeshShape& newMeanShape);
 };
 
 

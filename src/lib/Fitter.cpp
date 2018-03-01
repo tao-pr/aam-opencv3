@@ -26,7 +26,8 @@ FittedState AAMFitter::fit(Mat sample, const ShapeModelPCA& pcaShape, const Appe
 
 FittedState AAMFitter::fitIterNext(Mat sample, FittedState& fitState)
 {
-  // TAOTODO:
+  // TAOTODO: Implement line search
+  // auto meanShape = stateShape.toShape(Mat::zeros(1, stateShape.dimension(), CV_64FC1));
 
 
   fitState.iters ++;

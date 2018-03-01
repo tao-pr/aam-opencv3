@@ -61,6 +61,11 @@ Mat AppearanceModelPCA::toParam(const BaseModel* m) const
   return this->pca.project(vec);
 }
 
+void AppearanceModelPCA::overrideMeanShape(const MeshShape& newMeanShape)
+{
+  this->meanShape = newMeanShape;
+}
+
 Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
 {
   auto bound = meanShape.getBound();

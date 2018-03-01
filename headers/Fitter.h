@@ -4,6 +4,7 @@
 #include "master.h"
 #include "BaseModel.h"
 #include "Shape.h"
+#include "MeshShape.h"
 #include "Appearance.h"
 #include "ModelPCA.h"
 
@@ -12,10 +13,17 @@
  */
 struct FittedState 
 {
+  // Current states
   int iters;
   double error;
+  
+  // Fixed PCA characteristics
   ShapeModelPCA stateShape;
   AppearanceModelPCA stateAppearance;
+
+  // Current states
+  Mat shapeParam;
+  Mat appParam;
 
   double eps(double oldError)
   {
@@ -27,10 +35,35 @@ struct FittedState
       return abs(error - oldError)/oldError;
   }
 
+  double measureError(const Mat& sample)
+  {
+    int M = stateAppearance.dimension();
+
+    // Generate row vector of the fitted appearance on the real sample
+    auto meanShape = stateShape.toShape(shapeParam);
+    auto sampleApp = Appearance(*meanShape, sample);
+    Mat sampleVec  = sampleApp.toRowVectorReduced(M);
+
+    // Generate row vector of the candidate model
+    Mat candVec = stateAppearance.toAppearance(appParam)->toRowVectorReduced(M);
+
+    // Compute RMSE between two vectors
+    double e = 0;
+    for (int i=0; i<M; i++)
+    {
+      double x  = sampleVec.at<double>(0,i);
+      double x0 = candVec.at<double>(0,i);
+      e += Aux::sqrt(Aux::square(x - x0));
+    }
+    return e;
+  }
+
   static FittedState create(const ShapeModelPCA& pcaShape, const AppearanceModelPCA& pcaAppearance)
   {
     double maxError = numeric_limits<double>::max();
-    return FittedState{ 0, maxError, pcaShape, pcaAppearance };
+    Mat shapePar = Mat::zeros(1, pcaShape.dimension(), CV_64FC1);
+    Mat appPar   = Mat::zeros(1, pcaAppearance.dimension(), CV_64FC1);
+    return FittedState{ 0, maxError, pcaShape, pcaAppearance, shapePar, appPar };
   };
 };
 
