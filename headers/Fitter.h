@@ -77,7 +77,10 @@ protected:
   int maxIter;
   double eps;
 
-  virtual FittedState fitIterNext(Mat sample, FittedState& fitState) = 0;
+  virtual FittedState fitIterNext(const Mat& sample, FittedState& fitState);
+  virtual FittedState findBestShapeMove(const Mat& sample, FittedState& fitState, double stepSize = 1e-3) const;
+  virtual FittedState findBestAppearanceMove(const Mat& sample, FittedState& fitState, double stepSize = 1e-3) const;
+
 public:
   inline AAMFitter(int maxIter, double eps = 1e-3) : maxIter(maxIter), eps(eps) {};
   inline virtual ~AAMFitter() {};
