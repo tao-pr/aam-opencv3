@@ -290,6 +290,17 @@ void testAppearance()
 
   moveWindow("resized", (CANVAS_SIZE+15)*2, 0);
   waitKey(300);
+
+  // Recentre
+  auto trans = Point2d(75, -15);
+  cout << "... Recentring Appearance model ..." << endl;
+  appr.recentre(trans);
+  auto tSize = appr.getSpannedSize();
+  IO::WindowIO ioTrans("translated");
+  Mat canvasTranslated = Mat::zeros(tSize, CV_8UC3);
+  appr.render(&ioTrans, canvasTranslated);
+
+  waitKey(300);
 }
 
 void testAAMFitting()
@@ -299,23 +310,23 @@ void testAAMFitting()
 
 int main(int argc, char** argv)
 {
-  cout << MAGENTA << "**********************" << RESET << endl;
-  cout << MAGENTA << " Mesh shape testing  "  << RESET << endl;
-  cout << MAGENTA << "**********************" << RESET << endl;
+  // cout << MAGENTA << "**********************" << RESET << endl;
+  // cout << MAGENTA << " Mesh shape testing  "  << RESET << endl;
+  // cout << MAGENTA << "**********************" << RESET << endl;
 
-  testMeshShape(argv);
+  // testMeshShape(argv);
 
-  cout << MAGENTA << "**********************" << RESET << endl;
-  cout << MAGENTA << " Shape model testing  " << RESET << endl;
-  cout << MAGENTA << "**********************" << RESET << endl;
+  // cout << MAGENTA << "**********************" << RESET << endl;
+  // cout << MAGENTA << " Shape model testing  " << RESET << endl;
+  // cout << MAGENTA << "**********************" << RESET << endl;
 
-  testShape(argv);
+  // testShape(argv);
 
-  cout << MAGENTA << "***********************************************" << RESET << endl;
-  cout << MAGENTA << " Hit a key to proceed to texture model testing " << RESET << endl;
-  cout << MAGENTA << "***********************************************" << RESET << endl;
-  waitKey(2000);
-  destroyAllWindows();
+  // cout << MAGENTA << "***********************************************" << RESET << endl;
+  // cout << MAGENTA << " Hit a key to proceed to texture model testing " << RESET << endl;
+  // cout << MAGENTA << "***********************************************" << RESET << endl;
+  // waitKey(2000);
+  // destroyAllWindows();
 
   testTexture(argv);
 
