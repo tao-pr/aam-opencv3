@@ -18,8 +18,8 @@ struct FittedState
   double error;
   
   // Fixed PCA characteristics
-  ShapeModelPCA stateShape;
-  AppearanceModelPCA stateAppearance;
+  ShapeModelPCA pcaShape;
+  AppearanceModelPCA pcaAppearance;
 
   // Current states
   Mat shapeParam;
@@ -37,23 +37,23 @@ struct FittedState
 
   double measureError(const Mat& sample)
   {
-    int M = stateAppearance.dimension();
+    int M = pcaAppearance.dimension();
 
     // Generate row vector of the fitted appearance on the real sample
-    auto meanShape = stateShape.toShape(shapeParam);
+    auto meanShape = pcaShape.toShape(shapeParam);
     auto sampleApp = Appearance(*meanShape, sample);
     Mat sampleVec  = sampleApp.toRowVectorReduced(M);
 
     // Generate row vector of the candidate model
-    Mat candVec = stateAppearance.toAppearance(appParam)->toRowVectorReduced(M);
+    Mat candVec = pcaAppearance.toAppearance(appParam)->toRowVectorReduced(M);
 
-    // Compute RMSE between two vectors
+    // Compute (pseudo) MSE between two vectors
     double e = 0;
     for (int i=0; i<M; i++)
     {
       double x  = sampleVec.at<double>(0,i);
       double x0 = candVec.at<double>(0,i);
-      e += Aux::sqrt(Aux::square(x - x0));
+      e += abs(x - x0);
     }
     return e;
   }
@@ -78,6 +78,8 @@ protected:
   double eps;
 
   virtual FittedState fitIterNext(const Mat& sample, FittedState& fitState);
+  virtual FittedState findBestTranslation(const Mat& sample, FittedState& fitState, double stepSize = 10);
+  virtual FittedState findBestScaling(const Mat& sample, FittedState& fitState, double stepSize = 1);
   virtual FittedState findBestShapeMove(const Mat& sample, FittedState& fitState, double stepSize = 1e-3) const;
   virtual FittedState findBestAppearanceMove(const Mat& sample, FittedState& fitState, double stepSize = 1e-3) const;
 

@@ -27,7 +27,7 @@ FittedState AAMFitter::fit(Mat sample, const ShapeModelPCA& pcaShape, const Appe
 FittedState AAMFitter::findBestShapeMove(const Mat& sample, FittedState& fitState, double stepSize) const 
 {
   // TAOTODO: Skip the prev step, otherwise it would bounce
-  int M = fitState.stateShape.dimension();
+  int M = fitState.pcaShape.dimension();
 
   Mat bestParamDiff;
   double bestError = numeric_limits<double>::max();
@@ -61,12 +61,16 @@ FittedState AAMFitter::findBestShapeMove(const Mat& sample, FittedState& fitStat
   FittedState newState = fitState;
   newState.shapeParam += bestParamDiff;
   newState.error = bestError;
+
+  // Associate the appearance with the new shape
+  MeshShape* newMeanShape = newState.pcaShape.toShape(newState.shapeParam);
+  newState.pcaAppearance.overrideMeanShape(*newMeanShape);
   return newState;
 }
 
 FittedState AAMFitter::findBestAppearanceMove(const Mat& sample, FittedState& fitState, double stepSize) const
 {
-  int M = fitState.stateAppearance.dimension();
+  int M = fitState.pcaAppearance.dimension();
 
   Mat bestParamDiff;
   double bestError = numeric_limits<double>::max();
@@ -101,6 +105,38 @@ FittedState AAMFitter::findBestAppearanceMove(const Mat& sample, FittedState& fi
   newState.appParam += bestParamDiff;
   newState.error = bestError;
   return newState;
+}
+
+FittedState AAMFitter::findBestTranslation(const Mat& sample, FittedState& fitState, double stepSize)
+{
+  double diagStepSize = 1.4142 * stepSize;
+  Point2d directions[] = 
+  {
+    Point2d(stepSize, 0),
+    Point2d(-stepSize, 0),
+    Point2d(0, stepSize),
+    Point2d(0, -stepSize),
+    Point2d(diagStepSize, diagStepSize),
+    Point2d(-diagStepSize, -diagStepSize),
+    Point2d(diagStepSize, -diagStepSize),
+    Point2d(-diagStepSize, diagStepSize)
+  };
+
+  // TAOTOREVIEW: Try Principal Component Regression instead of blind exhuastive search
+  double bestError = numeric_limits<double>::max();
+  // FittedState bestState;
+  // for (auto dir : directions)
+  // {
+  //   FittedState s(fitState);
+  //   // TAOTODO:
+  // }
+
+  // return bestState;
+}
+
+FittedState AAMFitter::findBestScaling(const Mat& sample, FittedState& fitState, double stepSize)
+{
+
 }
 
 FittedState AAMFitter::fitIterNext(const Mat& sample, FittedState& fitState)
