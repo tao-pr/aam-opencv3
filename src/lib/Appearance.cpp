@@ -154,6 +154,20 @@ void Appearance::realignTo(MeshShape& newShape)
   this->graphic = warped;
 }
 
+void Appearance::recentre(Point2d t)
+{
+  auto bound = this->mesh.getBound();
+  this->mesh.recentreAndScale(t, 1.0);
+
+  // Translate the texture
+  int h = this->graphic.rows + t.y;
+  int w = this->graphic.cols + t.x;
+  Mat newGraphic(h, w, this->graphic.type());
+  auto newBound = this->mesh.getBound();
+  this->graphic(bound).copyTo(newGraphic(newBound));
+  swap(this->graphic, newGraphic);
+}
+
 void Appearance::resizeTo(double newScale)
 {
   auto centre = this->mesh.centroid();

@@ -11,7 +11,7 @@ void testMeshShape(char** argv)
 
   auto ioMesh = IO::WindowIO("mesh");
   mesh.render(&ioMesh, Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3));
-  waitKey(0);
+  waitKey(700);
 }
 
 void testShape(char** argv)
@@ -254,7 +254,7 @@ void testTexture(char** argv)
   
   moveWindow("source", 15, 15);
   moveWindow("aligned", 185, 15);
-  moveWindow("canvas", 750, 250);
+  moveWindow("canvas", 750, 15);
 }
 
 void testAppearance()
@@ -290,6 +290,11 @@ void testAppearance()
 
   moveWindow("resized", (CANVAS_SIZE+15)*2, 0);
   waitKey(300);
+}
+
+void testAAMFitting()
+{
+  //
 }
 
 int main(int argc, char** argv)
@@ -329,6 +334,15 @@ int main(int argc, char** argv)
   destroyAllWindows();
 
   testAAMCollection();
+
+  cout << MAGENTA << "***********************************************" << RESET << endl;
+  cout << MAGENTA << " Hit a key to proceed to AAM fitting test" << RESET << endl;
+  cout << MAGENTA << "***********************************************" << RESET << endl;
+  waitKey(2000);
+  destroyAllWindows();
+
+  testAAMFitting();  
+
 
   cout << GREEN << "***********************************************" << RESET << endl;
   cout << GREEN << " All tests done" << RESET << endl;

@@ -46,6 +46,7 @@ public:
   //------- Transformation -----------
   void realignTo(MeshShape& newShape);
   void resizeTo(double newScale);
+  void recentre(Point2d t);
 };
 
 #endif

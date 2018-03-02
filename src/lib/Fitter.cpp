@@ -26,6 +26,7 @@ FittedState AAMFitter::fit(Mat sample, const ShapeModelPCA& pcaShape, const Appe
 
 FittedState AAMFitter::findBestShapeMove(const Mat& sample, FittedState& fitState, double stepSize) const 
 {
+  // TAOTODO: Skip the prev step, otherwise it would bounce
   int M = fitState.stateShape.dimension();
 
   Mat bestParamDiff;
@@ -105,7 +106,14 @@ FittedState AAMFitter::findBestAppearanceMove(const Mat& sample, FittedState& fi
 FittedState AAMFitter::fitIterNext(const Mat& sample, FittedState& fitState)
 {
   // TAOTODO: Implement line search
-  // auto meanShape = stateShape.toShape(Mat::zeros(1, stateShape.dimension(), CV_64FC1));
+  
+  // Find the best scaling and translation
+
+
+  // Find the best shape parameters
+
+
+  // Find the best appearance parameters
 
 
   fitState.iters ++;
