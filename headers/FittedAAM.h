@@ -1,0 +1,38 @@
+#ifndef FITTER
+#define FITTER
+
+#include "master.h"
+#include "BaseModel.h"
+#include "Shape.h"
+#include "MeshShape.h"
+#include "Appearance.h"
+#include "ModelPCA.h"
+
+class FittedAAM 
+{
+protected:
+  // Static PCA of Shape and Appearance components
+  ShapeModelPCA pcaShape;
+  AppearanceModelPCA pcaAppearance;
+
+public:
+  // Variable states
+  Mat shapeParam;
+  Mat appearanceParam;
+
+  inline FittedAAM(const ShapeModelPCA& pcaShape, const AppearanceModelPCA& pcaAppearance)
+    : pcaShape(pcaShape), pcaAppearance(pcaAppearance), 
+      fittingError(numeric_limits<double>::max()) 
+      {
+        shapeParam = Mat::zeros(1, pcaShape.dimension(), CV_64FC1);
+        appearanceParam = Mat::zeros(1, pcaAppearance.dimension(), CV_64FC1);
+      };
+  FittedAAM(const FittedAAM& another);
+  virtual ~FittedAAM(){};
+
+  void setShapeParam(const Mat& param);
+  void setAppearanceParam(const Mat& param);
+
+  Appearance toAppearance();
+  MeshShape toShape();
+};
