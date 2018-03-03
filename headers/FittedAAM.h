@@ -19,20 +19,32 @@ public:
   // Variable states
   Mat shapeParam;
   Mat appearanceParam;
+  Point2d centre;
+  double scale;
 
+  /**
+   * Initialise a new AAM with mean shape and mean appearance
+   */
   inline FittedAAM(const ShapeModelPCA& pcaShape, const AppearanceModelPCA& pcaAppearance)
     : pcaShape(pcaShape), pcaAppearance(pcaAppearance), 
       fittingError(numeric_limits<double>::max()) 
       {
         shapeParam = Mat::zeros(1, pcaShape.dimension(), CV_64FC1);
         appearanceParam = Mat::zeros(1, pcaAppearance.dimension(), CV_64FC1);
+        centre = Point2d(0,0);
+        scale = 1;
       };
   FittedAAM(const FittedAAM& another);
   virtual ~FittedAAM(){};
 
+  void setCentre(const Point2d& p);
+  void setScale(const double& s);
   void setShapeParam(const Mat& param);
   void setAppearanceParam(const Mat& param);
 
   Appearance toAppearance();
   MeshShape toShape();
+
+  double measureError(const Mat& sample);
+  void drawOverlay(Mat& canvas);
 };
