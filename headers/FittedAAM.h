@@ -10,6 +10,8 @@
 
 class FittedAAM 
 {
+private:
+  FittedAAM() {};
 protected:
   // Static PCA of Shape and Appearance components
   ShapeModelPCA pcaShape;
@@ -22,7 +24,6 @@ public:
   Point2d centre;
   double scale;
 
-  FittedAAM() {};
 
   /**
    * Initialise a new AAM with mean shape and mean appearance
