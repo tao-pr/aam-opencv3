@@ -15,6 +15,7 @@ class ModelPCA
 protected:
   PCA pca;
 public:
+  ModelPCA() {};
   ModelPCA(PCA& p) : pca(p) {};
   inline virtual ~ModelPCA() {};
 
@@ -29,6 +30,7 @@ public:
 class ShapeModelPCA : public ModelPCA 
 { 
 public: 
+  ShapeModelPCA() : ModelPCA() {};
   ShapeModelPCA(PCA& p) : ModelPCA(p) {};
   BaseModel* mean() const; 
   BaseModel* toModel(const Mat& param) const;
@@ -41,6 +43,7 @@ protected:
   Size originalBound;
   MeshShape meanShape;
 public: 
+  AppearanceModelPCA() : ModelPCA() {};
   AppearanceModelPCA(PCA& p, MeshShape mean, Size& size) : ModelPCA(p), originalBound(size) { this->meanShape = mean; };
   BaseModel* mean() const;
   Mat toParam(const BaseModel* m) const;

@@ -22,12 +22,13 @@ public:
   Point2d centre;
   double scale;
 
+  FittedAAM() {};
+
   /**
    * Initialise a new AAM with mean shape and mean appearance
    */
   inline FittedAAM(const ShapeModelPCA& pcaShape, const AppearanceModelPCA& pcaAppearance)
-    : pcaShape(pcaShape), pcaAppearance(pcaAppearance), 
-      fittingError(numeric_limits<double>::max()) 
+    : pcaShape(pcaShape), pcaAppearance(pcaAppearance) 
       {
         shapeParam = Mat::zeros(1, pcaShape.dimension(), CV_64FC1);
         appearanceParam = Mat::zeros(1, pcaAppearance.dimension(), CV_64FC1);
@@ -48,3 +49,5 @@ public:
   double measureError(const Mat& sample);
   void drawOverlay(Mat& canvas);
 };
+
+#endif
