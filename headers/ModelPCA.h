@@ -46,10 +46,14 @@ public:
   AppearanceModelPCA() : ModelPCA() {};
   AppearanceModelPCA(PCA& p, MeshShape mean, Size& size) : ModelPCA(p), originalBound(size) { this->meanShape = mean; };
   BaseModel* mean() const;
+  
   Mat toParam(const BaseModel* m) const;
   BaseModel* toModel(const Mat& param) const;
   Appearance* toAppearance(const Mat& param) const;
+  
   void overrideMeanShape(const MeshShape& newMeanShape);
+  
+  const double getScale() const { return this->meanShape.getScale(); };
 };
 
 

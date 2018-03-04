@@ -40,7 +40,7 @@ public:
   virtual ~FittedAAM(){};
 
   void setCentre(const Point2d& p);
-  void setScale(const double& s);
+  const double getMeanShapeScale();
   void setShapeParam(const Mat& param);
   void setAppearanceParam(const Mat& param);
 

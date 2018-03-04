@@ -7,27 +7,26 @@ FittedAAM::FittedAAM(const FittedAAM& another)
   this->shapeParam = another.shapeParam;
   this->appearanceParam = another.appearanceParam;
   this->centre = another.centre;
-  this->scale = another.scale;
 }
 
 void FittedAAM::setCentre(const Point2d& p)
 {
-
+  this->centre = p;
 }
 
-void FittedAAM::setScale(const double& s)
+const double FittedAAM::getMeanShapeScale()
 {
-
+  return this->pcaAppearance.getScale();
 }
 
 void FittedAAM::setShapeParam(const Mat& param)
 {
-
+  param.copyTo(this->shapeParam);
 }
 
 void FittedAAM::setAppearanceParam(const Mat& param)
 {
-
+  param.copyTo(this->appearanceParam);
 }
 
 Appearance FittedAAM::toAppearance()

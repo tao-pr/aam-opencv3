@@ -172,20 +172,11 @@ void Appearance::recentre(Point2d t)
 void Appearance::resizeTo(double newScale)
 {
   auto centre = this->mesh.centroid();
-
-  // Find the current scale
-  auto points = this->mesh.toPoints();
-  double maxDist = 0;
-  for (auto p : points)
-  {
-    double dist = Aux::sqrt(Aux::squareDistance(p, centre));
-    maxDist = max(dist, maxDist);
-  }
-
-  double ratio = newScale / Aux::sqrt(maxDist);
+  double originalScale = this->mesh.getScale();
+  double ratio = newScale / originalScale;
 
   #ifdef DEBUG
-  cout << "Appearance::resizeTo : from " << maxDist << " -> " << newScale << " (scale = " << ratio << ")" << endl;
+  cout << "Appearance::resizeTo : from " << originalScale << " -> " << newScale << " (scale = " << ratio << ")" << endl;
   #endif
 
 

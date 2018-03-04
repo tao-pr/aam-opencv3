@@ -35,6 +35,19 @@ Point2d Shape::centroid() const
   return Point2d(m.at<double>(0,0), m.at<double>(0,1));
 }
 
+const double Shape::getScale() const
+{
+  auto centre = this->centroid();
+  auto points = this->toPoints();
+  double maxDist = 0;
+  for (auto p : points)
+  {
+    double dist = Aux::sqrt(Aux::squareDistance(p, centre));
+    maxDist = max(dist, maxDist);
+  }
+  return Aux::sqrt(maxDist);
+}
+
 /**
  * Compute the sum of square distance to another shape.
  */
