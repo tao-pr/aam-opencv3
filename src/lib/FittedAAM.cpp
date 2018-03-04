@@ -31,7 +31,17 @@ void FittedAAM::setAppearanceParam(const Mat& param)
 
 Appearance* FittedAAM::toAppearance()
 {
-  return this->pcaAppearance.toAppearance(this->appearanceParam);
+  assert(this->scale != 0);
+
+  auto app = this->pcaAppearance.toAppearance(this->appearanceParam);
+  app->recentre(this->centre);
+  
+  if (this->scale != 1)
+  {
+    double scale0 = getMeanShapeScale();
+    app->resizeTo(scale0 * this->scale);
+  }
+  return app;
 }
 
 MeshShape* FittedAAM::toShape()
@@ -41,10 +51,19 @@ MeshShape* FittedAAM::toShape()
 
 double FittedAAM::measureError(const Mat& sample)
 {
+  Appearance* app = this->toAppearance();
+  int M = pcaAppearance.dimension();
 
+  // Row vector representing the current state of appearance
+  Mat selfRow = app->toRowVectorReduced(M);
+
+  // Row vectot representing the current shape overlaid onto the sample
+  app->setGraphic(sample);
+  Mat sampleRow = app->toRowVectorReduced(M);
+
+  return Aux::mse(sampleRow, selfRow);
 }
 
 void FittedAAM::drawOverlay(Mat& canvas)
 {
-
 }

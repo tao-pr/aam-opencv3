@@ -22,7 +22,7 @@ public:
   Mat shapeParam;
   Mat appearanceParam;
   Point2d centre;
-  double scale;
+  double scale; // Scale multiplier (1x by default)
 
 
   /**
