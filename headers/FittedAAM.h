@@ -44,8 +44,8 @@ public:
   void setShapeParam(const Mat& param);
   void setAppearanceParam(const Mat& param);
 
-  Appearance toAppearance();
-  MeshShape toShape();
+  Appearance* toAppearance();
+  MeshShape* toShape();
 
   double measureError(const Mat& sample);
   void drawOverlay(Mat& canvas);

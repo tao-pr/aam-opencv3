@@ -29,14 +29,14 @@ void FittedAAM::setAppearanceParam(const Mat& param)
   param.copyTo(this->appearanceParam);
 }
 
-Appearance FittedAAM::toAppearance()
+Appearance* FittedAAM::toAppearance()
 {
-
+  return this->pcaAppearance.toAppearance(this->appearanceParam);
 }
 
-MeshShape FittedAAM::toShape()
+MeshShape* FittedAAM::toShape()
 {
-
+  return this->pcaShape.toShape(this->shapeParam);
 }
 
 double FittedAAM::measureError(const Mat& sample)
