@@ -67,6 +67,24 @@ namespace IO
       moveWindow(this->wndName, this->pos.x, this->pos.y);
     }
   };
+
+  class MatIO : public GenericIO
+  {
+  private:
+    Mat m;
+  public:
+    MatIO(){};
+
+    inline void render(const Mat& im)
+    {
+      im.copyTo(this->m);
+    }
+    
+    Mat get()
+    {
+      return m;
+    }
+  };
 };
 
 
