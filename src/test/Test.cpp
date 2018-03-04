@@ -305,7 +305,18 @@ void testAppearance()
 
 void testAAMFitting()
 {
-  //
+  const int TRAIN_SET_SIZE = 16;
+  const int SHAPE_SIZE = 8;
+  const int MAX_DIM = 512;
+
+  // Initialise AAM Model
+  cout << "Generating collection of Shapes and Appearances ..." << endl;
+  auto aamCollection = initialAppearanceCollection(TRAIN_SET_SIZE, SHAPE_SIZE);
+  auto meanAppearance = aamCollection->procrustesMean();
+  auto pcaAppearance = dynamic_cast<AppearanceModelPCA*>(aamCollection->pca(meanAppearance, MAX_DIM));
+
+  // TAOTODO:
+
 }
 
 int main(int argc, char** argv)

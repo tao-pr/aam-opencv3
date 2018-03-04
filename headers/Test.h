@@ -9,6 +9,7 @@
 #include "AppearanceCollection.h"
 #include "MeshShape.h"
 #include "Texture.h"
+#include "FittedAAM.h"
 
 const double CANVAS_SIZE     = 300.0;
 const double CANVAS_HALFSIZE = CANVAS_SIZE / 2.0;
