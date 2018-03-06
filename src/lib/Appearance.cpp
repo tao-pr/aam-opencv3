@@ -80,6 +80,7 @@ Mat Appearance::toRowVector() const
 
   #ifdef DEBUG
   cout << "Appearance::toRowVector : bound ~ " << bound << endl;
+  cout << "... graphic bound ~ " << this->graphic.size() << endl; // TAODEBUG:
   #endif
 
   Mat channels[3];
@@ -140,8 +141,9 @@ void Appearance::realignTo(MeshShape& newShape)
   assert(this->textureList.size() == targetTriangles.size());
 
   // Warp the attached graphic onto the target
+  const int span = 16;
   auto newSize = newShape.getSpannedSize();
-  Mat warped = Mat::zeros(newSize, CV_8UC3);
+  Mat warped = Mat::zeros(newSize.height + span, newSize.width + span, CV_8UC3);
   for (int ti=0; ti<targetTriangles.size(); ti++)
   {
     this->textureList[ti].realignTo(targetTriangles[ti], &newShape.mat, &warped);

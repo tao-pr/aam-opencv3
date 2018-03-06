@@ -306,7 +306,7 @@ void testAppearance()
 void testAAMFitting()
 {
   const int TRAIN_SET_SIZE = 16;
-  const int SHAPE_SIZE = 8;
+  const int SHAPE_SIZE = 14;
   const int MAX_DIM = 3 * 64;
 
   // Initialise AAM Model

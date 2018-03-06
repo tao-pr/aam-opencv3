@@ -77,7 +77,7 @@ BaseModel* ModelCollection::procrustesMean(double tol, int maxIter)
   }
   
   #ifdef DEBUG
-  cout << "... Alignment done" << endl;
+  cout << GREEN << "... [Alignment done]" << endl;
   #endif
 
   auto meanModel = alignedSet->items[0];

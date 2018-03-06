@@ -73,10 +73,10 @@ inline unique_ptr<AppearanceCollection> initialAppearanceCollection(int num, int
 
   // Generate a base shape and texture
   auto baseShape = MeshShape(initialMesh(shapeSize));
-  auto baseTexture = chessPattern(5, Size(CANVAS_SIZE, CANVAS_SIZE));
+  auto baseTexture = chessPattern(7, Size(CANVAS_SIZE, CANVAS_SIZE));
 
   // Generate [n] random displacements on the base shape
-  auto noiseConstraint = Point2d(9.5, 9.5);
+  auto noiseConstraint = Point2d(6.5, 6.5);
   srand(time(NULL));
   vector<Appearance*> appearances;
 
