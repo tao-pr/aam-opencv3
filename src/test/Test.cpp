@@ -307,13 +307,32 @@ void testAAMFitting()
 {
   const int TRAIN_SET_SIZE = 16;
   const int SHAPE_SIZE = 8;
-  const int MAX_DIM = 512;
+  const int MAX_DIM = 3 * 64;
 
   // Initialise AAM Model
   cout << "Generating collection of Shapes and Appearances ..." << endl;
   auto aamCollection = initialAppearanceCollection(TRAIN_SET_SIZE, SHAPE_SIZE);
-  auto meanAppearance = aamCollection->procrustesMean();
+  auto meanAppearance = dynamic_cast<Appearance*>(aamCollection->procrustesMean());
+
+  IO::WindowIO ioMean("mean");
+  cout << "roi of mean appearance : " << meanAppearance->getSpannedSize() << endl;
+  meanAppearance->render(&ioMean, Mat::zeros(meanAppearance->getSpannedSize(), CV_8UC3));
+  moveWindow("mean", CANVAS_SIZE*2, 0);
+  waitKey(300);
+
   auto pcaAppearance = dynamic_cast<AppearanceModelPCA*>(aamCollection->pca(meanAppearance, MAX_DIM));
+
+  IO::WindowIO ioSnap("AAM");
+  for (auto aam : aamCollection->getItems())
+  {
+    Appearance* app = dynamic_cast<Appearance*>(aam);
+    Mat canvas = Mat::zeros(app->getSpannedSize(), CV_8UC3);
+    app->render(&ioSnap, canvas);
+    moveWindow("AAM", CANVAS_SIZE*3, 0);
+    waitKey(300);
+  }
+
+  waitKey(0);
 
   // TAOTODO:
 
@@ -339,29 +358,29 @@ int main(int argc, char** argv)
   // waitKey(2000);
   // destroyAllWindows();
 
-  testTexture(argv);
+  // testTexture(argv);
 
-  cout << MAGENTA << "***********************************************" << RESET << endl;
-  cout << MAGENTA << " Hit a key to proceed to appearance testing " << RESET << endl;
-  cout << MAGENTA << "***********************************************" << RESET << endl;
-  waitKey(2000);
-  destroyAllWindows();
+  // cout << MAGENTA << "***********************************************" << RESET << endl;
+  // cout << MAGENTA << " Hit a key to proceed to appearance testing " << RESET << endl;
+  // cout << MAGENTA << "***********************************************" << RESET << endl;
+  // waitKey(2000);
+  // destroyAllWindows();
   
-  testAppearance();
+  // testAppearance();
 
-  cout << MAGENTA << "***********************************************" << RESET << endl;
-  cout << MAGENTA << " Hit a key to proceed to AAM collection test" << RESET << endl;
-  cout << MAGENTA << "***********************************************" << RESET << endl;
-  waitKey(2000);
-  destroyAllWindows();
+  // cout << MAGENTA << "***********************************************" << RESET << endl;
+  // cout << MAGENTA << " Hit a key to proceed to AAM collection test" << RESET << endl;
+  // cout << MAGENTA << "***********************************************" << RESET << endl;
+  // waitKey(2000);
+  // destroyAllWindows();
 
-  testAAMCollection();
+  // testAAMCollection();
 
-  cout << MAGENTA << "***********************************************" << RESET << endl;
-  cout << MAGENTA << " Hit a key to proceed to AAM fitting test" << RESET << endl;
-  cout << MAGENTA << "***********************************************" << RESET << endl;
-  waitKey(2000);
-  destroyAllWindows();
+  // cout << MAGENTA << "***********************************************" << RESET << endl;
+  // cout << MAGENTA << " Hit a key to proceed to AAM fitting test" << RESET << endl;
+  // cout << MAGENTA << "***********************************************" << RESET << endl;
+  // waitKey(2000);
+  // destroyAllWindows();
 
   testAAMFitting();  
 

@@ -78,6 +78,10 @@ Mat Appearance::toRowVector() const
   auto bound = this->mesh.getBound();
   auto N = bound.width * bound.height;
 
+  #ifdef DEBUG
+  cout << "Appearance::toRowVector : bound ~ " << bound << endl;
+  #endif
+
   Mat channels[3];
   split(this->graphic(bound), channels);
   Mat row(1, N*3, CV_8UC1);
