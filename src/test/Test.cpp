@@ -316,6 +316,7 @@ void testAAMFitting()
   
   auto meanAppearance = dynamic_cast<Appearance*>(aamCollection->procrustesMean());
   auto meanShape = dynamic_cast<Shape*>(shapeCollection->procrustesMean());
+  auto meanMeshShape = MeshShape(*meanShape);
 
   // TAOTODO: Find mean and PCA of shape counterpart
 
@@ -325,12 +326,13 @@ void testAAMFitting()
   cout << "roi of mean appearance : " << meanAppearance->getSpannedSize() << endl;
   auto size = meanAppearance->getSpannedSize();
   meanAppearance->render(&ioMean, Mat::zeros(size, CV_8UC3));
-  meanShape->render(&ioMeanShape, Mat::zeros(size, CV_8UC3));
+  meanMeshShape.render(&ioMeanShape, Mat::zeros(size, CV_8UC3));
   moveWindow("meanApp", CANVAS_SIZE*2, 0);
   moveWindow("meanShape", CANVAS_SIZE*2, CANVAS_SIZE);
   waitKey(300);
 
   auto pcaAppearance = dynamic_cast<AppearanceModelPCA*>(aamCollection->pca(meanAppearance, MAX_DIM));
+  auto pcaShape = dynamic_cast<ShapeModelPCA*>(shapeCollection->pca(meanShape, -1));
 
   IO::WindowIO ioSnap("AAM");
   for (auto aam : aamCollection->getItems())
