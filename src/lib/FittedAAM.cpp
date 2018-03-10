@@ -2,8 +2,7 @@
 
 FittedAAM::FittedAAM(const FittedAAM& another)
 {
-  this->pcaShape = another.pcaShape;
-  this->pcaAppearance = another.pcaAppearance;
+  this->fitter = another.fitter;
   this->shapeParam = another.shapeParam;
   this->appearanceParam = another.appearanceParam;
   this->centre = another.centre;
@@ -16,7 +15,7 @@ void FittedAAM::setCentre(const Point2d& p)
 
 const double FittedAAM::getMeanShapeScale()
 {
-  return this->pcaAppearance.getScale();
+  return this->pcaAppearance().getScale();
 }
 
 void FittedAAM::setShapeParam(const Mat& param)
@@ -33,7 +32,7 @@ Appearance* FittedAAM::toAppearance()
 {
   assert(this->scale != 0);
 
-  auto app = this->pcaAppearance.toAppearance(this->appearanceParam);
+  auto app = this->pcaAppearance().toAppearance(this->appearanceParam);
   app->recentre(this->centre);
   
   if (this->scale != 1)
@@ -46,13 +45,13 @@ Appearance* FittedAAM::toAppearance()
 
 MeshShape* FittedAAM::toShape()
 {
-  return this->pcaShape.toShape(this->shapeParam);
+  return this->pcaShape().toShape(this->shapeParam);
 }
 
 double FittedAAM::measureError(const Mat& sample)
 {
   Appearance* app = this->toAppearance();
-  int M = pcaAppearance.dimension();
+  int M = pcaAppearance().dimension();
 
   // Row vector representing the current state of appearance
   Mat selfRow = app->toRowVectorReduced(M);

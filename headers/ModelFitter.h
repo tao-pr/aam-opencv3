@@ -21,6 +21,9 @@ public:
   ModelFitter(const ShapeModelPCA& shapePCA, const AppearanceModelPCA& appearancePCA)
     : pcaShape(shapePCA), pcaAppearance(appearancePCA) {};
   virtual ~ModelFitter(){};
+
+  const ShapeModelPCA getShapePCA() { return this->pcaShape; } const;
+  const AppearanceModelPCA getAppearancePCA() { return this->pcaAppearance; } const;
 };
 
 #endif

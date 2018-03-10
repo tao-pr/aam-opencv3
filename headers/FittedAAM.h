@@ -7,16 +7,15 @@
 #include "MeshShape.h"
 #include "Appearance.h"
 #include "ModelPCA.h"
+#include "ModelFitter.h"
 
 class FittedAAM 
 {
 private:
   FittedAAM() {};
 protected:
-  // TAOTODO: Remove these PCAs
-  // Static PCA of Shape and Appearance components
-  ShapeModelPCA pcaShape;
-  AppearanceModelPCA pcaAppearance;
+  // Static model fitter instance (shared)
+  ModelFitter* fitter;
 
 public:
   // Variable states
@@ -29,16 +28,18 @@ public:
   /**
    * Initialise a new AAM with mean shape and mean appearance
    */
-  inline FittedAAM(const ShapeModelPCA& pcaShape, const AppearanceModelPCA& pcaAppearance)
-    : pcaShape(pcaShape), pcaAppearance(pcaAppearance) 
-      {
-        shapeParam = Mat::zeros(1, pcaShape.dimension(), CV_64FC1);
-        appearanceParam = Mat::zeros(1, pcaAppearance.dimension(), CV_64FC1);
-        centre = Point2d(0,0);
-        scale = 1;
-      };
+  inline FittedAAM(ModelFitter* sharedFitter) : fitter(sharedFitter)
+  {
+    shapeParam = Mat::zeros(1, pcaShape().dimension(), CV_64FC1);
+    appearanceParam = Mat::zeros(1, pcaAppearance().dimension(), CV_64FC1);
+    centre = Point2d(0,0);
+    scale = 1;
+  };
   FittedAAM(const FittedAAM& another);
   virtual ~FittedAAM(){};
+
+  const ShapeModelPCA pcaShape(){ return this->fitter->getShapePCA(); } const;
+  const AppearanceModelPCA pcaAppearance(){ return this->fitter->getAppearancePCA(); } const;
 
   void setCentre(const Point2d& p);
   const double getMeanShapeScale();
