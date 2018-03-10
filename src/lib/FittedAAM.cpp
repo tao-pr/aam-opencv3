@@ -3,7 +3,7 @@
 FittedAAM::FittedAAM(const FittedAAM& another)
 {
   this->fitter = another.fitter;
-  this->shapeParam = another.shapeParam;
+  this->shapeParam = another.shapeParam; // TAOTOREVIEW: supposed to be `copyTo` instead?
   this->appearanceParam = another.appearanceParam;
   this->centre = another.centre;
 }
@@ -30,7 +30,7 @@ void FittedAAM::setAppearanceParam(const Mat& param)
 
 Appearance* FittedAAM::toAppearance()
 {
-  assert(this->scale != 0);
+  assert(this->scale > 0);
 
   auto app = this->pcaAppearance().toAppearance(this->appearanceParam);
   app->recentre(this->centre);

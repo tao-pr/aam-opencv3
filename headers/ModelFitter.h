@@ -9,6 +9,21 @@
 #include "ModelPCA.h"
 #include "FittedAAM.h"
 
+class FittedAAM;
+
+struct FittingCriteria
+{
+  int numMaxIter;
+  double eps;
+  double initScale;
+  Point2d initPos;
+
+  static FittingCriteria getDefault()
+  {
+    return FittingCriteria{ 10, 1e-3, 1, Point2d(0,0) };
+  };
+};
+
 class ModelFitter
 {
 private:
@@ -24,6 +39,8 @@ public:
 
   const ShapeModelPCA getShapePCA() { return this->pcaShape; } const;
   const AppearanceModelPCA getAppearancePCA() { return this->pcaAppearance; } const;
+
+  virtual FittedAAM& fit(const Mat& sample, const FittingCriteria& crit = FittingCriteria::getDefault()) const;
 };
 
 #endif
