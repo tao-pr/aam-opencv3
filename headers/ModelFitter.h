@@ -32,6 +32,8 @@ protected:
   ShapeModelPCA pcaShape;
   AppearanceModelPCA pcaAppearance;
 
+  virtual FittedAAM& initModel(const FittingCriteria& crit) const;
+
 public:
   ModelFitter(const ShapeModelPCA& shapePCA, const AppearanceModelPCA& appearancePCA)
     : pcaShape(shapePCA), pcaAppearance(appearancePCA) {};
