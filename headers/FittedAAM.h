@@ -9,13 +9,16 @@
 #include "ModelPCA.h"
 #include "ModelFitter.h"
 
+/**
+ * State of the active appearance model fitted onto a sample
+ */
 class FittedAAM 
 {
 private:
   FittedAAM() {};
 protected:
   // Static model fitter instance (shared)
-  ModelFitter* fitter;
+  ModelFitter* fitter; // TAOTODO: Use <shared_ptr> instead
 
 public:
   // Variable states
