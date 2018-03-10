@@ -13,6 +13,7 @@ class FittedAAM
 private:
   FittedAAM() {};
 protected:
+  // TAOTODO: Remove these PCAs
   // Static PCA of Shape and Appearance components
   ShapeModelPCA pcaShape;
   AppearanceModelPCA pcaAppearance;

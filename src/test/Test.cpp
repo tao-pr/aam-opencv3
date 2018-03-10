@@ -342,11 +342,12 @@ void testAAMFitting()
   sampleShape.addRandomNoise(Point2d(8.5, 9.5));
   cout << "Distorting unknown sample ..." << endl;
   sampleAppearance.realignTo(sampleShape);
-  sampleAppearance.resizeTo(450);
+  sampleAppearance.resizeTo(512);
   sampleAppearance.recentre(Point2d(35, 36));
 
+  // Render sample without vertices nor edges
   auto ioSample = IO::WindowIO("generated sample");
-  sampleAppearance.render(&ioSample, Mat::zeros(sampleAppearance.getSpannedSize(), CV_8UC3));
+  sampleAppearance.render(&ioSample, Mat::zeros(sampleAppearance.getSpannedSize(), CV_8UC3), false, false);
   moveWindow("generated sample", CANVAS_SIZE, CANVAS_SIZE);
 
   // Try fitting the model onto an unknown sample
