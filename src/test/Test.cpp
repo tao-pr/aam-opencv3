@@ -314,35 +314,47 @@ void testAAMFitting()
   auto aamCollection = initialAppearanceCollection(TRAIN_SET_SIZE, SHAPE_SIZE);
   auto shapeCollection = aamCollection->toShapeCollection();
   
+  // Find means
   auto meanAppearance = dynamic_cast<Appearance*>(aamCollection->procrustesMean());
   auto meanShape = dynamic_cast<Shape*>(shapeCollection->procrustesMean());
   auto meanMeshShape = MeshShape(*meanShape);
 
-  // TAOTODO: Find mean and PCA of shape counterpart
-
   IO::WindowIO ioMean("meanApp");
   IO::WindowIO ioMeanShape("meanShape");
 
-  cout << "roi of mean appearance : " << meanAppearance->getSpannedSize() << endl;
   auto size = meanAppearance->getSpannedSize();
+  cout << "roi of mean appearance : " << size << endl;
   meanAppearance->render(&ioMean, Mat::zeros(size, CV_8UC3));
   meanMeshShape.render(&ioMeanShape, Mat::zeros(size, CV_8UC3));
-  moveWindow("meanApp", CANVAS_SIZE*2, 0);
-  moveWindow("meanShape", CANVAS_SIZE*2, CANVAS_SIZE);
+  moveWindow("meanApp", CANVAS_SIZE*2-40, 0);
+  moveWindow("meanShape", CANVAS_SIZE*2-20+size.width, 0);
   waitKey(300);
 
+  // Find PCAs
+  cout << "Finding PCAs ..." << endl;
   auto pcaAppearance = dynamic_cast<AppearanceModelPCA*>(aamCollection->pca(meanAppearance, MAX_DIM));
   auto pcaShape = dynamic_cast<ShapeModelPCA*>(shapeCollection->pca(meanShape, -1));
 
-  IO::WindowIO ioSnap("AAM");
-  for (auto aam : aamCollection->getItems())
-  {
-    Appearance* app = dynamic_cast<Appearance*>(aam);
-    Mat canvas = Mat::zeros(app->getSpannedSize(), CV_8UC3);
-    app->render(&ioSnap, canvas);
-    moveWindow("AAM", CANVAS_SIZE*3, 0);
-    waitKey(300);
-  }
+  // Generate unknown sample we want to try fitting the model on
+  cout << "Generating unknown sample ..." << endl;
+  auto sampleShape = MeshShape(*meanShape);
+  auto sampleAppearance = Appearance(*meanAppearance);
+  sampleShape.addRandomNoise(Point2d(8.5, 9.5));
+  cout << "Distorting unknown sample ..." << endl;
+  sampleAppearance.realignTo(sampleShape);
+  sampleAppearance.resizeTo(450);
+  sampleAppearance.recentre(Point2d(35, 36));
+
+  auto ioSample = IO::WindowIO("generated sample");
+  sampleAppearance.render(&ioSample, Mat::zeros(sampleAppearance.getSpannedSize(), CV_8UC3));
+  moveWindow("generated sample", CANVAS_SIZE, CANVAS_SIZE);
+
+  // Try fitting the model onto an unknown sample
+  // TAOTODO:
+
+
+
+
 
   waitKey(0);
 
