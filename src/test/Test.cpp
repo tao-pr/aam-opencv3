@@ -346,9 +346,11 @@ void testAAMFitting()
   sampleAppearance.recentre(Point2d(35, 36));
 
   // Render sample without vertices nor edges
-  auto ioSample = IO::WindowIO("generated sample");
+  auto ioSample = IO::MatIO();
   sampleAppearance.render(&ioSample, Mat::zeros(sampleAppearance.getSpannedSize(), CV_8UC3), false, false);
+  namedWindow("generated sample");
   moveWindow("generated sample", CANVAS_SIZE, CANVAS_SIZE);
+  imshow("generated sample", ioSample.get());
 
   // Try fitting the model onto an unknown sample
   // TAOTODO:
