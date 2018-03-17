@@ -350,15 +350,18 @@ void testAAMFitting()
   // Render sample without vertices nor edges
   auto ioSample = IO::MatIO();
   sampleAppearance.render(&ioSample, Mat::zeros(sampleAppearance.getSpannedSize(), CV_8UC3), false, false);
+  Mat sampleMat = ioSample.get();
   namedWindow("generated sample");
   moveWindow("generated sample", CANVAS_SIZE, CANVAS_SIZE);
-  imshow("generated sample", ioSample.get());
+  imshow("generated sample", sampleMat);
 
   // Try fitting the model onto an unknown sample
   int maxIters = 20;
   double eps = 1e-5;
-  auto crit = FittingCriteria { maxIters, eps, sampleScale, sampleCentre };
   auto fitter = ModelFitter(*pcaShape, *pcaAppearance);
+
+  cout << "AAM model fitting started ..." << endl;
+  fitter.fit(sampleMat, FittingCriteria { maxIters, eps, sampleScale, sampleCentre });
 
   // TAOTODO:
 

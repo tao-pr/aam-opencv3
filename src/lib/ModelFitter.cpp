@@ -21,8 +21,12 @@ BaseFittedModel& ModelFitter::fit(const Mat& sample, const FittingCriteria& crit
     cout << CYAN << "Fitting model #" << iter << RESET << endl;
     #endif
 
-    
+
 
     iter++;
   };
+
+  #ifdef DEBUG
+  cout << RED << "[Model fitting finished]" << RESET << endl;
+  #endif
 }
