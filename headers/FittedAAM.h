@@ -8,11 +8,12 @@
 #include "Appearance.h"
 #include "ModelPCA.h"
 #include "ModelFitter.h"
+#include "BaseFittedModel.h"
 
 /**
  * State of the active appearance model fitted onto a sample
  */
-class FittedAAM 
+class FittedAAM : protected BaseFittedModel
 {
 private:
   FittedAAM() {};

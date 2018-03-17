@@ -336,14 +336,16 @@ void testAAMFitting()
   auto pcaShape = dynamic_cast<ShapeModelPCA*>(shapeCollection->pca(meanShape, -1));
 
   // Generate unknown sample we want to try fitting the model on
+  double sampleScale = 512;
+  auto sampleCentre = Point2d(35, 36);
   cout << "Generating unknown sample ..." << endl;
   auto sampleShape = MeshShape(*meanShape);
   auto sampleAppearance = Appearance(*meanAppearance);
   sampleShape.addRandomNoise(Point2d(8.5, 9.5));
   cout << "Distorting unknown sample ..." << endl;
   sampleAppearance.realignTo(sampleShape);
-  sampleAppearance.resizeTo(512);
-  sampleAppearance.recentre(Point2d(35, 36));
+  sampleAppearance.resizeTo(sampleScale);
+  sampleAppearance.recentre(sampleCentre);
 
   // Render sample without vertices nor edges
   auto ioSample = IO::MatIO();
@@ -353,7 +355,13 @@ void testAAMFitting()
   imshow("generated sample", ioSample.get());
 
   // Try fitting the model onto an unknown sample
+  int maxIters = 20;
+  double eps = 1e-5;
+  auto crit = FittingCriteria { maxIters, eps, sampleScale, sampleCentre };
+  auto fitter = ModelFitter(*pcaShape, *pcaAppearance);
+
   // TAOTODO:
+
 
 
 

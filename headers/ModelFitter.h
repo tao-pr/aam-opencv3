@@ -7,7 +7,7 @@
 #include "MeshShape.h"
 #include "Appearance.h"
 #include "ModelPCA.h"
-#include "FittedAAM.h"
+#include "BaseFittedModel.h"
 
 class FittedAAM;
 
@@ -32,7 +32,7 @@ protected:
   ShapeModelPCA pcaShape;
   AppearanceModelPCA pcaAppearance;
 
-  virtual FittedAAM& initModel(const FittingCriteria& crit) const;
+  virtual BaseFittedModel& initModel(const FittingCriteria& crit) const;
 
 public:
   ModelFitter(const ShapeModelPCA& shapePCA, const AppearanceModelPCA& appearancePCA)
@@ -42,7 +42,7 @@ public:
   const ShapeModelPCA getShapePCA() { return this->pcaShape; } const;
   const AppearanceModelPCA getAppearancePCA() { return this->pcaAppearance; } const;
 
-  virtual FittedAAM& fit(const Mat& sample, const FittingCriteria& crit = FittingCriteria::getDefault()) const;
+  virtual BaseFittedModel& fit(const Mat& sample, const FittingCriteria& crit = FittingCriteria::getDefault()) const;
 };
 
 #endif
