@@ -22,12 +22,6 @@ protected:
   ModelFitter* fitter; // TAOTODO: Use <shared_ptr> instead
 
 public:
-  // Variable states
-  Mat shapeParam;
-  Mat appearanceParam;
-  Point2d centre;
-  double scale; // Scale multiplier (1x by default)
-
 
   /**
    * Initialise a new AAM with mean shape and mean appearance
@@ -44,12 +38,12 @@ public:
 
   const ShapeModelPCA pcaShape(){ return this->fitter->getShapePCA(); } const;
   const AppearanceModelPCA pcaAppearance(){ return this->fitter->getAppearancePCA(); } const;
-
-  void setCentre(const Point2d& p);
-  inline void setScale(const double s) { this->scale = s; };
   const double getMeanShapeScale();
-  void setShapeParam(const Mat& param);
-  void setAppearanceParam(const Mat& param);
+
+  BaseFittedModel* setCentre(const Point2d& p);
+  inline BaseFittedModel* setScale(const double s) { this->scale = s; return this; };
+  BaseFittedModel* setShapeParam(const Mat& param);
+  BaseFittedModel* setAppearanceParam(const Mat& param);
 
   Appearance* toAppearance();
   MeshShape* toShape();
