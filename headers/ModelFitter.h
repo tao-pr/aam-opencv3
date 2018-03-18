@@ -9,15 +9,6 @@
 #include "ModelPCA.h"
 #include "BaseFittedModel.h"
 
-enum Step
-{
-  SCALING = 0,
-  TRANSITION = 1,
-  RESHAPING = 2,
-  RETEXTURING = 3,
-  END = 4
-};
-
 struct FittingCriteria
 {
   int numMaxIter;
@@ -38,7 +29,7 @@ protected:
   // Static PCA of Shape and Appearance components
   ShapeModelPCA pcaShape;
   AppearanceModelPCA pcaAppearance;
-  BaseFittedModel* generateNextBestModel(BaseFittedModel* model, const Mat& sample) const;
+  tuple<BaseFittedModel*, double> generateNextBestModel(BaseFittedModel* model, const Mat& sample) const;
 
 public:
   ModelFitter(const ShapeModelPCA& shapePCA, const AppearanceModelPCA& appearancePCA)

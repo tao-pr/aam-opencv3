@@ -359,9 +359,10 @@ void testAAMFitting()
   int maxIters = 20;
   double eps = 1e-5;
   auto fitter = ModelFitter(*pcaShape, *pcaAppearance);
+  auto initModel = new FittedAAM(&fitter);
 
   cout << "AAM model fitting started ..." << endl;
-  fitter.fit(sampleMat, FittingCriteria { maxIters, eps, sampleScale, sampleCentre });
+  fitter.fit(initModel, sampleMat, FittingCriteria { maxIters, eps, sampleScale, sampleCentre });
 
   // TAOTODO:
   

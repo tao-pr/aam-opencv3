@@ -74,3 +74,12 @@ void FittedAAM::drawOverlay(Mat& canvas)
   imshow("canvas", canvas);
   waitKey(0);
 }
+
+BaseFittedModel* FittedAAM::clone() const
+{
+  auto cloned = new FittedAAM(this->fitter);
+  cloned->setCentre(this->centre);
+  cloned->setShapeParam(this->shapeParam);
+  cloned->setAppearanceParam(this->appearanceParam);
+  return cloned;
+}

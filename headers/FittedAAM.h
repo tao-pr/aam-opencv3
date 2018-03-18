@@ -13,7 +13,7 @@
 /**
  * State of the active appearance model fitted onto a sample
  */
-class FittedAAM : protected BaseFittedModel
+class FittedAAM : public BaseFittedModel
 {
 private:
   FittedAAM() {};
@@ -46,12 +46,14 @@ public:
   const AppearanceModelPCA pcaAppearance(){ return this->fitter->getAppearancePCA(); } const;
 
   void setCentre(const Point2d& p);
+  inline void setScale(const double s) { this->scale = s; };
   const double getMeanShapeScale();
   void setShapeParam(const Mat& param);
   void setAppearanceParam(const Mat& param);
 
   Appearance* toAppearance();
   MeshShape* toShape();
+  BaseFittedModel* clone() const;
 
   double measureError(const Mat& sample);
   void drawOverlay(Mat& canvas);

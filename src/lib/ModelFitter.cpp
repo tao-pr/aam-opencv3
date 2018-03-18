@@ -1,6 +1,6 @@
 #include "ModelFitter.h"
 
-BaseFittedModel* ModelFitter::generateNextBestModel(BaseFittedModel* model, const Mat& sample) const
+tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedModel* model, const Mat& sample) const
 {
   // TAOTODO:
 }
@@ -15,7 +15,7 @@ BaseFittedModel* ModelFitter::fit(const BaseFittedModel* initModel, const Mat& s
   #endif
 
   // Start with the given initial model
-  auto prevModel = initModel;
+  auto prevModel = initModel->clone();
 
   // Adjust model parameters until converges
   while (iter < crit.numMaxIter && errorDiff > crit.eps)
@@ -35,9 +35,11 @@ BaseFittedModel* ModelFitter::fit(const BaseFittedModel* initModel, const Mat& s
 
     // Explore next best parameters
     // TAOTOREVIEW: Add prev explored paths as taboo
-    auto newModel = generateNextBestModel(prevModel, sample);
+    auto newModelWithError = generateNextBestModel(prevModel, sample);
 
-    double error = newModel->measureError(sample);
+    BaseFittedModel* newModel = get<0>(newModelWithError);
+    double error = get<1>(newModelWithError);
+    
     double errorDiff;
     if (error == 0)
     {
@@ -56,11 +58,16 @@ BaseFittedModel* ModelFitter::fit(const BaseFittedModel* initModel, const Mat& s
     cout << endl; // TAOTODO: Report error here
     #endif
 
+    // Destroy prev model
+    delete prevModel;
+
     iter++;
-    prevModel = model;
+    prevModel = newModel;
   };
 
   #ifdef DEBUG
   cout << RED << "[Model fitting finished]" << RESET << endl;
   #endif
+
+  return prevModel;
 }
