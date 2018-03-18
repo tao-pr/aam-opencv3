@@ -24,6 +24,9 @@ public:
   virtual BaseModel* mean() const = 0;
   virtual BaseModel* toModel(const Mat& param) const = 0;
 
+  // Generate permutation of parameter matrix
+  virtual Mat* permutationOfParams() const = 0;
+
   const int dimension() const { return this->pca.eigenvalues.cols; };
 };
 
@@ -35,6 +38,7 @@ public:
   BaseModel* mean() const; 
   BaseModel* toModel(const Mat& param) const;
   MeshShape* toShape(const Mat& param) const;
+  Mat* permutationOfParams() const;
 };
 
 class AppearanceModelPCA : public ModelPCA 
@@ -50,6 +54,7 @@ public:
   Mat toParam(const BaseModel* m) const;
   BaseModel* toModel(const Mat& param) const;
   Appearance* toAppearance(const Mat& param) const;
+  Mat* permutationOfParams() const;
   
   void overrideMeanShape(const MeshShape& newMeanShape);
   

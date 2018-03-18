@@ -2,7 +2,39 @@
 
 tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedModel* model, const Mat& sample) const
 {
-  // TAOTODO:
+  vector<SearchWith> actions = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
+  vector<tuple<BaseFittedModel*, double>> candidates;
+
+  // Generate action params
+  double scales[] = {1.01, 0.99};
+  Point2d trans[] = {Point2d(-1,0), Point2d(0,-1), Point2d(1,0), Point2d(0,1)};
+  Mat* smat       = pcaShape.permutationOfParams();
+  Mat* amat       = pcaAppearance.permutationOfParams();
+
+  for (auto a : actions)
+  {
+    // TAOTOREVIEW: better to use priority queue here?
+    
+    // TAOTODO:
+  }
+
+  // Identify the best model
+  double bestError = get<1>(candidates.front());
+  BaseFittedModel* bestCandidate = get<0>(candidates.front());
+  for (auto c : candidates)
+  {
+    double e = get<1>(c);
+    if (e <= bestError)
+    {
+      bestError = e;
+      bestCandidate = get<0>(c);
+    }
+  }
+  
+  // TAOTODO: Delete other unselected models, to prevent mem leakage
+
+
+  return bestCandidate;
 }
 
 BaseFittedModel* ModelFitter::fit(const BaseFittedModel* initModel, const Mat& sample, const FittingCriteria& crit) const 
@@ -55,7 +87,8 @@ BaseFittedModel* ModelFitter::fit(const BaseFittedModel* initModel, const Mat& s
     else (error - prevError)/min(error, prevError);
 
     #ifdef DEBUG
-    cout << endl; // TAOTODO: Report error here
+    auto errorStr = fmt::format("{0:2d} %", errorDiff/100);
+    cout << ", error diff : " << errorStr << endl;
     #endif
 
     // Destroy prev model

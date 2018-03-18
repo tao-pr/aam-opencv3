@@ -22,6 +22,26 @@ MeshShape* ShapeModelPCA::toShape(const Mat& param) const
   return new MeshShape(shapeParam);
 }
 
+Mat* ShapeModelPCA::permutationOfParams() const
+{
+  double step = 0.01;
+  auto perm = new Mat[dimension()*2];
+  for (int i=0; i<dimension()*2; i++)
+  {
+    if (i%2 == 0)
+    {
+      perm[i] = Mat::zeros(0, dimension(), CV_64FC1);
+      perm[i].at<double>(0, i) = step;
+    }
+    else
+    {
+      perm[i] = Mat::zeros(0, dimension(), CV_64FC1);
+      perm[i].at<double>(0, i) = -step;
+    }
+  }
+  return perm;
+}
+
 BaseModel* AppearanceModelPCA::mean() const
 {
   auto bound = meanShape.getBound();
@@ -64,6 +84,26 @@ Mat AppearanceModelPCA::toParam(const BaseModel* m) const
 void AppearanceModelPCA::overrideMeanShape(const MeshShape& newMeanShape)
 {
   this->meanShape = newMeanShape;
+}
+
+Mat* AppearanceModelPCA::permutationOfParams() const
+{
+  double step = 0.001;
+  auto perm = new Mat[dimension()*2];
+  for (int i=0; i<dimension()*2; i++)
+  {
+    if (i%2 == 0)
+    {
+      perm[i] = Mat::zeros(0, dimension(), CV_64FC1);
+      perm[i].at<double>(0, i) = step;
+    }
+    else
+    {
+      perm[i] = Mat::zeros(0, dimension(), CV_64FC1);
+      perm[i].at<double>(0, i) = -step;
+    }
+  }
+  return perm;
 }
 
 Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const

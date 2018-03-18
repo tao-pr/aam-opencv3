@@ -9,11 +9,20 @@
 #include "ModelPCA.h"
 #include "BaseFittedModel.h"
 
+enum SearchWith
+{
+  SCALING = 0,
+  TRANSLATION,
+  RESHAPING,
+  REAPPEARANCING
+  // TAOTOREVIEW: Rotation?
+};
+
 struct FittingCriteria
 {
   int numMaxIter;
   double eps;
-  double initScale;
+  double initScale; // TAOTODO: unused?
   Point2d initPos;
 
   static FittingCriteria getDefault()
