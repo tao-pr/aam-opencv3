@@ -14,7 +14,6 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
   for (auto a : actions)
   {
     // TAOTOREVIEW: better to use priority queue here?
-    vector<function<BaseFittedModel* (BaseFittedModel*)>> operators;
     
     // TAOTODO:
     switch (a)
@@ -22,11 +21,7 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
       case SCALING:
         for (auto s : scales) 
         {
-          function<BaseFittedModel* (BaseFittedModel*)> f = [](BaseFittedModel* m)
-          { 
-            m->clone()->setScale(s * m->scale); 
-          };
-          operators.push_back(f);
+          candidates.push_back(model->clone()->setScale(s * model->scale));
         }
         break;
       case TRANSLATION:
