@@ -24,7 +24,14 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
           candidates.push_back(model->clone()->setScale(s * model->scale));
         }
         break;
+
       case TRANSLATION:
+        for (auto t : trans)
+        {
+          candidates.push_back(model->clone()->setCentre(model->centre + t));
+        }
+        break;
+
       case RESHAPING:
       case REAPPEARANCING:
         break;
