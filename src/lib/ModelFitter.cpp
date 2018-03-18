@@ -3,11 +3,13 @@
 tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedModel* model, const Mat& sample) const
 {
   vector<SearchWith> actions = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
-  vector<tuple<BaseFittedModel*, double>> candidates;
+  vector<BaseFittedModel*> candidates;
 
   // Generate action params
   double scales[] = {1.01, 0.99};
   Point2d trans[] = {Point2d(-1,0), Point2d(0,-1), Point2d(1,0), Point2d(0,1)};
+  int shapeDim    = pcaShape.dimension();
+  int appDim      = pcaAppearance.dimension();
   Mat* smat       = pcaShape.permutationOfParams();
   Mat* amat       = pcaAppearance.permutationOfParams();
 
@@ -33,30 +35,41 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
         break;
 
       case RESHAPING:
+        for (int k=0; k<shapeDim; k++)
+        {
+          candidates.push_back(model->clone()->setShapeParam(model->shapeParam + smat[k]));
+        }
+        break;
+
       case REAPPEARANCING:
+        for (int k=0; k<appDim; k++)
+        {
+          candidates.push_back(model->clone()->setAppearanceParam(model->appearanceParam + amat[k]));
+        }
         break;
     }
-
-    // Apply the actions and pick the best model
-    // 
   }
 
   // Identify the best model
-  double bestError = get<1>(candidates.front());
-  BaseFittedModel* bestCandidate = get<0>(candidates.front());
+  double bestError = numeric_limits<double>::max();
+  BaseFittedModel* bestCandidate = candidates.front();
   for (auto c : candidates)
   {
-    double e = get<1>(c);
+    double e = c->measureError(sample);
     if (e <= bestError)
     {
       bestError = e;
-      bestCandidate = get<0>(c);
+      bestCandidate = c->clone();
     }
   }
+
+  // Free the allocated blocks
+  #ifdef DEBUG
+  cout << "Deallocating candidates ..." << endl;
+  #endif 
+  for (auto p : candidates)
+    delete p;
   
-  // TAOTODO: Delete other unselected models, to prevent mem leakage
-
-
   return bestCandidate;
 }
 
