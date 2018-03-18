@@ -8,6 +8,7 @@ public:
   virtual const double getMeanShapeScale() = 0;
   virtual void setShapeParam(const Mat& param) = 0;
   virtual void setAppearanceParam(const Mat& param) = 0;
+  virtual BaseFittedModel* generateBestModel() = 0;
 
   virtual Appearance* toAppearance() = 0;
   virtual MeshShape* toShape() = 0;

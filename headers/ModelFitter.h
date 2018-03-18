@@ -9,7 +9,14 @@
 #include "ModelPCA.h"
 #include "BaseFittedModel.h"
 
-class FittedAAM;
+enum Step
+{
+  SCALING = 0,
+  TRANSITION = 1,
+  RESHAPING = 2,
+  RETEXTURING = 3,
+  END = 4
+};
 
 struct FittingCriteria
 {
@@ -31,8 +38,7 @@ protected:
   // Static PCA of Shape and Appearance components
   ShapeModelPCA pcaShape;
   AppearanceModelPCA pcaAppearance;
-
-  virtual BaseFittedModel& initModel(const FittingCriteria& crit) const;
+  BaseFittedModel* generateNextBestModel(BaseFittedModel* model, const Mat& sample) const;
 
 public:
   ModelFitter(const ShapeModelPCA& shapePCA, const AppearanceModelPCA& appearancePCA)
@@ -42,7 +48,7 @@ public:
   const ShapeModelPCA getShapePCA() { return this->pcaShape; } const;
   const AppearanceModelPCA getAppearancePCA() { return this->pcaAppearance; } const;
 
-  virtual BaseFittedModel& fit(const Mat& sample, const FittingCriteria& crit = FittingCriteria::getDefault()) const;
+  virtual BaseFittedModel* fit(const BaseFittedModel* initModel, const Mat& sample, const FittingCriteria& crit = FittingCriteria::getDefault()) const;
 };
 
 #endif
