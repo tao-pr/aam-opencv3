@@ -16,7 +16,7 @@
 class FittedAAM : public BaseFittedModel
 {
 private:
-  FittedAAM() {};
+  FittedAAM() : BaseFittedModel() {};
 protected:
   // Static model fitter instance (shared)
   ModelFitter* fitter; // TAOTODO: Use <shared_ptr> instead
@@ -26,13 +26,9 @@ public:
   /**
    * Initialise a new AAM with mean shape and mean appearance
    */
-  inline FittedAAM(ModelFitter* sharedFitter) : fitter(sharedFitter)
-  {
-    shapeParam = Mat::zeros(1, pcaShape().dimension(), CV_64FC1);
-    appearanceParam = Mat::zeros(1, pcaAppearance().dimension(), CV_64FC1);
-    centre = Point2d(0,0);
-    scale = 1;
-  };
+  inline FittedAAM(ModelFitter* sharedFitter) 
+    : fitter(sharedFitter), BaseFittedModel(fitter->getShapePCA(), fitter->getAppearancePCA()) {};
+  
   FittedAAM(const FittedAAM& another);
   virtual ~FittedAAM(){};
 

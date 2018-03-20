@@ -17,7 +17,6 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
   {
     // TAOTOREVIEW: better to use priority queue here?
     
-    // TAOTODO:
     switch (a)
     {
       case SCALING:
@@ -49,6 +48,10 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
         break;
     }
   }
+
+  #ifdef DEBUG
+  cout << "Candidates size : " << candidates.size() << endl;
+  #endif
 
   // Identify the best model
   double bestError = numeric_limits<double>::max();
@@ -82,16 +85,25 @@ BaseFittedModel* ModelFitter::fit(const BaseFittedModel* initModel, const Mat& s
   cout << GREEN << "[Model fitting started]" << RESET << endl;
   #endif
 
+  // TAODEBUG:
+  cout << "[Init model]" << endl;
+  cout << *initModel << endl;
+
   // Start with the given initial model
   auto prevModel = initModel->clone();
+
+  // TAODEBUG:
+  cout << "[prevModel]" << endl;
+  cout << *prevModel << endl;
 
   // Adjust model parameters until converges
   while (iter < crit.numMaxIter && errorDiff > crit.eps)
   {
     #ifdef DEBUG
-    cout << CYAN << "Fitting model #" << iter << RESET;
+    cout << CYAN << "Fitting model #" << iter << RESET << endl;
     #endif
 
+    // TAOTODO: Following causes error
     double prevError = prevModel->measureError(sample);
     if (prevError == 0)
     {
@@ -112,7 +124,7 @@ BaseFittedModel* ModelFitter::fit(const BaseFittedModel* initModel, const Mat& s
     if (error == 0)
     {
       #ifdef DEBUG
-      cout << CYAN << ": fittng error hits zero" << RESET << endl;
+      cout << CYAN << "... Fittng error hits zero" << RESET << endl;
       #endif
       break;
     }
@@ -124,7 +136,7 @@ BaseFittedModel* ModelFitter::fit(const BaseFittedModel* initModel, const Mat& s
 
     #ifdef DEBUG
     auto errorStr = fmt::format("{0:2d} %", errorDiff/100);
-    cout << ", error diff : " << errorStr << endl;
+    cout << "... Error diff : " << errorStr << endl;
     #endif
 
     // Destroy prev model

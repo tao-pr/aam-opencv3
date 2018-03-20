@@ -56,6 +56,9 @@ double FittedAAM::measureError(const Mat& sample)
   Appearance* app = this->toAppearance();
   int M = pcaAppearance().dimension();
 
+  // TAODEBUG:
+  cout << "M = " << M << endl;
+
   // Row vector representing the current state of appearance
   Mat selfRow = app->toRowVectorReduced(M);
 
