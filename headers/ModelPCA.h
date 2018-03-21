@@ -57,6 +57,7 @@ public:
   Mat* permutationOfParams() const;
   
   void overrideMeanShape(const MeshShape& newMeanShape);
+  Rect getBound() const { return meanShape.getBound(); };
   
   const double getScale() const { return this->meanShape.getScale(); };
 };

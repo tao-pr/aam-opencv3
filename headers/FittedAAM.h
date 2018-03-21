@@ -27,8 +27,8 @@ public:
   FittedAAM(const FittedAAM& another) : BaseFittedModel(another){};
   virtual ~FittedAAM(){};
 
-  const ShapeModelPCA pcaShape(){ return aamPCA->getShapePCA(); } const;
-  const AppearanceModelPCA pcaAppearance(){ return aamPCA->getAppearancePCA(); } const;
+  const ShapeModelPCA pcaShape() const { return aamPCA->getShapePCA(); };
+  const AppearanceModelPCA pcaAppearance() const { return aamPCA->getAppearancePCA(); };
   const double getMeanShapeScale();
 
   BaseFittedModel* setCentre(const Point2d& p);

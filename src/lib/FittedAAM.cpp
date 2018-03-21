@@ -25,7 +25,10 @@ BaseFittedModel* FittedAAM::setAppearanceParam(const Mat& param)
 
 Appearance* FittedAAM::toAppearance()
 {
+  cout << "toAppearance ~~" << endl; // TAODEBUG:
   assert(this->scale > 0);
+  assert(this->centre.x - this->pcaAppearance().getBound().x >= 0);
+  assert(this->centre.y - this->pcaAppearance().getBound().y >= 0);
 
   auto app = this->pcaAppearance().toAppearance(this->appearanceParam);
   app->recentre(this->centre);
@@ -47,9 +50,6 @@ double FittedAAM::measureError(const Mat& sample)
 {
   Appearance* app = this->toAppearance();
   int M = pcaAppearance().dimension();
-
-  // TAODEBUG:
-  cout << "M = " << M << endl;
 
   // Row vector representing the current state of appearance
   Mat selfRow = app->toRowVectorReduced(M);

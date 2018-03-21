@@ -85,18 +85,12 @@ BaseFittedModel* ModelFitter::fit(const BaseFittedModel* initModel, const Mat& s
   
   #ifdef DEBUG
   cout << GREEN << "[Model fitting started]" << RESET << endl;
-  #endif
-
-  // TAODEBUG:
   cout << "[Init model]" << endl;
   cout << *initModel << endl;
+  #endif
 
   // Start with the given initial model
   auto prevModel = initModel->clone();
-
-  // TAODEBUG:
-  cout << "[prevModel]" << endl;
-  cout << *prevModel << endl;
 
   // Adjust model parameters until converges
   while (iter < crit.numMaxIter && errorDiff > crit.eps)
@@ -114,6 +108,9 @@ BaseFittedModel* ModelFitter::fit(const BaseFittedModel* initModel, const Mat& s
       #endif
       break;
     }
+
+    // TAODEBUG:
+    cout << "aaaaaa" << endl;
 
     // Explore next best parameters
     // TAOTOREVIEW: Add prev explored paths as taboo
