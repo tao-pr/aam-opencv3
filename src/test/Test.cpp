@@ -335,6 +335,9 @@ void testAAMFitting()
   auto pcaAppearance = dynamic_cast<AppearanceModelPCA*>(aamCollection->pca(meanAppearance, MAX_DIM));
   auto pcaShape = dynamic_cast<ShapeModelPCA*>(shapeCollection->pca(meanShape, -1));
 
+  cout << "PCA dimension of shape      : " << pcaShape->dimension() << endl;
+  cout << "PCA dimension of appearance : " << pcaAppearance->dimension() << endl;
+
   // Generate unknown sample we want to try fitting the model on
   double sampleScale = 512;
   auto sampleCentre = Point2d(35, 36);
@@ -358,8 +361,12 @@ void testAAMFitting()
   // Try fitting the model onto an unknown sample
   int maxIters = 20;
   double eps = 1e-5;
-  auto fitter = ModelFitter(*pcaShape, *pcaAppearance);
-  auto initModel = new FittedAAM(&fitter);
+  shared_ptr<AAMPCA> aamPCA(new AAMPCA(*pcaShape, *pcaAppearance));
+  auto fitter = ModelFitter(aamPCA);
+  auto initModel = new FittedAAM(aamPCA);
+
+  // TAODEBUG:
+  cout << "ready~" << endl;
 
   cout << "AAM model fitting started ..." << endl;
   fitter.fit(initModel, sampleMat, FittingCriteria { maxIters, eps, sampleScale, sampleCentre });

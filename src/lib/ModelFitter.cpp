@@ -6,12 +6,14 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
   vector<BaseFittedModel*> candidates;
 
   // Generate action params
-  double scales[] = {1.01, 0.99};
-  Point2d trans[] = {Point2d(-1,0), Point2d(0,-1), Point2d(1,0), Point2d(0,1)};
-  int shapeDim    = pcaShape.dimension();
-  int appDim      = pcaAppearance.dimension();
-  Mat* smat       = pcaShape.permutationOfParams();
-  Mat* amat       = pcaAppearance.permutationOfParams();
+  auto pcaShape      = aamPCA->getShapePCA();
+  auto pcaAppearance = aamPCA->getAppearancePCA();
+  double scales[]    = {1.01, 0.99};
+  Point2d trans[]    = {Point2d(-1,0), Point2d(0,-1), Point2d(1,0), Point2d(0,1)};
+  int shapeDim       = pcaShape.dimension();
+  int appDim         = pcaAppearance.dimension();
+  Mat* smat          = pcaShape.permutationOfParams();
+  Mat* amat          = pcaAppearance.permutationOfParams();
 
   for (auto a : actions)
   {

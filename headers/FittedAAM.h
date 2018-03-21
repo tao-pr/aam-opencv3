@@ -17,23 +17,18 @@ class FittedAAM : public BaseFittedModel
 {
 private:
   FittedAAM() : BaseFittedModel() {};
-protected:
-  // Static model fitter instance (shared)
-  ModelFitter* fitter; // TAOTODO: Use <shared_ptr> instead
 
 public:
-
   /**
    * Initialise a new AAM with mean shape and mean appearance
    */
-  inline FittedAAM(ModelFitter* sharedFitter) 
-    : fitter(sharedFitter), BaseFittedModel(fitter->getShapePCA(), fitter->getAppearancePCA()) {};
+  inline FittedAAM(shared_ptr<AAMPCA> const& aamPCA) : BaseFittedModel(aamPCA) {};
   
-  FittedAAM(const FittedAAM& another);
+  FittedAAM(const FittedAAM& another) : BaseFittedModel(another){};
   virtual ~FittedAAM(){};
 
-  const ShapeModelPCA pcaShape(){ return this->fitter->getShapePCA(); } const;
-  const AppearanceModelPCA pcaAppearance(){ return this->fitter->getAppearancePCA(); } const;
+  const ShapeModelPCA pcaShape(){ return aamPCA->getShapePCA(); } const;
+  const AppearanceModelPCA pcaAppearance(){ return aamPCA->getAppearancePCA(); } const;
   const double getMeanShapeScale();
 
   BaseFittedModel* setCentre(const Point2d& p);

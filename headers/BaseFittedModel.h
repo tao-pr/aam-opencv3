@@ -12,6 +12,17 @@ class BaseFittedModel
 {
 protected:
   inline BaseFittedModel(){};
+  inline BaseFittedModel(const BaseFittedModel& another)
+  {
+    this->aamPCA = another.aamPCA;
+    another.shapeParam.copyTo(this->shapeParam);
+    another.appearanceParam.copyTo(this->appearanceParam);
+    this->centre = another.centre;
+    this->scale = another.scale;
+  };
+  // Static model fitter instance (shared)
+  shared_ptr<AAMPCA> aamPCA;
+
 public:
   // Variable states
   Mat shapeParam;
@@ -19,10 +30,10 @@ public:
   Point2d centre;
   double scale; // Scale multiplier (1x by default)
 
-  inline BaseFittedModel(const ShapeModelPCA& pcaShape, const AppearanceModelPCA& pcaAppearance)
+  inline BaseFittedModel(shared_ptr<AAMPCA> const& aamPCA) : aamPCA(aamPCA)
   {
-    shapeParam = Mat::zeros(1, pcaShape.dimension(), CV_64FC1);
-    appearanceParam = Mat::zeros(1, pcaAppearance.dimension(), CV_64FC1);
+    shapeParam = Mat::zeros(1, aamPCA->dimensionShape(), CV_64FC1);
+    appearanceParam = Mat::zeros(1, aamPCA->dimensionAppearance(), CV_64FC1);
     this->centre = Point2d(0,0);
     this->scale = 1;
   };

@@ -1,13 +1,5 @@
 #include "FittedAAM.h"
 
-FittedAAM::FittedAAM(const FittedAAM& another)
-{
-  this->fitter = another.fitter;
-  this->shapeParam = another.shapeParam; // TAOTOREVIEW: supposed to be `copyTo` instead?
-  this->appearanceParam = another.appearanceParam;
-  this->centre = another.centre;
-}
-
 BaseFittedModel* FittedAAM::setCentre(const Point2d& p)
 {
   this->centre = p;
@@ -83,7 +75,7 @@ void FittedAAM::drawOverlay(Mat& canvas)
 
 BaseFittedModel* FittedAAM::clone() const
 {
-  auto cloned = new FittedAAM(this->fitter);
+  auto cloned = new FittedAAM(this->aamPCA);
   cloned->setCentre(this->centre);
   cloned->setShapeParam(this->shapeParam);
   cloned->setAppearanceParam(this->appearanceParam);

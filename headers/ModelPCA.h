@@ -27,7 +27,7 @@ public:
   // Generate permutation of parameter matrix
   virtual Mat* permutationOfParams() const = 0;
 
-  const int dimension() const { return this->pca.eigenvalues.cols; };
+  const int dimension() const { return this->pca.eigenvalues.rows; };
 };
 
 class ShapeModelPCA : public ModelPCA 
@@ -59,6 +59,23 @@ public:
   void overrideMeanShape(const MeshShape& newMeanShape);
   
   const double getScale() const { return this->meanShape.getScale(); };
+};
+
+class AAMPCA 
+{
+protected:
+  ShapeModelPCA pcaShape;
+  AppearanceModelPCA pcaAppearance;
+
+public:
+  AAMPCA(const ShapeModelPCA& shapePCA, const AppearanceModelPCA& appearancePCA)
+    : pcaShape(shapePCA), pcaAppearance(appearancePCA) {};
+
+  int dimensionShape() const { return pcaShape.dimension(); };
+  int dimensionAppearance() const { return pcaAppearance.dimension(); };
+
+  const ShapeModelPCA getShapePCA() const { return pcaShape; };
+  const AppearanceModelPCA getAppearancePCA() const { return pcaAppearance; };
 };
 
 
