@@ -365,9 +365,6 @@ void testAAMFitting()
   auto fitter = ModelFitter(aamPCA);
   auto initModel = new FittedAAM(aamPCA);
 
-  // TAODEBUG:
-  cout << "ready~" << endl;
-
   cout << "AAM model fitting started ..." << endl;
   fitter.fit(initModel, sampleMat, FittingCriteria { maxIters, eps, sampleScale, sampleCentre });
 

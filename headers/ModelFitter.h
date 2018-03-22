@@ -22,12 +22,12 @@ struct FittingCriteria
 {
   int numMaxIter;
   double eps;
-  double initScale; // TAOTODO: unused?
+  double initScale;
   Point2d initPos;
 
   static FittingCriteria getDefault()
   {
-    return FittingCriteria{ 10, 1e-3, 1, Point2d(0,0) };
+    return FittingCriteria{ 10, 1e-3, 100, Point2d(0,0) };
   };
 };
 
