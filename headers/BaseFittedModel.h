@@ -17,7 +17,7 @@ protected:
     this->aamPCA = another.aamPCA;
     another.shapeParam.copyTo(this->shapeParam);
     another.appearanceParam.copyTo(this->appearanceParam);
-    this->centre = another.centre;
+    this->origin = another.origin;
     this->scale = another.scale;
   };
   // Static model fitter instance (shared)
@@ -27,18 +27,18 @@ public:
   // Variable states
   Mat shapeParam;
   Mat appearanceParam;
-  Point2d centre;
+  Point2d origin;
   double scale; // Scale multiplier (1x by default)
 
   inline BaseFittedModel(shared_ptr<AAMPCA> const& aamPCA) : aamPCA(aamPCA)
   {
     shapeParam = Mat::zeros(1, aamPCA->dimensionShape(), CV_64FC1);
     appearanceParam = Mat::zeros(1, aamPCA->dimensionAppearance(), CV_64FC1);
-    this->centre = Point2d(0,0);
+    this->origin = Point2d(0,0);
     this->scale = 1;
   };
 
-  virtual BaseFittedModel* setCentre(const Point2d& p) = 0;
+  virtual BaseFittedModel* setOrigin(const Point2d& p) = 0;
   virtual BaseFittedModel* setScale(const double s) = 0;
   virtual BaseFittedModel* setShapeParam(const Mat& param) = 0;
   virtual BaseFittedModel* setAppearanceParam(const Mat& param) = 0;
@@ -53,7 +53,7 @@ public:
 };
 
 inline ostream &operator<<(ostream &os, BaseFittedModel const &m) {
-  return os << "FittedModel centered at : " << m.centre << endl
+  return os << "FittedModel centered at : " << m.origin << endl
             << "            scale of    : " << m.scale << endl 
             << "            shape param : " << m.shapeParam.size() <<  endl
             << "            app param   : " << m.appearanceParam.size() << endl;

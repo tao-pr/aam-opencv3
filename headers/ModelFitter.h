@@ -23,7 +23,7 @@ struct FittingCriteria
   int numMaxIter;
   double eps;
   double initScale;
-  Point2d initPos;
+  Point2d initPos; // Coordinate of the upper-left origin
 
   static FittingCriteria getDefault()
   {

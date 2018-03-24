@@ -31,7 +31,7 @@ public:
   const AppearanceModelPCA pcaAppearance() const { return aamPCA->getAppearancePCA(); };
   const double getMeanShapeScale();
 
-  BaseFittedModel* setCentre(const Point2d& p);
+  BaseFittedModel* setOrigin(const Point2d& p);
   inline BaseFittedModel* setScale(const double s) { this->scale = s; return this; };
   BaseFittedModel* setShapeParam(const Mat& param);
   BaseFittedModel* setAppearanceParam(const Mat& param);

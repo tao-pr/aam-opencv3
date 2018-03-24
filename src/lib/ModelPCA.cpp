@@ -106,6 +106,7 @@ Mat* AppearanceModelPCA::permutationOfParams() const
   return perm;
 }
 
+// TAOTODO: Stop using [centre], use [origin] instead
 Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
 {
   auto bound = meanShape.getBound();

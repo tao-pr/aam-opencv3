@@ -31,7 +31,7 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
       case TRANSLATION:
         for (auto t : trans)
         {
-          candidates.push_back(model->clone()->setCentre(model->centre + t));
+          candidates.push_back(model->clone()->setOrigin(model->origin + t));
         }
         break;
 
@@ -85,7 +85,7 @@ BaseFittedModel* ModelFitter::fit(const BaseFittedModel* initModel, const Mat& s
 
   // Start with the given initial model
   auto prevModel = initModel->clone();
-  prevModel->setCentre(crit.initPos);
+  prevModel->setOrigin(crit.initPos);
   prevModel->setScale(crit.initScale);
 
   #ifdef DEBUG
@@ -111,9 +111,6 @@ BaseFittedModel* ModelFitter::fit(const BaseFittedModel* initModel, const Mat& s
       #endif
       break;
     }
-
-    // TAODEBUG:
-    cout << "aaaaaa" << endl;
 
     // Explore next best parameters
     // TAOTOREVIEW: Add prev explored paths as taboo

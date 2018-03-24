@@ -1,8 +1,8 @@
 #include "FittedAAM.h"
 
-BaseFittedModel* FittedAAM::setCentre(const Point2d& p)
+BaseFittedModel* FittedAAM::setOrigin(const Point2d& p)
 {
-  this->centre = p;
+  this->origin = p;
   return this;
 }
 
@@ -25,13 +25,15 @@ BaseFittedModel* FittedAAM::setAppearanceParam(const Mat& param)
 
 Appearance* FittedAAM::toAppearance()
 {
-  cout << "toAppearance ~~" << endl; // TAODEBUG:
   assert(this->scale > 0);
-  assert(this->centre.x - this->pcaAppearance().getBound().x >= 0);
-  assert(this->centre.y - this->pcaAppearance().getBound().y >= 0);
+  assert(this->origin.x >= 0);
+  assert(this->origin.y >= 0);
 
-  auto app = this->pcaAppearance().toAppearance(this->appearanceParam);
-  app->recentre(this->centre);
+  // Override scale and translation
+  auto app = this->pcaAppearance().toAppearance(appearanceParam);
+  Point2d origin0 = this->pcaAppearance().getBound().tl();
+  Point2d displacement = origin0 - this->origin;
+  app->recentre(displacement);
   
   if (this->scale != 1)
   {
@@ -76,7 +78,7 @@ void FittedAAM::drawOverlay(Mat& canvas)
 BaseFittedModel* FittedAAM::clone() const
 {
   auto cloned = new FittedAAM(this->aamPCA);
-  cloned->setCentre(this->centre);
+  cloned->setOrigin(this->origin);
   cloned->setShapeParam(this->shapeParam);
   cloned->setAppearanceParam(this->appearanceParam);
   return cloned;
