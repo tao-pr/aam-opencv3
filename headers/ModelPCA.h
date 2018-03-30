@@ -21,8 +21,8 @@ protected:
 
 public:
   ModelPCA() : translation(Point2d(0,0)), scale(1) {};
-  ModelPCA(PCA& p) : pca(p), translation(Point2d(0,0)), scale(1) {};
-  ModelPCA(PCA& p, const Point2d &t, const double s) : pca(p), translation(t), scale(s) {};
+  ModelPCA(const PCA& p) : pca(p), translation(Point2d(0,0)), scale(1) {};
+  ModelPCA(const PCA& p, const Point2d &t, const double s) : pca(p), translation(t), scale(s) {};
   inline virtual ~ModelPCA() {};
 
   // Encode a model to a parameter set (row vector)
@@ -44,8 +44,8 @@ class ShapeModelPCA : public ModelPCA
 { 
 public: 
   ShapeModelPCA() : ModelPCA() {};
-  ShapeModelPCA(PCA& p) : ModelPCA(p) {};
-  ShapeModelPCA(PCA& p, const Point2d& t, const double s) : ModelPCA(p) {};
+  ShapeModelPCA(const PCA& p) : ModelPCA(p) {};
+  ShapeModelPCA(const PCA& p, const Point2d& t, const double s) : ModelPCA(p) {};
   BaseModel* mean() const; 
   BaseModel* toModel(const Mat& param) const;
   MeshShape* toShape(const Mat& param) const;
@@ -59,7 +59,7 @@ protected:
   MeshShape meanShape;
 public: 
   AppearanceModelPCA() : ModelPCA() {};
-  AppearanceModelPCA(PCA& p, const MeshShape& mean, const Size& size) : ModelPCA(p), originalBound(size) { this->meanShape = mean; };
+  AppearanceModelPCA(const PCA& p, const MeshShape& mean, const Size& size) : ModelPCA(p), originalBound(size) { this->meanShape = mean; };
   AppearanceModelPCA(const AppearanceModelPCA& that) : ModelPCA(that.pca) 
   { 
     originalBound = that.originalBound;
@@ -93,6 +93,8 @@ public:
 
   const ShapeModelPCA getShapePCA() const { return pcaShape; };
   const AppearanceModelPCA getAppearancePCA() const { return pcaAppearance; };
+
+  Rect getBound() const { return pcaAppearance.getBound(); };
 };
 
 

@@ -43,9 +43,9 @@ MeshShape* FittedAAM::toShape()
 Rect FittedAAM::getBound() const
 {
   // Offset and scaled bound of the shape
-  auto b = aamPCA.getBound();
-  b.w *= this->scale;
-  b.h *= this->scale;
+  auto b = aamPCA->getBound();
+  b.width *= this->scale;
+  b.height *= this->scale;
   b.x += this->origin.x;
   b.y += this->origin.y;
   return b;
@@ -60,7 +60,7 @@ double FittedAAM::measureError(const Mat& sample)
   // - Measure error
 
   Rect bound = getBound();
-  Mat canvas = Mat::zeros(bound, CV_8UC3);
+  Mat canvas = Mat::zeros(Size(bound.x + bound.width + 1, bound.y + bound.height + 1), CV_8UC3);
   cout << "bound of AAM ~ " << bound << endl; // TAODEBUG:
 
   drawOverlay(canvas);
@@ -68,7 +68,7 @@ double FittedAAM::measureError(const Mat& sample)
   // TAOTODO: Draw contour of appearance as boundary of computation
 
 
-  return Aux::mse(sampleRow, selfRow);
+  return 0;
 }
 
 void FittedAAM::drawOverlay(Mat& canvas)
