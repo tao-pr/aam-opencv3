@@ -78,11 +78,6 @@ Mat Appearance::toRowVector() const
   auto bound = this->mesh.getBound();
   auto N = bound.width * bound.height;
 
-  #ifdef DEBUG
-  cout << "Appearance::toRowVector : bound ~ " << bound << endl;
-  cout << "... graphic bound ~ " << this->graphic.size() << endl; // TAODEBUG:
-  #endif
-
   Mat channels[3];
   split(this->graphic(bound), channels);
   Mat row(1, N*3, CV_8UC1);
@@ -165,12 +160,18 @@ void Appearance::recentre(Point2d t)
   auto bound = this->mesh.getBound();
   this->mesh = MeshShape(this->mesh >> t);
 
-  // Translate the texture
+  // Correction of boundary
+  auto newBound = this->mesh.getBound();
+  newBound.width = bound.width;
+  newBound.height = bound.height; 
   int h = this->graphic.rows + t.y;
   int w = this->graphic.cols + t.x;
   Mat newGraphic = Mat::zeros(h, w, this->graphic.type());
-  auto newBound = this->mesh.getBound();
-  
+
+  #ifdef DEBUG
+  cout << "Appearance recentering : " << bound << " => " << newBound << endl;
+  #endif
+
   this->graphic(bound).copyTo(newGraphic(newBound));
   swap(this->graphic, newGraphic);
 }
@@ -185,10 +186,8 @@ void Appearance::resizeTo(double newScale)
   cout << "Appearance::resizeTo : from " << originalScale << " -> " << newScale << " (scale = " << ratio << ")" << endl;
   #endif
 
-
   // Resize shape without translation
   this->mesh = MeshShape(this->mesh * ratio);
-
 
   // Resize texture without translation
   auto bound = this->mesh.getBound();

@@ -29,18 +29,10 @@ Appearance* FittedAAM::toAppearance()
   assert(this->origin.x >= 0);
   assert(this->origin.y >= 0);
 
-  // Override scale and translation
-  auto app = this->pcaAppearance().toAppearance(appearanceParam);
-  Point2d origin0 = this->pcaAppearance().getBound().tl();
-  Point2d displacement = origin0 - this->origin;
-  app->recentre(displacement);
-  
-  if (this->scale != 1)
-  {
-    double scale0 = getMeanShapeScale();
-    app->resizeTo(scale0 * this->scale);
-  }
-  return app;
+  // TAOTODO: check if works
+  return this->pcaAppearance()
+    .cloneWithNewScale(scale, origin)
+    .toAppearance(appearanceParam);
 }
 
 MeshShape* FittedAAM::toShape()
@@ -48,17 +40,33 @@ MeshShape* FittedAAM::toShape()
   return this->pcaShape().toShape(this->shapeParam);
 }
 
+Rect FittedAAM::getBound() const
+{
+  // Offset and scaled bound of the shape
+  auto b = aamPCA.getBound();
+  b.w *= this->scale;
+  b.h *= this->scale;
+  b.x += this->origin.x;
+  b.y += this->origin.y;
+  return b;
+}
+
 double FittedAAM::measureError(const Mat& sample)
 {
-  Appearance* app = this->toAppearance();
-  int M = pcaAppearance().dimension();
+  // TAOTODO: New approach:
+  // - Draw the model as overlay on black canvas
+  // - Offset and rescale the overlay
+  // - Crop the sample by shape boundary
+  // - Measure error
 
-  // Row vector representing the current state of appearance
-  Mat selfRow = app->toRowVectorReduced(M);
+  Rect bound = getBound();
+  Mat canvas = Mat::zeros(bound, CV_8UC3);
+  cout << "bound of AAM ~ " << bound << endl; // TAODEBUG:
 
-  // Row vectot representing the current shape overlaid onto the sample
-  app->setGraphic(sample);
-  Mat sampleRow = app->toRowVectorReduced(M);
+  drawOverlay(canvas);
+
+  // TAOTODO: Draw contour of appearance as boundary of computation
+
 
   return Aux::mse(sampleRow, selfRow);
 }

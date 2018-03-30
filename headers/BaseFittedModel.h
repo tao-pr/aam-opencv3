@@ -47,6 +47,7 @@ public:
   virtual Appearance* toAppearance() = 0;
   virtual MeshShape* toShape() = 0;
   virtual BaseFittedModel* clone() const = 0;
+  virtual Rect getBound() const = 0;
 
   virtual double measureError(const Mat& sample) = 0;
   virtual void drawOverlay(Mat& canvas) = 0;

@@ -44,6 +44,7 @@ Mat* ShapeModelPCA::permutationOfParams() const
 
 BaseModel* AppearanceModelPCA::mean() const
 {
+  // TAOTODO: Should also shift and scale
   auto bound = meanShape.getBound();
   auto N = bound.width * bound.height;
   auto K = pca.mean.cols/3;
@@ -106,18 +107,45 @@ Mat* AppearanceModelPCA::permutationOfParams() const
   return perm;
 }
 
-// TAOTODO: Stop using [centre], use [origin] instead
+Rect AppearanceModelPCA::getBound() const
+{
+  Rect b = meanShape.getBound();
+  b.width *= this->scale;
+  b.height *= this->scale;
+  b.x += this->translation.x;
+  b.y += this->translation.y;
+  return b;
+}
+
+const AppearanceModelPCA& AppearanceModelPCA::cloneWithNewScale(double newScale, const Point2d& newTranslation) const
+{
+  AppearanceModelPCA neue(*this);
+  neue.setScale(newScale);
+  neue.setTranslation(newTranslation);
+  return neue;
+}
+
 Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
 {
   auto bound = meanShape.getBound();
+  auto offsetBound = this->getBound();
   auto N = bound.width * bound.height;
   auto K = pca.mean.cols/3;
+
+  #ifdef DEBUG
+  cout << "Converting PCA -> Appearance Model" << endl;
+  cout << "-> bound : " << bound << endl;
+  cout << "-> offset bound : " << offsetBound << endl;
+  #endif
 
   // Backprojection of appearance params
   Mat backPrj = this->pca.backProject(param);
 
   // Reshape the row vector into a spatial graphic for the appearance
-  Mat graphic = Mat(bound.height + bound.y, bound.width + bound.x, CV_8UC3, Scalar(0,0,0)); 
+  Mat graphic = Mat(
+    offsetBound.height + offsetBound.y, 
+    offsetBound.width + offsetBound.x, 
+    CV_8UC3, Scalar(0,0,0));
   
   // Split backprojected vector into 3 channels, scale them to the expected size
   vector<Mat> bpjChannels;
@@ -134,7 +162,24 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
   merge(bpjChannels, bpjGraphic);
   bpjGraphic.copyTo(graphic(Rect(bound)));
 
-  return new Appearance(meanShape, graphic);
+  // TAOTODO:
+  if (scale == 1 && translation == Point2d(0,0))
+    return new Appearance(meanShape, graphic);
+  else
+  {
+    #ifdef DEBUG
+    cout << "-> scaling : " << scale << endl;
+    cout << "-> translation : " << translation << endl;
+    #endif
+
+    MeshShape meanOffsetShape(meanShape.recentreAndScale(translation, scale));  
+    // TAODEBUG:
+    auto ioMesh = IO::WindowIO("meanShapeOffset");
+    meanOffsetShape.render(&ioMesh, Mat::zeros(graphic.size(), CV_8UC3));
+    waitKey(0);
+
+    return new Appearance(meanOffsetShape, graphic);
+  }
 }
 
 
