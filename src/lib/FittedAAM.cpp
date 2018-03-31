@@ -37,7 +37,11 @@ Appearance* FittedAAM::toAppearance()
 
 MeshShape* FittedAAM::toShape()
 {
-  return this->pcaShape().toShape(this->shapeParam);
+  // With scaling and translation
+  auto shape = this->pcaShape().toShape(this->shapeParam);
+  shape->recentreAndScale(origin, scale);
+  auto shape_ = new MeshShape(*shape);
+  return shape_;
 }
 
 Rect FittedAAM::getBound() const
@@ -66,7 +70,8 @@ double FittedAAM::measureError(const Mat& sample)
   drawOverlay(canvas);
 
   // TAOTODO: Draw contour of appearance as boundary of computation
-
+  auto shape = toShape();
+  Mat shapeConvex = shape->convexFill();
 
   return 0;
 }
