@@ -22,7 +22,7 @@ MeshShape* ShapeModelPCA::toShape(const Mat& param) const
   return new MeshShape(shapeParam);
 }
 
-const ShapeModelPCA& ShapeModelPCA::cloneWithNewScale(double newScale, const Point2d& newTranslation) const
+ShapeModelPCA ShapeModelPCA::cloneWithNewScale(double newScale, const Point2d& newTranslation) const
 {
   ShapeModelPCA neue(*this);
   neue.setScale(newScale);
@@ -125,14 +125,10 @@ Rect AppearanceModelPCA::getBound() const
   return b;
 }
 
-AppearanceModelPCA& AppearanceModelPCA::cloneWithNewScale(double newScale, const Point2d& newTranslation) const
+AppearanceModelPCA AppearanceModelPCA::cloneWithNewScale(double newScale, const Point2d& newTranslation) const
 {
+  // TAOTODO: Should also rescale or translate meanshape
   AppearanceModelPCA neue(*this);
-
-  // TAODEBUG:
-  cout << "pca mean original : " << this->pca.mean.size() << endl;
-  cout << "pca mean copied   : " << neue.pca.mean.size() << endl;
-
   neue.setScale(newScale);
   neue.setTranslation(newTranslation);
   return neue;
@@ -140,7 +136,8 @@ AppearanceModelPCA& AppearanceModelPCA::cloneWithNewScale(double newScale, const
 
 Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
 {
-  auto bound = meanShape.getBound();
+  auto meanShapeOffset = MeshShape(this->meanShape.recentreAndScale(translation, scale));
+  auto bound = meanShapeOffset.getBound();
   auto offsetBound = this->getBound();
   auto N = bound.width * bound.height;
   auto K = pca.mean.cols/3;
@@ -178,9 +175,8 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
   merge(bpjChannels, bpjGraphic);
   bpjGraphic.copyTo(graphic(Rect(bound)));
 
-  // TAOTODO:
   if (scale == 1 && translation == Point2d(0,0))
-    return new Appearance(meanShape, graphic);
+    return new Appearance(meanShapeOffset, graphic);
   else
   {
     #ifdef DEBUG

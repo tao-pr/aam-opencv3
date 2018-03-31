@@ -51,14 +51,14 @@ public:
   MeshShape* toShape(const Mat& param) const;
   Mat* permutationOfParams() const;
 
-  const ShapeModelPCA& cloneWithNewScale(double newScale, const Point2d& newTranslation) const;
+  ShapeModelPCA cloneWithNewScale(double newScale, const Point2d& newTranslation) const;
 };
 
 class AppearanceModelPCA : public ModelPCA 
 { 
 protected:
   Size originalBound;
-  MeshShape meanShape;
+  MeshShape meanShape; // TAOTODO: Should enfore meanShape origin at (0,0)
 public: 
   AppearanceModelPCA() : ModelPCA() {};
   AppearanceModelPCA(const PCA& p, const MeshShape& mean, const Size& size) : ModelPCA(p), originalBound(size) { this->meanShape = mean; };
@@ -69,7 +69,7 @@ public:
   };
   BaseModel* mean() const;
   
-  AppearanceModelPCA& cloneWithNewScale(double newScale, const Point2d& newTranslation) const;
+  AppearanceModelPCA cloneWithNewScale(double newScale, const Point2d& newTranslation) const;
   Mat toParam(const BaseModel* m) const;
   BaseModel* toModel(const Mat& param) const;
   Appearance* toAppearance(const Mat& param) const;
@@ -77,6 +77,7 @@ public:
   
   void overrideMeanShape(const MeshShape& newMeanShape);
   Rect getBound() const;
+  // TAOTODO: Following is now conforming the state scaling and translation
   const double getMeanShapeScale() const { return this->meanShape.getScale(); };
 };
 

@@ -87,11 +87,7 @@ void FittedAAM::drawOverlay(Mat& canvas)
   IO::MatIO m;
   Appearance* app = this->toAppearance();
   app->render(&m, canvas);
- 
-  // TAODEBUG:
-  imshow("overlay", m.get());
-  imshow("canvas", canvas);
-  waitKey(0);
+  // TAOTODO: Canvas is wrongly painted, it's entirely blackout
 }
 
 BaseFittedModel* FittedAAM::clone() const
