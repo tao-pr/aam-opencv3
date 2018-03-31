@@ -29,7 +29,7 @@ public:
 
   const ShapeModelPCA pcaShape() const { return aamPCA->getShapePCA(); };
   const AppearanceModelPCA pcaAppearance() const { return aamPCA->getAppearancePCA(); };
-  const double getMeanShapeScale();
+  const double getMeanShapeScale() const;
   Rect getBound() const;
 
   BaseFittedModel* setOrigin(const Point2d& p);
@@ -37,8 +37,8 @@ public:
   BaseFittedModel* setShapeParam(const Mat& param);
   BaseFittedModel* setAppearanceParam(const Mat& param);
 
-  Appearance* toAppearance();
-  MeshShape* toShape();
+  Appearance* toAppearance() const;
+  MeshShape* toShape() const;
   BaseFittedModel* clone() const;
 
   double measureError(const Mat& sample);

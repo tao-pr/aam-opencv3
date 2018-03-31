@@ -6,7 +6,7 @@ BaseFittedModel* FittedAAM::setOrigin(const Point2d& p)
   return this;
 }
 
-const double FittedAAM::getMeanShapeScale()
+const double FittedAAM::getMeanShapeScale() const
 {
   return this->pcaAppearance().getScale();
 }
@@ -23,7 +23,7 @@ BaseFittedModel* FittedAAM::setAppearanceParam(const Mat& param)
   return this;
 }
 
-Appearance* FittedAAM::toAppearance()
+Appearance* FittedAAM::toAppearance() const
 {
   assert(this->scale > 0);
   assert(this->origin.x >= 0);
@@ -35,7 +35,7 @@ Appearance* FittedAAM::toAppearance()
     .toAppearance(appearanceParam);
 }
 
-MeshShape* FittedAAM::toShape()
+MeshShape* FittedAAM::toShape() const
 {
   // With scaling and translation
   auto shape = this->pcaShape().toShape(this->shapeParam);
@@ -69,9 +69,15 @@ double FittedAAM::measureError(const Mat& sample)
 
   drawOverlay(canvas);
 
-  // TAOTODO: Draw contour of appearance as boundary of computation
+  // Draw contour of appearance as boundary of computation
   auto shape = toShape();
   Mat shapeConvex = shape->convexFill();
+
+  // TAODEBUG:
+  destroyAllWindows();
+  imshow("overlay", canvas);
+  imshow("convex", shapeConvex);
+  waitKey(0);
 
   return 0;
 }

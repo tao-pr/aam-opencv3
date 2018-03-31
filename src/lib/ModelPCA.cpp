@@ -22,6 +22,14 @@ MeshShape* ShapeModelPCA::toShape(const Mat& param) const
   return new MeshShape(shapeParam);
 }
 
+const ShapeModelPCA& ShapeModelPCA::cloneWithNewScale(double newScale, const Point2d& newTranslation) const
+{
+  ShapeModelPCA neue(*this);
+  neue.setScale(newScale);
+  neue.setTranslation(newTranslation);
+  return neue;
+}
+
 Mat* ShapeModelPCA::permutationOfParams() const
 {
   double step = 0.01;
@@ -117,9 +125,14 @@ Rect AppearanceModelPCA::getBound() const
   return b;
 }
 
-const AppearanceModelPCA& AppearanceModelPCA::cloneWithNewScale(double newScale, const Point2d& newTranslation) const
+AppearanceModelPCA& AppearanceModelPCA::cloneWithNewScale(double newScale, const Point2d& newTranslation) const
 {
   AppearanceModelPCA neue(*this);
+
+  // TAODEBUG:
+  cout << "pca mean original : " << this->pca.mean.size() << endl;
+  cout << "pca mean copied   : " << neue.pca.mean.size() << endl;
+
   neue.setScale(newScale);
   neue.setTranslation(newTranslation);
   return neue;
@@ -134,8 +147,11 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
 
   #ifdef DEBUG
   cout << "Converting PCA -> Appearance Model" << endl;
-  cout << "-> bound : " << bound << endl;
+  cout << "-> bound        : " << bound << endl;
   cout << "-> offset bound : " << offsetBound << endl;
+  cout << "-> pca mean     : " << this->pca.mean.size() << endl;
+  cout << "-> eigenvectors : " << this->pca.eigenvectors.size() << endl;
+  cout << "-> params       : " << param.size() << endl;
   #endif
 
   // Backprojection of appearance params

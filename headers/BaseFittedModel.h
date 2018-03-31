@@ -43,9 +43,9 @@ public:
   virtual BaseFittedModel* setShapeParam(const Mat& param) = 0;
   virtual BaseFittedModel* setAppearanceParam(const Mat& param) = 0;
 
-  virtual const double getMeanShapeScale() = 0;
-  virtual Appearance* toAppearance() = 0;
-  virtual MeshShape* toShape() = 0;
+  virtual const double getMeanShapeScale() const = 0;
+  virtual Appearance* toAppearance() const = 0;
+  virtual MeshShape* toShape() const = 0;
   virtual BaseFittedModel* clone() const = 0;
   virtual Rect getBound() const = 0;
 

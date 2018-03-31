@@ -50,6 +50,8 @@ public:
   BaseModel* toModel(const Mat& param) const;
   MeshShape* toShape(const Mat& param) const;
   Mat* permutationOfParams() const;
+
+  const ShapeModelPCA& cloneWithNewScale(double newScale, const Point2d& newTranslation) const;
 };
 
 class AppearanceModelPCA : public ModelPCA 
@@ -67,7 +69,7 @@ public:
   };
   BaseModel* mean() const;
   
-  const AppearanceModelPCA& cloneWithNewScale(double newScale, const Point2d& newTranslation) const;
+  AppearanceModelPCA& cloneWithNewScale(double newScale, const Point2d& newTranslation) const;
   Mat toParam(const BaseModel* m) const;
   BaseModel* toModel(const Mat& param) const;
   Appearance* toAppearance(const Mat& param) const;
