@@ -137,7 +137,7 @@ AppearanceModelPCA AppearanceModelPCA::cloneWithNewScale(double newScale, const 
 Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
 {
   auto meanShapeOffset = MeshShape(this->meanShape.recentreAndScale(translation, scale));
-  auto bound = meanShapeOffset.getBound();
+  auto bound = meanShape.getBound();
   auto offsetBound = this->getBound();
   auto N = bound.width * bound.height;
   auto K = pca.mean.cols/3;

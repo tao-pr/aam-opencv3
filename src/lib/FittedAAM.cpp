@@ -86,6 +86,14 @@ void FittedAAM::drawOverlay(Mat& canvas)
 {
   IO::MatIO m;
   Appearance* app = this->toAppearance();
+
+  // TAODEBUG: check appearance
+  cout << RED << "[appearance]" << RESET << endl;
+  cout << app->getGraphic().size() << endl;
+  cout << "bound : " << app->getSpannedSize() << endl;
+  imshow("graphic", app->getGraphic());
+  waitKey(0);
+
   app->render(&m, canvas);
   // TAOTODO: Canvas is wrongly painted, it's entirely blackout
 }
