@@ -185,11 +185,6 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
     #endif
 
     MeshShape meanOffsetShape(meanShape.recentreAndScale(translation, scale));  
-    // TAODEBUG:
-    auto ioMesh = IO::WindowIO("meanShapeOffset");
-    meanOffsetShape.render(&ioMesh, Mat::zeros(graphic.size(), CV_8UC3));
-    waitKey(0);
-
     return new Appearance(meanOffsetShape, graphic);
   }
 }

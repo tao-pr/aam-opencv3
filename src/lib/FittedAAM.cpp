@@ -57,11 +57,10 @@ Rect FittedAAM::getBound() const
 
 double FittedAAM::measureError(const Mat& sample)
 {
-  // TAOTODO: New approach:
   // - Draw the model as overlay on black canvas
   // - Offset and rescale the overlay
   // - Crop the sample by shape boundary
-  // - Measure error
+  // - Measure aggregated error of intensity
 
   Rect bound = getBound();
   Mat canvas = Mat::zeros(Size(bound.x + bound.width + 1, bound.y + bound.height + 1), CV_8UC3);
@@ -73,29 +72,48 @@ double FittedAAM::measureError(const Mat& sample)
   auto shape = toShape();
   Mat shapeConvex = shape->convexFill();
 
-  // TAODEBUG:
-  destroyAllWindows();
-  imshow("overlay", canvas);
-  imshow("convex", shapeConvex);
+  // RMSE
+  double e = 0;
+  int n = 0;
+  for (int i=0; i<canvas.cols; i++)
+    for (int j=0; j<canvas.rows; j++)
+    {
+      if (shapeConvex.at<unsigned char>(j,i) > 0 &&
+          sample.cols > i && 
+          sample.rows > j)
+      {
+        ++n;
+        auto a = canvas.at<Vec3b>(j,i);
+        auto b = sample.at<Vec3b>(j,i);
+        auto d = a - b;
+        cout << "a = " << a << endl; // TAODEBUG:
+        cout << "b = " << a << endl; // TAODEBUG:
+        cout << "d = " << a << endl; // TAODEBUG:
+        e += Aux::square(d[0]) + Aux::square(d[1]) + Aux::square(d[2]);
+      }
+    }
+
+  imshow("canvas", canvas);
+  imshow("sample", sample);
+  cout << "n ~ " << n << endl;
+  cout << "e ~ " << e << endl; // TAODEBUG:
   waitKey(0);
 
-  return 0;
+  return Aux::sqrt(e);
 }
 
 void FittedAAM::drawOverlay(Mat& canvas)
 {
   IO::MatIO m;
   Appearance* app = this->toAppearance();
-
-  // TAODEBUG: check appearance
-  cout << RED << "[appearance]" << RESET << endl;
-  cout << app->getGraphic().size() << endl;
-  cout << "bound : " << app->getSpannedSize() << endl;
-  imshow("graphic", app->getGraphic());
-  waitKey(0);
+  
+  // TAOTODO: It renders nothing but black :(
+  Mat gr = app->getGraphic();
+  auto size = app->getShape().getBound();
+  rectangle(gr, size.tl(), size.br(), Scalar(0,100,200), 1);
+  imshow("graphic", gr);
 
   app->render(&m, canvas);
-  // TAOTODO: Canvas is wrongly painted, it's entirely blackout
 }
 
 BaseFittedModel* FittedAAM::clone() const

@@ -305,9 +305,9 @@ void testAppearance()
 
 void testAAMFitting()
 {
-  const int TRAIN_SET_SIZE = 30;
-  const int SHAPE_SIZE = 6;
-  const int MAX_DIM = 3 * 400;
+  const int TRAIN_SET_SIZE = 16;
+  const int SHAPE_SIZE = 5;
+  const int MAX_DIM = 3 * 1000;
 
   // Initialise AAM Model
   cout << "Generating collection of Shapes and Appearances ..." << endl;
