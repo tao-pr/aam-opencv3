@@ -14,8 +14,6 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
   auto pcaAppearance = aamPCA->getAppearancePCA();
   double scales[]    = {1.01, 0.99};
   Point2d trans[]    = {Point2d(-1,0), Point2d(0,-1), Point2d(1,0), Point2d(0,1)};
-  int shapeDim       = pcaShape.dimension();
-  int appDim         = pcaAppearance.dimension();
   auto smat          = pcaShape.permutationOfParams();
   auto amat          = pcaAppearance.permutationOfParams();
 
@@ -42,6 +40,10 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
       case RESHAPING:
         while (!smat.empty())
         {
+          cout << "reshaping ..." << smat.size() << "left" << endl; // TAODEBUG:
+          cout << "shapeParam ~ " << model->shapeParam.size() << endl;
+          cout << "param add  ~ " << smat.top().size() << endl;
+
           candidates.push_back(model->clone()->setShapeParam(model->shapeParam + smat.top()));
           smat.pop();
         }
@@ -50,6 +52,7 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
       case REAPPEARANCING:
         while (!amat.empty())
         {
+          cout << "reappearancing ..." << endl; // TAODEBUG:
           candidates.push_back(model->clone()->setAppearanceParam(model->appearanceParam + amat.top()));
           amat.pop();
         }

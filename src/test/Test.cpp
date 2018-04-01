@@ -382,8 +382,25 @@ void testAAMFitting()
 
 }
 
+// @href https://stackoverflow.com/questions/77005/how-to-automatically-generate-a-stacktrace-when-my-gcc-c-program-crashes
+void segFaultHandler(int sig) 
+{
+  void *array[10];
+  size_t size;
+
+  // get void*'s for all entries on the stack
+  size = backtrace(array, 10);
+
+  // print out all the frames to stderr
+  fprintf(stderr, "Error: signal %d:\n", sig);
+  backtrace_symbols_fd(array, size, STDERR_FILENO);
+  exit(1);
+}
+
 int main(int argc, char** argv)
 {
+  signal(SIGSEGV, segFaultHandler);
+
   // cout << MAGENTA << "**********************" << RESET << endl;
   // cout << MAGENTA << " Mesh shape testing  "  << RESET << endl;
   // cout << MAGENTA << "**********************" << RESET << endl;
