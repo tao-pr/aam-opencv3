@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <stack>
 #include <stdlib.h>
 #include <limits>
 #include <time.h>

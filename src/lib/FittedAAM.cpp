@@ -64,10 +64,7 @@ double FittedAAM::measureError(const Mat& sample)
 
   Rect bound = getBound();
   Mat canvas = Mat::zeros(Size(bound.x + bound.width + 1, bound.y + bound.height + 1), CV_8UC3);
-
   Mat overlay = drawOverlay(canvas);
-  imshow("overlay", overlay); // TAODEBUG:
-  waitKey(0);
 
   // Draw contour of appearance as boundary of computation
   auto shape = toShape();
@@ -91,7 +88,8 @@ double FittedAAM::measureError(const Mat& sample)
       }
     }
 
-  return Aux::sqrt(e);
+  // Error per pixel
+  return Aux::sqrt(e) / (double)n;
 }
 
 Mat FittedAAM::drawOverlay(Mat& canvas, bool withEdges)

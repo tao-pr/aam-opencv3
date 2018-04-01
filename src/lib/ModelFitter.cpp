@@ -16,8 +16,8 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
   Point2d trans[]    = {Point2d(-1,0), Point2d(0,-1), Point2d(1,0), Point2d(0,1)};
   int shapeDim       = pcaShape.dimension();
   int appDim         = pcaAppearance.dimension();
-  Mat* smat          = pcaShape.permutationOfParams();
-  Mat* amat          = pcaAppearance.permutationOfParams();
+  auto smat          = pcaShape.permutationOfParams();
+  auto amat          = pcaAppearance.permutationOfParams();
 
   for (auto a : actions)
   {
@@ -40,16 +40,18 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
         break;
 
       case RESHAPING:
-        for (int k=0; k<shapeDim; k++)
+        while (!smat.empty())
         {
-          candidates.push_back(model->clone()->setShapeParam(model->shapeParam + smat[k]));
+          candidates.push_back(model->clone()->setShapeParam(model->shapeParam + smat.top()));
+          smat.pop();
         }
         break;
 
       case REAPPEARANCING:
-        for (int k=0; k<appDim; k++)
+        while (!amat.empty())
         {
-          candidates.push_back(model->clone()->setAppearanceParam(model->appearanceParam + amat[k]));
+          candidates.push_back(model->clone()->setAppearanceParam(model->appearanceParam + amat.top()));
+          amat.pop();
         }
         break;
     }
@@ -78,7 +80,7 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
   #endif 
   for (auto p : candidates)
     delete p;
-  
+
   return bestCandidate;
 }
 
