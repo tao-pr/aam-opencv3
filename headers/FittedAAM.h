@@ -42,7 +42,7 @@ public:
   BaseFittedModel* clone() const;
 
   double measureError(const Mat& sample);
-  void drawOverlay(Mat& canvas);
+  Mat drawOverlay(Mat& canvas, bool withEdges = false);
 };
 
 #endif

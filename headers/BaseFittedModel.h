@@ -50,7 +50,7 @@ public:
   virtual Rect getBound() const = 0;
 
   virtual double measureError(const Mat& sample) = 0;
-  virtual void drawOverlay(Mat& canvas) = 0;
+  virtual Mat drawOverlay(Mat& canvas, bool withEdges = false) = 0;
 };
 
 inline ostream &operator<<(ostream &os, BaseFittedModel const &m) {

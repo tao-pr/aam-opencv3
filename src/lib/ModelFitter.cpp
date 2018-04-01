@@ -5,6 +5,10 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
   vector<SearchWith> actions = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
   vector<BaseFittedModel*> candidates;
 
+  #ifdef DEBUG
+  cout << CYAN << "Fitter : Generating next best model" << RESET << endl;
+  #endif
+
   // Generate action params
   auto pcaShape      = aamPCA->getShapePCA();
   auto pcaAppearance = aamPCA->getAppearancePCA();
@@ -102,7 +106,6 @@ BaseFittedModel* ModelFitter::fit(const BaseFittedModel* initModel, const Mat& s
     cout << CYAN << "Fitting model #" << iter << RESET << endl;
     #endif
 
-    // TAOTODO: Following causes error
     double prevError = prevModel->measureError(sample);
     if (prevError == 0)
     {
@@ -111,6 +114,10 @@ BaseFittedModel* ModelFitter::fit(const BaseFittedModel* initModel, const Mat& s
       #endif
       break;
     }
+
+    #ifdef DEBUG
+    cout << YELLOW << "... Error so far ~ " << prevError << RESET << endl;
+    #endif
 
     // Explore next best parameters
     // TAOTOREVIEW: Add prev explored paths as taboo

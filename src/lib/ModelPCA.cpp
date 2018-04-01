@@ -173,14 +173,14 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
     bpjChannels.push_back(meanCh.reshape(1, bound.height));
   }
   merge(bpjChannels, bpjGraphic);
-  bpjGraphic.copyTo(graphic(Rect(bound)));
+  bpjGraphic.copyTo(graphic(Rect(offsetBound)));
 
   if (scale == 1 && translation == Point2d(0,0))
     return new Appearance(meanShapeOffset, graphic);
   else
   {
     #ifdef DEBUG
-    cout << "-> scaling : " << scale << endl;
+    cout << "-> scaling     : " << scale << endl;
     cout << "-> translation : " << translation << endl;
     #endif
 
