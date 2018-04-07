@@ -38,13 +38,14 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
         break;
 
       case RESHAPING:
+        /// TAOTODO: Memory issue here
         while (!smat.empty())
         {
           cout << "reshaping ..." << smat.size() << "left" << endl; // TAODEBUG:
           cout << "shapeParam ~ " << model->shapeParam.size() << endl;
           cout << "param add  ~ " << smat.top().size() << endl;
-
-          candidates.push_back(model->clone()->setShapeParam(model->shapeParam + smat.top()));
+          Mat p = smat.top();
+          candidates.push_back(model->clone()->setShapeParam(model->shapeParam + p));
           smat.pop();
         }
         break;

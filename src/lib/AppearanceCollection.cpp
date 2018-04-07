@@ -146,7 +146,7 @@ double AppearanceCollection::sumProcrustesDistance(const BaseModel* targetModel)
   cout << "AppearanceCollection::sumProcrustesDistance" << endl;
   #endif
 
-  // TAOTODO:
+  // TAOTOREVIEW:
 }
 
 ModelPCA* AppearanceCollection::pca(const BaseModel* mean, int maxDimension) const
