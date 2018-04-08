@@ -37,7 +37,7 @@ private:
 protected:
   // Static PCA of Shape and Appearance components
   shared_ptr<AAMPCA> aamPCA;
-  tuple<BaseFittedModel*, double> generateNextBestModel(BaseFittedModel* model, const Mat& sample) const;
+  tuple<shared_ptr<BaseFittedModel>, double> generateNextBestModel(shared_ptr<BaseFittedModel> model, const Mat& sample) const;
 
 public:
   inline ModelFitter(shared_ptr<AAMPCA> const & aamPCA) : aamPCA(aamPCA){};

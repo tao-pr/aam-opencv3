@@ -39,7 +39,7 @@ public:
 
   Appearance* toAppearance() const;
   MeshShape* toShape() const;
-  BaseFittedModel* clone() const;
+  shared_ptr<BaseFittedModel> clone() const;
 
   double measureError(const Mat& sample);
   Mat drawOverlay(Mat& canvas, bool withEdges = false);

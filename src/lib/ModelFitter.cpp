@@ -1,9 +1,9 @@
 #include "ModelFitter.h"
 
-tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedModel* model, const Mat& sample) const
+tuple<shared_ptr<BaseFittedModel>, double> ModelFitter::generateNextBestModel(shared_ptr<BaseFittedModel> model, const Mat& sample) const
 {
   vector<SearchWith> actions = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
-  vector<BaseFittedModel*> candidates;
+  vector<shared_ptr<BaseFittedModel>> candidates;
 
   #ifdef DEBUG
   cout << CYAN << "Fitter : Generating next best model" << RESET << endl;
@@ -26,14 +26,18 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
       case SCALING:
         for (auto s : scales) 
         {
-          candidates.push_back(model->clone()->setScale(s * model->scale));
+          auto ptrModel = model->clone();
+          ptrModel->setScale(s * model->scale);
+          candidates.push_back(ptrModel);
         }
         break;
 
       case TRANSLATION:
         for (auto t : trans)
         {
-          candidates.push_back(model->clone()->setOrigin(model->origin + t));
+          auto ptrModel = model->clone();
+          ptrModel->setOrigin(model->origin + t);
+          candidates.push_back(ptrModel);
         }
         break;
 
@@ -44,8 +48,10 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
           cout << "reshaping ..." << smat.size() << "left" << endl; // TAODEBUG:
           cout << "shapeParam ~ " << model->shapeParam.size() << endl;
           cout << "param add  ~ " << smat.top().size() << endl;
-          Mat p = smat.top();
-          candidates.push_back(model->clone()->setShapeParam(model->shapeParam + p));
+          const Mat p = smat.top();
+          auto ptrModel = model->clone();
+          ptrModel->setShapeParam(model->shapeParam + p);
+          candidates.push_back(ptrModel);
           smat.pop();
         }
         break;
@@ -54,7 +60,9 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
         while (!amat.empty())
         {
           cout << "reappearancing ..." << endl; // TAODEBUG:
-          candidates.push_back(model->clone()->setAppearanceParam(model->appearanceParam + amat.top()));
+          auto ptrModel = model->clone();
+          ptrModel->setAppearanceParam(model->appearanceParam + amat.top());
+          candidates.push_back(ptrModel);
           amat.pop();
         }
         break;
@@ -67,7 +75,7 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
 
   // Identify the best model
   double bestError = numeric_limits<double>::max();
-  BaseFittedModel* bestCandidate = candidates.front();
+  auto bestCandidate = candidates.front();
   for (auto c : candidates)
   {
     double e = c->measureError(sample);
@@ -77,13 +85,6 @@ tuple<BaseFittedModel*, double> ModelFitter::generateNextBestModel(BaseFittedMod
       bestCandidate = c->clone();
     }
   }
-
-  // Free the allocated blocks
-  #ifdef DEBUG
-  cout << "Deallocating candidates ..." << endl;
-  #endif 
-  for (auto p : candidates)
-    delete p;
 
   return bestCandidate;
 }
@@ -101,7 +102,7 @@ BaseFittedModel* ModelFitter::fit(const BaseFittedModel* initModel, const Mat& s
   #ifdef DEBUG
   cout << GREEN << "[Model fitting started]" << RESET << endl;
   cout << "[Init model]" << endl;
-  cout << *prevModel << endl;
+  cout << *prevModel << endl; // TAOTODO: Best way to refer to shared_ptr ?
   #endif
 
 
@@ -129,7 +130,7 @@ BaseFittedModel* ModelFitter::fit(const BaseFittedModel* initModel, const Mat& s
     // TAOTOREVIEW: Add prev explored paths as taboo
     auto newModelWithError = generateNextBestModel(prevModel, sample);
 
-    BaseFittedModel* newModel = get<0>(newModelWithError);
+    shared_ptr<BaseFittedModel> newModel = get<0>(newModelWithError);
     double error = get<1>(newModelWithError);
     
     double errorDiff;
@@ -150,9 +151,6 @@ BaseFittedModel* ModelFitter::fit(const BaseFittedModel* initModel, const Mat& s
     auto errorStr = fmt::format("{0:2d} %", errorDiff/100);
     cout << "... Error diff : " << errorStr << endl;
     #endif
-
-    // Destroy prev model
-    delete prevModel;
 
     iter++;
     prevModel = newModel;

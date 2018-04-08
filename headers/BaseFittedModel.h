@@ -46,7 +46,7 @@ public:
   virtual const double getMeanShapeScale() const = 0;
   virtual Appearance* toAppearance() const = 0;
   virtual MeshShape* toShape() const = 0;
-  virtual BaseFittedModel* clone() const = 0;
+  virtual shared_ptr<BaseFittedModel> clone() const = 0;
   virtual Rect getBound() const = 0;
 
   virtual double measureError(const Mat& sample) = 0;
