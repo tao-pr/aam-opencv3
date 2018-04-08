@@ -30,24 +30,24 @@ ShapeModelPCA ShapeModelPCA::cloneWithNewScale(double newScale, const Point2d& n
   return neue;
 }
 
-stack<Mat> ShapeModelPCA::permutationOfParams() const
+vector<Mat> ShapeModelPCA::permutationOfParams() const
 {
   double step = 0.01;
   int K = dimension()*2;
-  stack<Mat> perm;
+  vector<Mat> perm;
   for (int i=0; i<K; i++)
   {
     if (i%2 == 0)
     {
       Mat p = Mat::zeros(1, dimension(), CV_64FC1);
       p.at<double>(0, i) = step;
-      perm.push(p);
+      perm.push_back(p);
     }
     else
     {
       Mat p = Mat::zeros(1, dimension(), CV_64FC1);
       p.at<double>(0, i) = -step;
-      perm.push(p);
+      perm.push_back(p);
     }
   }
   return perm;
@@ -98,23 +98,23 @@ void AppearanceModelPCA::overrideMeanShape(const MeshShape& newMeanShape)
   this->meanShape = newMeanShape;
 }
 
-stack<Mat> AppearanceModelPCA::permutationOfParams() const
+vector<Mat> AppearanceModelPCA::permutationOfParams() const
 {
   double step = 0.001;
-  stack<Mat> perm;
+  vector<Mat> perm;
   for (int i=0; i<dimension()*2; i++)
   {
     if (i%2 == 0)
     {
       Mat p = Mat::zeros(1, dimension(), CV_64FC1);
       p.at<double>(0, i) = step;
-      perm.push(p);
+      perm.push_back(p);
     }
     else
     {
       Mat p = Mat::zeros(1, dimension(), CV_64FC1);
       p.at<double>(0, i) = -step;
-      perm.push(p);
+      perm.push_back(p);
     }
   }
   return perm;

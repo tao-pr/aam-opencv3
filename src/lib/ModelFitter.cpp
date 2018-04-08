@@ -42,29 +42,22 @@ tuple<shared_ptr<BaseFittedModel>, double> ModelFitter::generateNextBestModel(sh
         break;
 
       case RESHAPING:
-        while (!smat.empty())
+        for (auto param : smat)
         {
-          cout << "reshaping ..." << smat.size() << "left" << endl; // TAODEBUG:
-          cout << "shapeParam ~ " << model->shapeParam.size() << endl;
-          cout << "param add  ~ " << smat.top().size() << endl;
-          const Mat p = smat.top();
           auto ptrModel = model->clone();
-          ptrModel->setShapeParam(model->shapeParam + p);
+          ptrModel->setShapeParam(model->shapeParam + param);
           candidates.push_back(ptrModel);
-          // TAOTODO: Release [model] memory somehow here, otherwise it causes memory leakage
-          smat.pop();
         }
         break;
 
       case REAPPEARANCING:
-        while (!amat.empty())
+        for (auto param : amat)
         {
-          cout << "reappearancing ..." << endl; // TAODEBUG:
           auto ptrModel = model->clone();
-          ptrModel->setAppearanceParam(model->appearanceParam + amat.top());
+          ptrModel->setAppearanceParam(model->appearanceParam + param);
           candidates.push_back(ptrModel);
-          amat.pop();
         }
+        cout << "finished all reappearancing params ..." << endl; // TAODEBUG:
         break;
     }
   }
