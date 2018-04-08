@@ -42,7 +42,6 @@ tuple<shared_ptr<BaseFittedModel>, double> ModelFitter::generateNextBestModel(sh
         break;
 
       case RESHAPING:
-        /// TAOTODO: Memory issue here
         while (!smat.empty())
         {
           cout << "reshaping ..." << smat.size() << "left" << endl; // TAODEBUG:
@@ -52,6 +51,7 @@ tuple<shared_ptr<BaseFittedModel>, double> ModelFitter::generateNextBestModel(sh
           auto ptrModel = model->clone();
           ptrModel->setShapeParam(model->shapeParam + p);
           candidates.push_back(ptrModel);
+          // TAOTODO: Release [model] memory somehow here, otherwise it causes memory leakage
           smat.pop();
         }
         break;
@@ -102,7 +102,7 @@ shared_ptr<BaseFittedModel> ModelFitter::fit(const BaseFittedModel* initModel, c
   #ifdef DEBUG
   cout << GREEN << "[Model fitting started]" << RESET << endl;
   cout << "[Init model]" << endl;
-  cout << *prevModel << endl; // TAOTODO: Best way to refer to shared_ptr ?
+  cout << *prevModel << endl;
   #endif
 
 
