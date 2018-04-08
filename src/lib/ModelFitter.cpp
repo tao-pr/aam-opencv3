@@ -89,7 +89,7 @@ tuple<shared_ptr<BaseFittedModel>, double> ModelFitter::generateNextBestModel(sh
   return bestCandidate;
 }
 
-BaseFittedModel* ModelFitter::fit(const BaseFittedModel* initModel, const Mat& sample, const FittingCriteria& crit) const 
+shared_ptr<BaseFittedModel> ModelFitter::fit(const BaseFittedModel* initModel, const Mat& sample, const FittingCriteria& crit) const 
 {
   double errorDiff = numeric_limits<double>::max();
   int iter = 0;

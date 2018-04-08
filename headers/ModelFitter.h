@@ -46,7 +46,7 @@ public:
   const ShapeModelPCA getShapePCA() { return aamPCA->getShapePCA(); } const;
   const AppearanceModelPCA getAppearancePCA() { return aamPCA->getAppearancePCA(); } const;
 
-  virtual BaseFittedModel* fit(const BaseFittedModel* initModel, const Mat& sample, const FittingCriteria& crit = FittingCriteria::getDefault()) const;
+  virtual shared_ptr<BaseFittedModel> fit(const BaseFittedModel* initModel, const Mat& sample, const FittingCriteria& crit = FittingCriteria::getDefault()) const;
 };
 
 #endif
