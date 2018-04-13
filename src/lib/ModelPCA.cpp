@@ -55,7 +55,6 @@ vector<Mat> ShapeModelPCA::permutationOfParams() const
 
 BaseModel* AppearanceModelPCA::mean() const
 {
-  // TAOTODO: Should also shift and scale
   auto bound = meanShape.getBound();
   auto N = bound.width * bound.height;
   auto K = pca.mean.cols/3;
@@ -132,7 +131,6 @@ Rect AppearanceModelPCA::getBound() const
 
 AppearanceModelPCA AppearanceModelPCA::cloneWithNewScale(double newScale, const Point2d& newTranslation) const
 {
-  // TAOTODO: Should also rescale or translate meanshape
   AppearanceModelPCA neue(*this);
   neue.setScale(newScale);
   neue.setTranslation(newTranslation);

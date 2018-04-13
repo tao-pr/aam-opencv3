@@ -57,7 +57,6 @@ tuple<shared_ptr<BaseFittedModel>, double> ModelFitter::generateNextBestModel(sh
           ptrModel->setAppearanceParam(model->appearanceParam + param);
           candidates.push_back(ptrModel);
         }
-        cout << "finished all reappearancing params ..." << endl; // TAODEBUG:
         break;
     }
   }
@@ -78,6 +77,9 @@ tuple<shared_ptr<BaseFittedModel>, double> ModelFitter::generateNextBestModel(sh
       bestCandidate = c->clone();
     }
   }
+
+  // TAODEBUG:
+  cout << "best candidate identified ..., error = " << bestError << endl;
 
   return bestCandidate;
 }
@@ -122,6 +124,8 @@ shared_ptr<BaseFittedModel> ModelFitter::fit(const BaseFittedModel* initModel, c
     // Explore next best parameters
     // TAOTOREVIEW: Add prev explored paths as taboo
     auto newModelWithError = generateNextBestModel(prevModel, sample);
+
+    // TAOTODO: Assess the best model here, check if the function above works
 
     shared_ptr<BaseFittedModel> newModel = get<0>(newModelWithError);
     double error = get<1>(newModelWithError);
