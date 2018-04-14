@@ -46,7 +46,7 @@ const std::string RESET("\033[0m");
 
 inline void adjustStackSize()
 {
-  const rlim_t minStackSize = 32 * 1024 * 1024; // 32 MB
+  const rlim_t minStackSize = 64 * 1024 * 1024; // 64 MB
   struct rlimit lim;
   int result = getrlimit(RLIMIT_STACK, &lim);
   if (result == 0)

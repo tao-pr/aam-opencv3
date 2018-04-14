@@ -1,6 +1,6 @@
 #include "ModelFitter.h"
 
-tuple<shared_ptr<BaseFittedModel>, double> ModelFitter::generateNextBestModel(shared_ptr<BaseFittedModel> model, const Mat& sample) const
+shared_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(shared_ptr<BaseFittedModel> model, const Mat& sample, double* bestError) const
 {
   vector<SearchWith> actions = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
   vector<shared_ptr<BaseFittedModel>> candidates;
@@ -66,8 +66,10 @@ tuple<shared_ptr<BaseFittedModel>, double> ModelFitter::generateNextBestModel(sh
   #endif
 
   // Identify the best model
-  double bestError = numeric_limits<double>::max();
-  shared_ptr<BaseFittedModel> bestCandidate = candidates.front()->clone();
+  *bestError = numeric_limits<double>::max();
+  int bestId = 0;
+
+  int i = 0;
   for (auto c : candidates)
   {
     #ifdef DEBUG
@@ -75,14 +77,15 @@ tuple<shared_ptr<BaseFittedModel>, double> ModelFitter::generateNextBestModel(sh
     #endif
 
     double e = c->measureError(sample);
-    if (e <= bestError)
+    if (e <= *bestError)
     {
-      bestError = e;
-      bestCandidate = c->clone();
+      *bestError = e;
+      bestId = i;
     }
+    ++i;
   }
 
-  return make_tuple(bestCandidate, bestError);
+  return candidates[bestId]->clone();
 }
 
 shared_ptr<BaseFittedModel> ModelFitter::fit(const BaseFittedModel* initModel, const Mat& sample, const FittingCriteria& crit) const 
@@ -124,12 +127,10 @@ shared_ptr<BaseFittedModel> ModelFitter::fit(const BaseFittedModel* initModel, c
 
     // Explore next best parameters
     // TAOTOREVIEW: Add prev explored paths as taboo
-    auto newModelWithError = generateNextBestModel(prevModel, sample);
+    double error;
+    auto newModel = generateNextBestModel(prevModel, sample, &error);
 
     cout << "best model identified~" << endl; // TAODEBUG:
-
-    shared_ptr<BaseFittedModel> newModel = get<0>(newModelWithError);
-    double error = get<1>(newModelWithError);
     
     double errorDiff;
     if (error == 0)
