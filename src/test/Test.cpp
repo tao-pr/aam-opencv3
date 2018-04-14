@@ -400,6 +400,7 @@ void segFaultHandler(int sig)
 int main(int argc, char** argv)
 {
   signal(SIGSEGV, segFaultHandler);
+  adjustStackSize();
 
   // cout << MAGENTA << "**********************" << RESET << endl;
   // cout << MAGENTA << " Mesh shape testing  "  << RESET << endl;

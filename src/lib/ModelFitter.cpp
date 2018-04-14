@@ -70,6 +70,10 @@ tuple<shared_ptr<BaseFittedModel>, double> ModelFitter::generateNextBestModel(sh
   shared_ptr<BaseFittedModel> bestCandidate = candidates.front()->clone();
   for (auto c : candidates)
   {
+    #ifdef DEBUG
+    cout << YELLOW << "Assessing candidate ..." << RESET << endl;
+    #endif
+
     double e = c->measureError(sample);
     if (e <= bestError)
     {
