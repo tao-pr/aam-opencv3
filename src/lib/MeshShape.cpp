@@ -92,10 +92,6 @@ const int MeshShape::findIndex(const Point2d& p) const
 
 void MeshShape::repopulateCache()
 {
-  #ifdef DEBUG
-  cout << "MeshShape::repopulateCache" << endl;
-  #endif
-
   this->trianglesCache.clear();
 
   vector<Vec6f> triangles;

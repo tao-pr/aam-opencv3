@@ -67,7 +67,7 @@ tuple<shared_ptr<BaseFittedModel>, double> ModelFitter::generateNextBestModel(sh
 
   // Identify the best model
   double bestError = numeric_limits<double>::max();
-  auto bestCandidate = candidates.front();
+  shared_ptr<BaseFittedModel> bestCandidate = candidates.front()->clone();
   for (auto c : candidates)
   {
     double e = c->measureError(sample);
@@ -78,7 +78,7 @@ tuple<shared_ptr<BaseFittedModel>, double> ModelFitter::generateNextBestModel(sh
     }
   }
 
-  return bestCandidate;
+  return make_tuple(bestCandidate, bestError);
 }
 
 shared_ptr<BaseFittedModel> ModelFitter::fit(const BaseFittedModel* initModel, const Mat& sample, const FittingCriteria& crit) const 
@@ -122,7 +122,6 @@ shared_ptr<BaseFittedModel> ModelFitter::fit(const BaseFittedModel* initModel, c
     // TAOTOREVIEW: Add prev explored paths as taboo
     auto newModelWithError = generateNextBestModel(prevModel, sample);
 
-    // TAOTODO: Assess the best model here, check if the function above works
     cout << "best model identified~" << endl; // TAODEBUG:
 
     shared_ptr<BaseFittedModel> newModel = get<0>(newModelWithError);
@@ -132,7 +131,7 @@ shared_ptr<BaseFittedModel> ModelFitter::fit(const BaseFittedModel* initModel, c
     if (error == 0)
     {
       #ifdef DEBUG
-      cout << CYAN << "... Fittng error hits zero" << RESET << endl;
+      cout << CYAN << "... Fitting error approaches ZERO" << RESET << endl;
       #endif
       break;
     }

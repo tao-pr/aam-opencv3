@@ -19,10 +19,6 @@ Appearance::Appearance(const MeshShape& shape, const Mat& img)
 
 void Appearance::reinitTextures()
 {
-  #ifdef DEBUG
-  cout << "Appearance::reinitTextures" << endl;
-  #endif
-
   this->textureList.clear();  
   auto triangles = this->mesh.getTriangles();
 
