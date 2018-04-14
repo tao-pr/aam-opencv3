@@ -78,9 +78,6 @@ tuple<shared_ptr<BaseFittedModel>, double> ModelFitter::generateNextBestModel(sh
     }
   }
 
-  // TAODEBUG:
-  cout << "best candidate identified ..., error = " << bestError << endl;
-
   return bestCandidate;
 }
 
@@ -126,6 +123,7 @@ shared_ptr<BaseFittedModel> ModelFitter::fit(const BaseFittedModel* initModel, c
     auto newModelWithError = generateNextBestModel(prevModel, sample);
 
     // TAOTODO: Assess the best model here, check if the function above works
+    cout << "best model identified~" << endl; // TAODEBUG:
 
     shared_ptr<BaseFittedModel> newModel = get<0>(newModelWithError);
     double error = get<1>(newModelWithError);

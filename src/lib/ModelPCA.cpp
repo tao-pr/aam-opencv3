@@ -145,6 +145,9 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
   auto N = bound.width * bound.height;
   auto K = pca.mean.cols/3;
 
+  // TAOTODO: This doesn't support scaling
+  // which makes size of [bound] != [offsetbound]
+
   #ifdef DEBUG
   cout << "Converting PCA -> Appearance Model" << endl;
   cout << "-> bound        : " << bound << endl;
@@ -176,7 +179,12 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
     bpjChannels.push_back(meanCh.reshape(1, bound.height));
   }
   merge(bpjChannels, bpjGraphic);
-  bpjGraphic.copyTo(graphic(Rect(offsetBound)));
+  if (offsetBound.size() != bound.size())
+  {
+    resize(bpjGraphic, graphic(offsetBound), offsetBound.size());
+  }
+  else
+    bpjGraphic.copyTo(graphic(Rect(offsetBound)));
 
   if (scale == 1 && translation == Point2d(0,0))
     return new Appearance(meanShapeOffset, graphic);
