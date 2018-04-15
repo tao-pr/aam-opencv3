@@ -1,9 +1,9 @@
 #include "ModelFitter.h"
 
-shared_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(shared_ptr<BaseFittedModel> model, const Mat& sample, double* bestError) const
+unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFittedModel>& model, const Mat& sample, double* bestError) const
 {
   vector<SearchWith> actions = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
-  vector<shared_ptr<BaseFittedModel>> candidates;
+  vector<unique_ptr<BaseFittedModel>> candidates;
 
   #ifdef DEBUG
   cout << CYAN << "Fitter : Generating next best model" << RESET << endl;
@@ -19,8 +19,6 @@ shared_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(shared_ptr<BaseFi
 
   for (auto a : actions)
   {
-    // TAOTOREVIEW: better to use priority queue here?
-    
     switch (a)
     {
       case SCALING:
@@ -70,7 +68,7 @@ shared_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(shared_ptr<BaseFi
   int bestId = 0;
 
   int i = 0;
-  for (auto c : candidates)
+  for (auto& c : candidates)
   {
     #ifdef DEBUG
     cout << YELLOW << "Assessing candidate ..." << RESET << endl;
@@ -88,20 +86,22 @@ shared_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(shared_ptr<BaseFi
   return candidates[bestId]->clone();
 }
 
-shared_ptr<BaseFittedModel> ModelFitter::fit(const BaseFittedModel* initModel, const Mat& sample, const FittingCriteria& crit) const 
+unique_ptr<BaseFittedModel> ModelFitter::fit(const BaseFittedModel* initModel, const Mat& sample, const FittingCriteria& crit) const 
 {
   double errorDiff = numeric_limits<double>::max();
   int iter = 0;
 
+  vector<unique_ptr<BaseFittedModel>> prevModels;
+
   // Start with the given initial model
-  auto prevModel = initModel->clone();
-  prevModel->setOrigin(crit.initPos);
-  prevModel->setScale(crit.initScale);
+  prevModels.push_back(move(initModel->clone()));
+  prevModels.back()->setOrigin(crit.initPos);
+  prevModels.back()->setScale(crit.initScale);
 
   #ifdef DEBUG
   cout << GREEN << "[Model fitting started]" << RESET << endl;
   cout << "[Init model]" << endl;
-  cout << *prevModel << endl;
+  cout << *prevModels.back() << endl;
   #endif
 
 
@@ -112,7 +112,7 @@ shared_ptr<BaseFittedModel> ModelFitter::fit(const BaseFittedModel* initModel, c
     cout << CYAN << "Fitting model #" << iter << RESET << endl;
     #endif
 
-    double prevError = prevModel->measureError(sample);
+    double prevError = prevModels.back()->measureError(sample);
     if (prevError == 0)
     {
       #ifdef DEBUG
@@ -128,6 +128,7 @@ shared_ptr<BaseFittedModel> ModelFitter::fit(const BaseFittedModel* initModel, c
     // Explore next best parameters
     // TAOTOREVIEW: Add prev explored paths as taboo
     double error;
+    auto& prevModel = prevModels.back();
     auto newModel = generateNextBestModel(prevModel, sample, &error);
 
     cout << "best model identified~" << endl; // TAODEBUG:
@@ -152,12 +153,14 @@ shared_ptr<BaseFittedModel> ModelFitter::fit(const BaseFittedModel* initModel, c
     #endif
 
     iter++;
-    prevModel = newModel;
+    prevModels.push_back(move(newModel));
   };
 
   #ifdef DEBUG
   cout << RED << "[Model fitting finished]" << RESET << endl;
   #endif
 
-  return prevModel;
+  auto selectedModel = move(prevModels.back());
+  prevModels.erase(prevModels.end());
+  return selectedModel;
 }

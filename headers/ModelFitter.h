@@ -37,7 +37,7 @@ private:
 protected:
   // Static PCA of Shape and Appearance components
   shared_ptr<AAMPCA> aamPCA;
-  shared_ptr<BaseFittedModel> generateNextBestModel(shared_ptr<BaseFittedModel> model, const Mat& sample, double* bestError) const;
+  unique_ptr<BaseFittedModel> generateNextBestModel(unique_ptr<BaseFittedModel>& model, const Mat& sample, double* bestError) const;
 
 public:
   inline ModelFitter(shared_ptr<AAMPCA> const & aamPCA) : aamPCA(aamPCA){};
@@ -46,7 +46,7 @@ public:
   const ShapeModelPCA getShapePCA() { return aamPCA->getShapePCA(); } const;
   const AppearanceModelPCA getAppearancePCA() { return aamPCA->getAppearancePCA(); } const;
 
-  virtual shared_ptr<BaseFittedModel> fit(const BaseFittedModel* initModel, const Mat& sample, const FittingCriteria& crit = FittingCriteria::getDefault()) const;
+  virtual unique_ptr<BaseFittedModel> fit(const BaseFittedModel* initModel, const Mat& sample, const FittingCriteria& crit = FittingCriteria::getDefault()) const;
 };
 
 #endif
