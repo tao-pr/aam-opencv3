@@ -17,12 +17,12 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFi
   auto smat          = pcaShape.permutationOfParams();
   auto amat          = pcaAppearance.permutationOfParams();
 
-  for (auto a : actions)
+  for (auto& a : actions)
   {
     switch (a)
     {
       case SCALING:
-        for (auto s : scales) 
+        for (auto& s : scales) 
         {
           auto ptrModel = model->clone();
           ptrModel->setScale(s * model->scale);
@@ -31,7 +31,7 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFi
         break;
 
       case TRANSLATION:
-        for (auto t : trans)
+        for (auto& t : trans)
         {
           auto ptrModel = model->clone();
           ptrModel->setOrigin(model->origin + t);
@@ -40,7 +40,7 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFi
         break;
 
       case RESHAPING:
-        for (auto param : smat)
+        for (auto& param : smat)
         {
           auto ptrModel = model->clone();
           ptrModel->setShapeParam(model->shapeParam + param);
@@ -49,7 +49,7 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFi
         break;
 
       case REAPPEARANCING:
-        for (auto param : amat)
+        for (auto& param : amat)
         {
           auto ptrModel = model->clone();
           ptrModel->setAppearanceParam(model->appearanceParam + param);
