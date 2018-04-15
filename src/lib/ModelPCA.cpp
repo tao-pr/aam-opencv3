@@ -30,23 +30,27 @@ ShapeModelPCA ShapeModelPCA::cloneWithNewScale(double newScale, const Point2d& n
   return neue;
 }
 
-vector<Mat> ShapeModelPCA::permutationOfParams() const
+vector<Mat*> ShapeModelPCA::permutationOfParams() const
 {
   double step = 0.01;
   int K = dimension()*2;
-  vector<Mat> perm;
+  vector<Mat*> perm;
   for (int i=0; i<K; i++)
   {
     if (i%2 == 0)
     {
-      Mat p = Mat::zeros(1, dimension(), CV_64FC1);
-      p.at<double>(0, i) = step;
+      Mat c = Mat::zeros(1, dimension(), CV_64FC1);
+      c.at<double>(0, i) = step;
+      Mat* p = new Mat();
+      c.copyTo(*p);
       perm.push_back(p);
     }
     else
     {
-      Mat p = Mat::zeros(1, dimension(), CV_64FC1);
-      p.at<double>(0, i) = -step;
+      Mat c = Mat::zeros(1, dimension(), CV_64FC1);
+      c.at<double>(0, i) = -step;
+      Mat* p = new Mat();
+      c.copyTo(*p);
       perm.push_back(p);
     }
   }
@@ -97,22 +101,26 @@ void AppearanceModelPCA::overrideMeanShape(const MeshShape& newMeanShape)
   this->meanShape = newMeanShape;
 }
 
-vector<Mat> AppearanceModelPCA::permutationOfParams() const
+vector<Mat*> AppearanceModelPCA::permutationOfParams() const
 {
   double step = 0.001;
-  vector<Mat> perm;
+  vector<Mat*> perm;
   for (int i=0; i<dimension()*2; i++)
   {
     if (i%2 == 0)
     {
-      Mat p = Mat::zeros(1, dimension(), CV_64FC1);
-      p.at<double>(0, i) = step;
+      Mat c = Mat::zeros(1, dimension(), CV_64FC1);
+      c.at<double>(0, i) = step;
+      Mat* p = new Mat();
+      c.copyTo(*p);
       perm.push_back(p);
     }
     else
     {
-      Mat p = Mat::zeros(1, dimension(), CV_64FC1);
-      p.at<double>(0, i) = -step;
+      Mat c = Mat::zeros(1, dimension(), CV_64FC1);
+      c.at<double>(0, i) = -step;
+      Mat* p = new Mat();
+      c.copyTo(*p);
       perm.push_back(p);
     }
   }

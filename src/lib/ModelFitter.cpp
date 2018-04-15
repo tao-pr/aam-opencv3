@@ -43,7 +43,7 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFi
         for (auto& param : smat)
         {
           auto ptrModel = model->clone();
-          ptrModel->setShapeParam(model->shapeParam + param);
+          ptrModel->setShapeParam(model->shapeParam + *param);
           candidates.push_back(move(ptrModel));
         }
         break;
@@ -52,7 +52,7 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFi
         for (auto& param : amat)
         {
           auto ptrModel = model->clone();
-          ptrModel->setAppearanceParam(model->appearanceParam + param);
+          ptrModel->setAppearanceParam(model->appearanceParam + *param);
           candidates.push_back(move(ptrModel));
         }
         break;
@@ -135,8 +135,6 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     double error;
     auto& prevModel = prevModels.back();
     auto newModel = generateNextBestModel(prevModel, sample, &error);
-
-    cout << "best model identified~" << endl; // TAODEBUG:
     
     double errorDiff;
     if (error == 0)
@@ -150,10 +148,10 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     {
       errorDiff = 0;
     }
-    else (error - prevError)/min(error, prevError);
+    else errorDiff = (error - prevError)/max(error, prevError);
 
     #ifdef DEBUG
-    auto errorStr = fmt::format("{0:2d} %", errorDiff/100);
+    auto errorStr = fmt::format("{:2f} %", errorDiff/100);
     cout << "... Error diff : " << errorStr << endl;
     #endif
 
