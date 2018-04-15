@@ -36,17 +36,20 @@ class ModelFitter
 private:
 protected:
   // Static PCA of Shape and Appearance components
-  shared_ptr<AAMPCA> aamPCA;
+  unique_ptr<AAMPCA> aamPCA;
   unique_ptr<BaseFittedModel> generateNextBestModel(unique_ptr<BaseFittedModel>& model, const Mat& sample, double* bestError) const;
 
 public:
-  inline ModelFitter(shared_ptr<AAMPCA> const & aamPCA) : aamPCA(aamPCA){};
+  inline ModelFitter(unique_ptr<AAMPCA> const & aamPCA)
+  {
+    this->aamPCA = aamPCA->clone();
+  };
   virtual ~ModelFitter(){};
 
   const ShapeModelPCA getShapePCA() { return aamPCA->getShapePCA(); } const;
   const AppearanceModelPCA getAppearancePCA() { return aamPCA->getAppearancePCA(); } const;
 
-  virtual unique_ptr<BaseFittedModel> fit(const BaseFittedModel* initModel, const Mat& sample, const FittingCriteria& crit = FittingCriteria::getDefault()) const;
+  virtual unique_ptr<BaseFittedModel> fit(unique_ptr<BaseFittedModel>& initModel, const Mat& sample, const FittingCriteria& crit = FittingCriteria::getDefault()) const;
 };
 
 #endif

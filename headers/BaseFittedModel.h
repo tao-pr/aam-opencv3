@@ -8,21 +8,20 @@
 #include "Appearance.h"
 #include "ModelPCA.h"
 
-// TAOTODO: Destructor of this class causes issue when releasing [aamPCA]
 class BaseFittedModel
 {
 protected:
   inline BaseFittedModel(){};
   inline BaseFittedModel(const BaseFittedModel& another)
   {
-    this->aamPCA = another.aamPCA;
+    this->aamPCA = another.aamPCA->clone();
     another.shapeParam.copyTo(this->shapeParam);
     another.appearanceParam.copyTo(this->appearanceParam);
     this->origin = another.origin;
     this->scale = another.scale;
   };
-  // Static model fitter instance (shared)
-  shared_ptr<AAMPCA> aamPCA;
+  
+  unique_ptr<AAMPCA> aamPCA;
 
 public:
   // Variable states
@@ -31,8 +30,9 @@ public:
   Point2d origin;
   double scale; // Scale multiplier (1x by default)
 
-  inline BaseFittedModel(shared_ptr<AAMPCA> const& aamPCA) : aamPCA(aamPCA)
+  inline BaseFittedModel(unique_ptr<AAMPCA> const& aamPCA)
   {
+    this->aamPCA = aamPCA->clone();
     shapeParam = Mat::zeros(1, aamPCA->dimensionShape(), CV_64FC1);
     appearanceParam = Mat::zeros(1, aamPCA->dimensionAppearance(), CV_64FC1);
     this->origin = Point2d(0,0);

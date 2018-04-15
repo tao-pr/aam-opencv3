@@ -362,12 +362,12 @@ void testAAMFitting()
   int maxIters = 20;
   double eps = 1e-5;
   double initScale = 1;
-  unique_ptr<AAMPCA> aamPCA(new AAMPCA(*pcaShape, *pcaAppearance));
-  auto fitter = ModelFitter(move(aamPCA));
-  auto initModel = new FittedAAM(move(aamPCA));
+  unique_ptr<AAMPCA> aamPCA{ new AAMPCA(*pcaShape, *pcaAppearance) };
+  unique_ptr<ModelFitter> fitter{ new ModelFitter(aamPCA) };
+  unique_ptr<BaseFittedModel> initModel{ new FittedAAM(aamPCA) };
 
   cout << "AAM model fitting started ..." << endl;
-  fitter.fit(initModel, sampleMat, FittingCriteria { maxIters, eps, initScale, sampleCentre });
+  fitter->fit(initModel, sampleMat, FittingCriteria { maxIters, eps, initScale, sampleCentre });
 
   // TAOTODO:
   

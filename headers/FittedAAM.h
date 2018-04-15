@@ -22,7 +22,7 @@ public:
   /**
    * Initialise a new AAM with mean shape and mean appearance
    */
-  inline FittedAAM(shared_ptr<AAMPCA> const& aamPCA) : BaseFittedModel(aamPCA) {};
+  inline FittedAAM(unique_ptr<AAMPCA> const& aamPCA) : BaseFittedModel(aamPCA) {};
   
   FittedAAM(const FittedAAM& another) : BaseFittedModel(another){};
   virtual ~FittedAAM(){};

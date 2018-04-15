@@ -106,7 +106,7 @@ Mat FittedAAM::drawOverlay(Mat& canvas, bool withEdges)
 
 unique_ptr<BaseFittedModel> FittedAAM::clone() const
 {
-  unique_ptr<BaseFittedModel> cloned(new FittedAAM(this->aamPCA));
+  unique_ptr<BaseFittedModel> cloned{ new FittedAAM(this->aamPCA) };
   cloned->setOrigin(this->origin);
   cloned->setShapeParam(this->shapeParam);
   cloned->setAppearanceParam(this->appearanceParam);

@@ -96,6 +96,11 @@ public:
 
   const ShapeModelPCA getShapePCA() const { return pcaShape; };
   const AppearanceModelPCA getAppearancePCA() const { return pcaAppearance; };
+  inline unique_ptr<AAMPCA> clone() const
+  {
+    unique_ptr<AAMPCA> aam{ new AAMPCA(this->pcaShape, this->pcaAppearance) };
+    return aam;
+  };
 
   Rect getBound() const { return pcaAppearance.getBound(); };
 };
