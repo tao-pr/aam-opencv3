@@ -360,7 +360,7 @@ void testAAMFitting()
 
   // Try fitting the model onto an unknown sample
   int maxIters = 20;
-  double eps = 1e-5;
+  double eps = 1e-16;
   double initScale = 1;
   unique_ptr<AAMPCA> aamPCA{ new AAMPCA(*pcaShape, *pcaAppearance) };
   unique_ptr<ModelFitter> fitter{ new ModelFitter(aamPCA) };

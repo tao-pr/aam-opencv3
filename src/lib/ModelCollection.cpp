@@ -46,40 +46,17 @@ BaseModel* ModelCollection::procrustesMean(double tol, int maxIter)
     return abs(e-e0)/min(e0,e);
   };
 
-  #ifdef DEBUG
-  cout << GREEN << "[Calculating Procrustes mean]" << RESET << endl;
-  #endif
-
   while (tl > tol && iter < maxIter)
   {
-    #ifdef DEBUG
-    cout << CYAN << "... Aligning iter# " << RESET << iter << endl;
-    cout << "... Normalising rotation" << endl;
-    #endif
-
     alignedSet->normaliseRotation();
     auto mean  = alignedSet->items[0];
-    
-    #ifdef DEBUG
-    cout << "... Calculating procrustes distance" << endl;
-    #endif
-
     double err = alignedSet->sumProcrustesDistance(mean);
-
-    #ifdef DEBUG
-    cout << "... Error so far : " << err << endl;
-    cout << "... tol : " << tolerance(err, lastError) << endl;
-    #endif
 
     iter++;
     tl = tolerance(err, lastError);
     lastError = err;
   }
   
-  #ifdef DEBUG
-  cout << GREEN << "... [Alignment done]" << endl;
-  #endif
-
   auto meanModel = alignedSet->items[0];
 
   swap(this->items, alignedSet->items);

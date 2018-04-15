@@ -95,6 +95,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
 {
   double errorDiff = numeric_limits<double>::max();
   int iter = 0;
+  double prevError;
 
   vector<unique_ptr<BaseFittedModel>> prevModels;
 
@@ -109,6 +110,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
   cout << *prevModels.back() << endl;
   #endif
 
+  prevError = prevModels.back()->measureError(sample);
 
   // Adjust model parameters until converges
   while (iter < crit.numMaxIter && errorDiff > crit.eps)
@@ -117,7 +119,6 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     cout << CYAN << "Fitting model #" << iter << RESET << endl;
     #endif
 
-    double prevError = prevModels.back()->measureError(sample);
     if (prevError == 0)
     {
       #ifdef DEBUG
@@ -127,7 +128,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     }
 
     #ifdef DEBUG
-    cout << YELLOW << "... Error so far ~ " << prevError << RESET << endl;
+    cout << YELLOW << "... Error so far : " << prevError << RESET << endl;
     #endif
 
     // Explore next best parameters
@@ -136,7 +137,6 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     auto& prevModel = prevModels.back();
     auto newModel = generateNextBestModel(prevModel, sample, &error);
     
-    double errorDiff;
     if (error == 0)
     {
       #ifdef DEBUG
@@ -152,18 +152,24 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
 
     #ifdef DEBUG
     auto errorStr = fmt::format("{:2f} %", errorDiff/100);
-    cout << "... Error diff : " << errorStr << endl;
+    cout << RED << "... Error diff : " << errorStr << RESET << endl;
+    cout << YELLOW << "... Last Error : " << prevError << RESET << endl;
+    cout << YELLOW << "... Error so far : " << error << RESET << endl;
     #endif
 
     iter++;
     prevModels.push_back(move(newModel));
+    prevError = error;
   };
 
   #ifdef DEBUG
-  cout << RED << "[Model fitting finished]" << RESET << endl;
+  cout << GREEN << "[Model fitting finished]" << endl;
+  cout << "... " << iter << " iteration(s)" << endl;
+  cout << "... best error : " << prevError << endl;
+  cout << *prevModels.back() << RESET << endl;
   #endif
 
   auto selectedModel = move(prevModels.back());
-  prevModels.erase(prevModels.end());
+  // prevModels.erase(prevModels.end());
   return selectedModel;
 }
