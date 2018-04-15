@@ -37,7 +37,7 @@ private:
 protected:
   // Static PCA of Shape and Appearance components
   unique_ptr<AAMPCA> aamPCA;
-  unique_ptr<BaseFittedModel> generateNextBestModel(unique_ptr<BaseFittedModel>& model, const Mat& sample, double* bestError) const;
+  unique_ptr<BaseFittedModel> generateNextBestModel(unique_ptr<BaseFittedModel> const& model, const Mat& sample, double* bestError) const;
 
 public:
   inline ModelFitter(unique_ptr<AAMPCA> const & aamPCA)

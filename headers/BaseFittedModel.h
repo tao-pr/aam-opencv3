@@ -20,7 +20,7 @@ protected:
     this->origin = another.origin;
     this->scale = another.scale;
   };
-  
+
   unique_ptr<AAMPCA> aamPCA;
 
 public:
@@ -38,7 +38,8 @@ public:
     this->origin = Point2d(0,0);
     this->scale = 1;
   };
-
+  inline virtual ~BaseFittedModel() {};
+  
   virtual BaseFittedModel* setOrigin(const Point2d& p) = 0;
   virtual BaseFittedModel* setScale(const double s) = 0;
   virtual BaseFittedModel* setShapeParam(const Mat& param) = 0;

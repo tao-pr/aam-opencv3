@@ -1,6 +1,6 @@
 #include "ModelFitter.h"
 
-unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFittedModel>& model, const Mat& sample, double* bestError) const
+unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFittedModel> const& model, const Mat& sample, double* bestError) const
 {
   vector<SearchWith> actions = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
   vector<unique_ptr<BaseFittedModel>> candidates;
@@ -83,7 +83,9 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFi
     ++i;
   }
 
-  return candidates[bestId]->clone();
+  auto p = move(candidates[bestId]->clone());
+  candidates.clear();
+  return p;
 }
 
 unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initModel, const Mat& sample, const FittingCriteria& crit) const 
