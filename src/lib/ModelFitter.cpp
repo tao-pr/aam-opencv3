@@ -13,7 +13,7 @@ ostream &operator<<(ostream &os, SearchWith const &s)
   return os << str;
 }
 
-unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFittedModel> const& model, const Mat& sample, double* bestError, SearchWith* action) const
+unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(double prevError, unique_ptr<BaseFittedModel> const& model, const Mat& sample, double* bestError, SearchWith* action) const
 {
   vector<SearchWith> actions = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
   vector<unique_ptr<BaseFittedModel>> candidates;
@@ -100,7 +100,7 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFi
     #endif
 
     double e = c->measureError(sample);
-    if (e <= *bestError)
+    if (e <= *bestError && e != prevError)
     {
       *bestError = e;
       bestId = i;
@@ -170,7 +170,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     double error;
     auto& prevModel = prevModels.back();
     SearchWith action;
-    auto newModel = generateNextBestModel(prevModel, sample, &error, &action);
+    auto newModel = generateNextBestModel(prevError, prevModel, sample, &error, &action);
 
     // TAOTODO: Restore the previous model if no actions could reduce the error
 
