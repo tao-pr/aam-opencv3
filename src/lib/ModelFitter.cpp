@@ -26,16 +26,17 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(double prevError,
   // Generate action params
   auto pcaShape      = aamPCA->getShapePCA();
   auto pcaAppearance = aamPCA->getAppearancePCA();
-  cout << "A" << endl; // TAODEBUG:
-  double scales[]    = {1.01, 0.99, 1.5, 0.5, 1.33, 0.67};
-  Point2d trans[]    = {Point2d(-1,0), Point2d(0,-1), Point2d(1,0), Point2d(0,1),
+  double scales[]    = {1.01, 0.99, 
+                        1.5, 0.5, 
+                        1.33, 0.67,
+                        2.5, 0.4};
+  Point2d trans[]    = {//Point2d(-1,0), Point2d(0,-1), Point2d(1,0), Point2d(0,1),
                         Point2d(-5,0), Point2d(0,-5), Point2d(5,0), Point2d(0,5),
-                        Point2d(-10,0), Point2d(0,-10), Point2d(10,0), Point2d(0,10)};
+                        Point2d(-10,0), Point2d(0,-10), Point2d(10,0), Point2d(0,10),
+                        Point2d(-25,0), Point2d(0,-25), Point2d(25,0), Point2d(0,25)};
   auto smat          = pcaShape.permutationOfParams();
-  cout << "B" << endl; // TAODEBUG:
   auto amat          = pcaAppearance.permutationOfParams();
 
-  cout << "Generating actions ... " << endl; // TAODEBUG:
   for (auto& a : actions)
   {
     switch (a)
