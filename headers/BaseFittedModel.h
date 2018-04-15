@@ -38,8 +38,11 @@ public:
     this->origin = Point2d(0,0);
     this->scale = 1;
   };
-  inline virtual ~BaseFittedModel() {};
-  
+  inline virtual ~BaseFittedModel() 
+  {
+    this->aamPCA.reset();
+  };
+
   virtual BaseFittedModel* setOrigin(const Point2d& p) = 0;
   virtual BaseFittedModel* setScale(const double s) = 0;
   virtual BaseFittedModel* setShapeParam(const Mat& param) = 0;

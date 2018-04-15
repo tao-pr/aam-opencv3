@@ -34,6 +34,8 @@ struct FittingCriteria
 class ModelFitter
 {
 private:
+  ModelFitter(const ModelFitter& another);
+
 protected:
   // Static PCA of Shape and Appearance components
   unique_ptr<AAMPCA> aamPCA;
@@ -44,7 +46,11 @@ public:
   {
     this->aamPCA = aamPCA->clone();
   };
-  virtual ~ModelFitter(){};
+  
+  virtual inline ~ModelFitter()
+  {
+    this->aamPCA.reset();
+  };
 
   const ShapeModelPCA getShapePCA() { return aamPCA->getShapePCA(); } const;
   const AppearanceModelPCA getAppearancePCA() { return aamPCA->getAppearancePCA(); } const;

@@ -83,9 +83,12 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFi
     ++i;
   }
 
-  auto p = move(candidates[bestId]->clone());
-  candidates.clear();
-  return p;
+  if (i > 0)
+  {
+    auto p = candidates[bestId]->clone();
+    return move(p);
+  }
+  else return nullptr;
 }
 
 unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initModel, const Mat& sample, const FittingCriteria& crit) const 
