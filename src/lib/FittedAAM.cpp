@@ -83,9 +83,12 @@ double FittedAAM::measureError(const Mat& sample)
         auto a = overlay.at<Vec3b>(j,i);
         auto b = sample.at<Vec3b>(j,i);
         auto d = a - b;
-        e += (Aux::square(d[0]) + Aux::square(d[1]) + Aux::square(d[2])) * 0.33;
+        e += (Aux::square(d[0]) + Aux::square(d[1]) + Aux::square(d[2]));
       }
     }
+
+  // TAODEBUG:
+  cout << n << " pixels of error measurement" << endl;
 
   // Error per pixel
   return Aux::sqrt(e) / (double)n;
