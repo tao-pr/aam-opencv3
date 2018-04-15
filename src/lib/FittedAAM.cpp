@@ -71,6 +71,7 @@ double FittedAAM::measureError(const Mat& sample)
 
   // RMSE
   double e = 0;
+  double MAX_ERR = exp(4096);
   int n = 0;
   for (int i=0; i<canvas.cols; i++)
     for (int j=0; j<canvas.rows; j++)
@@ -80,15 +81,17 @@ double FittedAAM::measureError(const Mat& sample)
           sample.rows > j)
       {
         ++n;
-        auto a = overlay.at<Vec3b>(j,i);
-        auto b = sample.at<Vec3b>(j,i);
-        auto d = a - b;
-        e += (Aux::square(d[0]) + Aux::square(d[1]) + Aux::square(d[2]));
+        if (sample.cols > i && sample.rows > j)
+        {
+          auto a = overlay.at<Vec3b>(j,i);
+          auto b = sample.at<Vec3b>(j,i);
+          auto d = a - b;
+          e += exp(abs(d[0]) + abs(d[1]) + abs(d[2]));
+        }
+        else
+          e += MAX_ERR;
       }
     }
-
-  // TAODEBUG:
-  cout << n << " pixels of error measurement" << endl;
 
   // Error per pixel
   return Aux::sqrt(e) / (double)n;

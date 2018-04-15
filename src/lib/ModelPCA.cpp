@@ -41,18 +41,16 @@ vector<Mat*>& ShapeModelPCA::permutationOfParams() const
     {
       if (i%2 == 0)
       {
-        Mat c = Mat::zeros(1, dimension(), CV_64FC1);
-        c.at<double>(0, i) = step;
         Mat* p = new Mat(1, dimension(), CV_64FC1);
-        c.copyTo(*p);
+        *p = Mat::zeros(1, dimension(), CV_64FC1);
+        p->at<double>(0, i) = step;
         perm.push_back(p);
       }
       else
       {
-        Mat c = Mat::zeros(1, dimension(), CV_64FC1);
-        c.at<double>(0, i) = -step;
         Mat* p = new Mat(1, dimension(), CV_64FC1);
-        c.copyTo(*p);
+        *p = Mat::zeros(1, dimension(), CV_64FC1);
+        p->at<double>(0, i) = -step;
         perm.push_back(p);
       }
     }
@@ -114,18 +112,16 @@ vector<Mat*>& AppearanceModelPCA::permutationOfParams() const
     {
       if (i%2 == 0)
       {
-        Mat c = Mat::zeros(1, dimension(), CV_64FC1);
-        c.at<double>(0, i) = step;
         Mat* p = new Mat(1, dimension(), CV_64FC1);
-        c.copyTo(*p);
+        *p = Mat::zeros(1, dimension(), CV_64FC1);
+        p->at<double>(0, i) = step;
         perm.push_back(p);
       }
       else
       {
-        Mat c = Mat::zeros(1, dimension(), CV_64FC1);
-        c.at<double>(0, i) = -step;
         Mat* p = new Mat(1, dimension(), CV_64FC1);
-        c.copyTo(*p);
+        *p = Mat::zeros(1, dimension(), CV_64FC1);
+        p->at<double>(0, i) = -step;
         perm.push_back(p);
       }
     }
