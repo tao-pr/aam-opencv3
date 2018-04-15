@@ -110,5 +110,6 @@ unique_ptr<BaseFittedModel> FittedAAM::clone() const
   cloned->setOrigin(this->origin);
   cloned->setShapeParam(this->shapeParam);
   cloned->setAppearanceParam(this->appearanceParam);
+  cloned->scale = this->scale;
   return cloned;
 }

@@ -1,9 +1,23 @@
 #include "ModelFitter.h"
 
-unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFittedModel> const& model, const Mat& sample, double* bestError) const
+ostream &operator<<(ostream &os, SearchWith const &s)
+{
+  string str;
+  switch (s)
+  {
+    case SCALING: str = "SCALING"; break;
+    case TRANSLATION: str = "TRANSLATION"; break;
+    case RESHAPING: str = "RESHAPING"; break;
+    case REAPPEARANCING: str = "REAPP"; break;
+  }
+  return os << str;
+}
+
+unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFittedModel> const& model, const Mat& sample, double* bestError, SearchWith* action) const
 {
   vector<SearchWith> actions = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
   vector<unique_ptr<BaseFittedModel>> candidates;
+  vector<SearchWith> candidateActions;
 
   #ifdef DEBUG
   cout << CYAN << "Fitter : Generating next best model" << RESET << endl;
@@ -12,8 +26,9 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFi
   // Generate action params
   auto pcaShape      = aamPCA->getShapePCA();
   auto pcaAppearance = aamPCA->getAppearancePCA();
-  double scales[]    = {1.01, 0.99};
-  Point2d trans[]    = {Point2d(-1,0), Point2d(0,-1), Point2d(1,0), Point2d(0,1)};
+  double scales[]    = {1.01, 0.99, 1.5, 0.5, 1.33, 0.67};
+  Point2d trans[]    = {Point2d(-1,0), Point2d(0,-1), Point2d(1,0), Point2d(0,1),
+                        Point2d(-5,0), Point2d(0,-5), Point2d(5,0), Point2d(0,5)};
   auto smat          = pcaShape.permutationOfParams();
   auto amat          = pcaAppearance.permutationOfParams();
 
@@ -27,6 +42,7 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFi
           auto ptrModel = model->clone();
           ptrModel->setScale(s * model->scale);
           candidates.push_back(move(ptrModel));
+          candidateActions.push_back(a);
         }
         break;
 
@@ -36,6 +52,7 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFi
           auto ptrModel = model->clone();
           ptrModel->setOrigin(model->origin + t);
           candidates.push_back(move(ptrModel));
+          candidateActions.push_back(a);
         }
         break;
 
@@ -45,6 +62,7 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFi
           auto ptrModel = model->clone();
           ptrModel->setShapeParam(model->shapeParam + *param);
           candidates.push_back(move(ptrModel));
+          candidateActions.push_back(a);
         }
         break;
 
@@ -54,6 +72,7 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFi
           auto ptrModel = model->clone();
           ptrModel->setAppearanceParam(model->appearanceParam + *param);
           candidates.push_back(move(ptrModel));
+          candidateActions.push_back(a);
         }
         break;
     }
@@ -86,6 +105,14 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFi
   if (i > 0)
   {
     auto p = candidates[bestId]->clone();
+    #ifdef DEBUG
+    cout << "best candidate index = " << bestId << endl;
+    #endif
+    
+    if (action)
+    {
+      *action = candidateActions[bestId];
+    }
     return move(p);
   }
   else return nullptr;
@@ -96,6 +123,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
   double errorDiff = numeric_limits<double>::max();
   int iter = 0;
   double prevError;
+  vector<SearchWith> recordedActions;
 
   vector<unique_ptr<BaseFittedModel>> prevModels;
 
@@ -135,13 +163,20 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     // TAOTOREVIEW: Add prev explored paths as taboo
     double error;
     auto& prevModel = prevModels.back();
-    auto newModel = generateNextBestModel(prevModel, sample, &error);
-    
+    SearchWith action;
+    auto newModel = generateNextBestModel(prevModel, sample, &error, &action);
+
+    // TAOTODO: Restore the previous model if no actions could reduce the error
+
+    recordedActions.push_back(action);
+
     if (error == 0)
     {
       #ifdef DEBUG
       cout << CYAN << "... Fitting error approaches ZERO" << RESET << endl;
       #endif
+      prevModels.push_back(move(newModel));
+      prevError = 0;
       break;
     }
     else if (error == prevError)
@@ -166,10 +201,15 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
   cout << GREEN << "[Model fitting finished]" << endl;
   cout << "... " << iter << " iteration(s)" << endl;
   cout << "... best error : " << prevError << endl;
+  cout << "... actions : ";
+  for (auto& a : recordedActions)
+  {
+    cout << a << " -> ";
+  }
+  cout << "end" << endl;
   cout << *prevModels.back() << RESET << endl;
   #endif
 
   auto selectedModel = move(prevModels.back());
-  // prevModels.erase(prevModels.end());
   return selectedModel;
 }

@@ -352,11 +352,13 @@ void testAAMFitting()
 
   // Render sample without vertices nor edges
   auto ioSample = IO::MatIO();
-  sampleAppearance.render(&ioSample, Mat::zeros(sampleAppearance.getSpannedSize(), CV_8UC3), false, false);
+  auto sizeSample = sampleAppearance.getSpannedSize();
+  sampleAppearance.render(&ioSample, Mat::zeros(sizeSample, CV_8UC3), false, false);
   Mat sampleMat = ioSample.get();
   namedWindow("generated sample");
   moveWindow("generated sample", CANVAS_SIZE, CANVAS_SIZE);
   imshow("generated sample", sampleMat);
+  waitKey(1000);
 
   // Try fitting the model onto an unknown sample
   int maxIters = 20;
@@ -367,19 +369,13 @@ void testAAMFitting()
   unique_ptr<BaseFittedModel> initModel{ new FittedAAM(aamPCA) };
 
   cout << "AAM model fitting started ..." << endl;
-  fitter->fit(initModel, sampleMat, FittingCriteria { maxIters, eps, initScale, sampleCentre });
+  auto alignedModel = fitter->fit(initModel, sampleMat, FittingCriteria { maxIters, eps, initScale, sampleCentre });
+  auto alignedAAM = alignedModel->toAppearance();
 
-  // TAOTODO:
-  
-
-
-
-
-
+  auto ioAligned = IO::WindowIO("aligned");
+  alignedAAM->render(&ioAligned, Mat::zeros(alignedAAM->getSpannedSize(), CV_8UC3), false, false);
+  moveWindow("aligned", CANVAS_SIZE + sizeSample.width, CANVAS_SIZE);
   waitKey(0);
-
-  // TAOTODO:
-
 }
 
 // @href https://stackoverflow.com/questions/77005/how-to-automatically-generate-a-stacktrace-when-my-gcc-c-program-crashes
