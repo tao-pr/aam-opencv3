@@ -362,7 +362,7 @@ void testAAMFitting()
 
   // Try fitting the model onto an unknown sample
   int maxIters = 20;
-  double eps = 1e-16;
+  double eps = 1e-3;
   double initScale = 1;
   unique_ptr<AAMPCA> aamPCA{ new AAMPCA(*pcaShape, *pcaAppearance) };
   unique_ptr<ModelFitter> fitter{ new ModelFitter(aamPCA) };
@@ -376,21 +376,6 @@ void testAAMFitting()
   alignedAAM->render(&ioAligned, Mat::zeros(alignedAAM->getSpannedSize(), CV_8UC3), false, false);
   moveWindow("aligned", CANVAS_SIZE + sizeSample.width, CANVAS_SIZE);
   waitKey(0);
-}
-
-// @href https://stackoverflow.com/questions/77005/how-to-automatically-generate-a-stacktrace-when-my-gcc-c-program-crashes
-void segFaultHandler(int sig) 
-{
-  void *array[10];
-  size_t size;
-
-  // get void*'s for all entries on the stack
-  size = backtrace(array, 10);
-
-  // print out all the frames to stderr
-  fprintf(stderr, "Error: signal %d:\n", sig);
-  backtrace_symbols_fd(array, size, STDERR_FILENO);
-  exit(1);
 }
 
 int main(int argc, char** argv)

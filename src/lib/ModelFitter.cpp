@@ -26,12 +26,15 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFi
   // Generate action params
   auto pcaShape      = aamPCA->getShapePCA();
   auto pcaAppearance = aamPCA->getAppearancePCA();
+  cout << "A" << endl; // TAODEBUG:
   double scales[]    = {1.01, 0.99, 1.5, 0.5, 1.33, 0.67};
   Point2d trans[]    = {Point2d(-1,0), Point2d(0,-1), Point2d(1,0), Point2d(0,1),
                         Point2d(-5,0), Point2d(0,-5), Point2d(5,0), Point2d(0,5)};
   auto smat          = pcaShape.permutationOfParams();
+  cout << "B" << endl; // TAODEBUG:
   auto amat          = pcaAppearance.permutationOfParams();
 
+  cout << "Generating actions ... " << endl; // TAODEBUG:
   for (auto& a : actions)
   {
     switch (a)
@@ -57,23 +60,25 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(unique_ptr<BaseFi
         break;
 
       case RESHAPING:
-        for (auto& param : smat)
+        for (auto param : smat)
         {
           auto ptrModel = model->clone();
           ptrModel->setShapeParam(model->shapeParam + *param);
           candidates.push_back(move(ptrModel));
           candidateActions.push_back(a);
         }
+        smat.clear();
         break;
 
       case REAPPEARANCING:
-        for (auto& param : amat)
+        for (auto param : amat)
         {
           auto ptrModel = model->clone();
           ptrModel->setAppearanceParam(model->appearanceParam + *param);
           candidates.push_back(move(ptrModel));
           candidateActions.push_back(a);
         }
+        amat.clear();
         break;
     }
   }
@@ -183,11 +188,14 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     {
       errorDiff = 0;
     }
-    else errorDiff = (error - prevError)/max(error, prevError);
+    else if (isinf(prevError))
+    {
+      errorDiff = 1;
+    }
+    else errorDiff = (prevError - error)/prevError;
 
     #ifdef DEBUG
-    auto errorStr = fmt::format("{:2f} %", errorDiff/100);
-    cout << RED << "... Error diff : " << errorStr << RESET << endl;
+    cout << RED << "... Error diff : " << errorDiff << RESET << endl;
     cout << YELLOW << "... Last Error : " << prevError << RESET << endl;
     cout << YELLOW << "... Error so far : " << error << RESET << endl;
     #endif

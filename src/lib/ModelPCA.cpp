@@ -30,28 +30,31 @@ ShapeModelPCA ShapeModelPCA::cloneWithNewScale(double newScale, const Point2d& n
   return neue;
 }
 
-vector<Mat*> ShapeModelPCA::permutationOfParams() const
+vector<Mat*>& ShapeModelPCA::permutationOfParams() const
 {
-  double step = 0.01;
+  double steps[] = {0.01, -0.01, 0.1, -0.1, 1, -1};
   int K = dimension()*2;
   vector<Mat*> perm;
-  for (int i=0; i<K; i++)
+  for (auto step : steps)
   {
-    if (i%2 == 0)
+    for (int i=0; i<K; i++)
     {
-      Mat c = Mat::zeros(1, dimension(), CV_64FC1);
-      c.at<double>(0, i) = step;
-      Mat* p = new Mat();
-      c.copyTo(*p);
-      perm.push_back(p);
-    }
-    else
-    {
-      Mat c = Mat::zeros(1, dimension(), CV_64FC1);
-      c.at<double>(0, i) = -step;
-      Mat* p = new Mat();
-      c.copyTo(*p);
-      perm.push_back(p);
+      if (i%2 == 0)
+      {
+        Mat c = Mat::zeros(1, dimension(), CV_64FC1);
+        c.at<double>(0, i) = step;
+        Mat* p = new Mat(1, dimension(), CV_64FC1);
+        c.copyTo(*p);
+        perm.push_back(p);
+      }
+      else
+      {
+        Mat c = Mat::zeros(1, dimension(), CV_64FC1);
+        c.at<double>(0, i) = -step;
+        Mat* p = new Mat(1, dimension(), CV_64FC1);
+        c.copyTo(*p);
+        perm.push_back(p);
+      }
     }
   }
   return perm;
@@ -101,27 +104,30 @@ void AppearanceModelPCA::overrideMeanShape(const MeshShape& newMeanShape)
   this->meanShape = newMeanShape;
 }
 
-vector<Mat*> AppearanceModelPCA::permutationOfParams() const
+vector<Mat*>& AppearanceModelPCA::permutationOfParams() const
 {
-  double step = 0.001;
+  double steps[] = {0.1, -0.1, 0.01, -0.01, 1, -1};
   vector<Mat*> perm;
-  for (int i=0; i<dimension()*2; i++)
+  for (auto step : steps)
   {
-    if (i%2 == 0)
+    for (int i=0; i<dimension()*2; i++)
     {
-      Mat c = Mat::zeros(1, dimension(), CV_64FC1);
-      c.at<double>(0, i) = step;
-      Mat* p = new Mat();
-      c.copyTo(*p);
-      perm.push_back(p);
-    }
-    else
-    {
-      Mat c = Mat::zeros(1, dimension(), CV_64FC1);
-      c.at<double>(0, i) = -step;
-      Mat* p = new Mat();
-      c.copyTo(*p);
-      perm.push_back(p);
+      if (i%2 == 0)
+      {
+        Mat c = Mat::zeros(1, dimension(), CV_64FC1);
+        c.at<double>(0, i) = step;
+        Mat* p = new Mat(1, dimension(), CV_64FC1);
+        c.copyTo(*p);
+        perm.push_back(p);
+      }
+      else
+      {
+        Mat c = Mat::zeros(1, dimension(), CV_64FC1);
+        c.at<double>(0, i) = -step;
+        Mat* p = new Mat(1, dimension(), CV_64FC1);
+        c.copyTo(*p);
+        perm.push_back(p);
+      }
     }
   }
   return perm;

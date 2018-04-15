@@ -31,7 +31,7 @@ public:
   virtual BaseModel* toModel(const Mat& param) const = 0;
 
   // Generate permutation of parameter matrix
-  virtual vector<Mat*> permutationOfParams() const = 0;
+  virtual vector<Mat*>& permutationOfParams() const = 0;
 
   const int dimension() const { return this->pca.eigenvalues.rows; };
   Point2d getTranslation() const { return this->translation; };
@@ -49,7 +49,7 @@ public:
   BaseModel* mean() const; 
   BaseModel* toModel(const Mat& param) const;
   MeshShape* toShape(const Mat& param) const;
-  vector<Mat*> permutationOfParams() const;
+  vector<Mat*>& permutationOfParams() const;
 
   ShapeModelPCA cloneWithNewScale(double newScale, const Point2d& newTranslation) const;
 };
@@ -73,7 +73,7 @@ public:
   Mat toParam(const BaseModel* m) const;
   BaseModel* toModel(const Mat& param) const;
   Appearance* toAppearance(const Mat& param) const;
-  vector<Mat*> permutationOfParams() const;
+  vector<Mat*>& permutationOfParams() const;
   
   void overrideMeanShape(const MeshShape& newMeanShape);
   Rect getBound() const;
@@ -94,8 +94,8 @@ public:
   int dimensionShape() const { return pcaShape.dimension(); };
   int dimensionAppearance() const { return pcaAppearance.dimension(); };
 
-  const ShapeModelPCA getShapePCA() const { return pcaShape; };
-  const AppearanceModelPCA getAppearancePCA() const { return pcaAppearance; };
+  const ShapeModelPCA& getShapePCA() const { return pcaShape; };
+  const AppearanceModelPCA& getAppearancePCA() const { return pcaAppearance; };
   inline unique_ptr<AAMPCA> clone() const
   {
     unique_ptr<AAMPCA> aam{ new AAMPCA(this->pcaShape, this->pcaAppearance) };

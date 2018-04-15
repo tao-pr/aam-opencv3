@@ -12,11 +12,6 @@
 #include "FittedAAM.h"
 #include "ModelFitter.h"
 
-#include <execinfo.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <unistd.h>
-
 const double CANVAS_SIZE     = 300.0;
 const double CANVAS_HALFSIZE = CANVAS_SIZE / 2.0;
 const double NOISE_T         = 15.0;

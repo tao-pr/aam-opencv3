@@ -22,6 +22,12 @@
 #include <chrono>
 #include <sys/resource.h>
 
+// Following imports are for stacktracing
+#include <execinfo.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
+
 #define DEBUG
 
 #include <opencv2/opencv.hpp>
@@ -46,7 +52,7 @@ const std::string RESET("\033[0m");
 
 inline void adjustStackSize()
 {
-  const rlim_t minStackSize = 64 * 1024 * 1024; // 64 MB
+  const rlim_t minStackSize = 128 * 1024 * 1024; // 128 MB
   struct rlimit lim;
   int result = getrlimit(RLIMIT_STACK, &lim);
   if (result == 0)
@@ -72,6 +78,21 @@ inline void adjustStackSize()
       #endif
     }
   }
+}
+
+// @href https://stackoverflow.com/questions/77005/how-to-automatically-generate-a-stacktrace-when-my-gcc-c-program-crashes
+inline void segFaultHandler(int sig) 
+{
+  void *array[10];
+  size_t size;
+
+  // get void*'s for all entries on the stack
+  size = backtrace(array, 10);
+
+  // print out all the frames to stderr
+  fprintf(stderr, "Error: signal %d:\n", sig);
+  backtrace_symbols_fd(array, size, STDERR_FILENO);
+  exit(1);
 }
 
 #endif
