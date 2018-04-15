@@ -8,6 +8,7 @@
 #include "Appearance.h"
 #include "ModelPCA.h"
 
+// TAOTODO: Destructor of this class causes issue when releasing [aamPCA]
 class BaseFittedModel
 {
 protected:

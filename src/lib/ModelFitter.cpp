@@ -28,7 +28,7 @@ shared_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(shared_ptr<BaseFi
         {
           auto ptrModel = model->clone();
           ptrModel->setScale(s * model->scale);
-          candidates.push_back(ptrModel);
+          candidates.push_back(move(ptrModel));
         }
         break;
 
@@ -37,7 +37,7 @@ shared_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(shared_ptr<BaseFi
         {
           auto ptrModel = model->clone();
           ptrModel->setOrigin(model->origin + t);
-          candidates.push_back(ptrModel);
+          candidates.push_back(move(ptrModel));
         }
         break;
 
@@ -46,7 +46,7 @@ shared_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(shared_ptr<BaseFi
         {
           auto ptrModel = model->clone();
           ptrModel->setShapeParam(model->shapeParam + param);
-          candidates.push_back(ptrModel);
+          candidates.push_back(move(ptrModel));
         }
         break;
 
@@ -55,7 +55,7 @@ shared_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(shared_ptr<BaseFi
         {
           auto ptrModel = model->clone();
           ptrModel->setAppearanceParam(model->appearanceParam + param);
-          candidates.push_back(ptrModel);
+          candidates.push_back(move(ptrModel));
         }
         break;
     }
