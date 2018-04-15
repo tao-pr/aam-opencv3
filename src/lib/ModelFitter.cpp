@@ -167,7 +167,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     #endif
 
     // Explore next best parameters
-    // TAOTOREVIEW: Add prev explored paths as taboo
+    // TAOTODO: Add prev explored paths as taboo
     double error;
     auto& prevModel = prevModels.back();
     SearchWith action;
