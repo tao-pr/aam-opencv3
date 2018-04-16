@@ -147,6 +147,8 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
 
   prevError = prevModels.back()->measureError(sample);
 
+  // TAOTODO: Generate tree search with taboo path
+
   // Adjust model parameters until converges
   while (iter < crit.numMaxIter && errorDiff > crit.eps)
   {
@@ -166,14 +168,10 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     cout << YELLOW << "... Error so far : " << prevError << RESET << endl;
     #endif
 
-    // Explore next best parameters
-    // TAOTODO: Add prev explored paths as taboo
     double error;
     auto& prevModel = prevModels.back();
     SearchWith action;
     auto newModel = generateNextBestModel(prevError, prevModel, sample, &error, &action);
-
-    // TAOTODO: Restore the previous model if no actions could reduce the error
 
     recordedActions.push_back(action);
 
