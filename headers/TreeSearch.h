@@ -14,9 +14,20 @@ class TreeSearch
 {
 private:
 protected:
+  unique_ptr<ModelFitter> fitter;
+  vector<unique_ptr<TreeSearch>> branches;
 public:
   TreeSearch();
+  TreeSearch(const unique_ptr<ModelFitter> &fitter);
   virtual ~TreeSearch(){};
+
+  unique_ptr<ModelFitter> get() const;
+
+  unique_ptr<TreeSearch> clone() const;
+  unique_ptr<TreeSearch> generateNextRoutes() const;
+  void prune();
+  bool isTerminal() const;
+  const unique_ptr<TreeSearch>
 };
 
 #endif
