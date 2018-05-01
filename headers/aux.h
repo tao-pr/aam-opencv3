@@ -134,6 +134,20 @@ namespace Aux
     return output;
   }
 
+  /**
+   * Compute MSE between two row vectors
+   */
+  const double inline mse(const Mat& m1, const Mat& m2) 
+  {
+    int M = m1.cols;
+    double e = 0;
+    for (int i=0; i<M; i++)
+    {
+      e += square(m1.at<double>(i,0) - m2.at<double>(i,0));
+    }
+    return e;
+  }
+
 }
 
 namespace Draw

@@ -11,7 +11,7 @@ void testMeshShape(char** argv)
 
   auto ioMesh = IO::WindowIO("mesh");
   mesh.render(&ioMesh, Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3));
-  waitKey(0);
+  waitKey(700);
 }
 
 void testShape(char** argv)
@@ -192,8 +192,6 @@ void testAAMCollection()
     cout << "... Estimation error : " << error << endl;
     i++;
   }
-
-  // TAOTODO:
 }
 
 void testTexture(char** argv)
@@ -256,7 +254,7 @@ void testTexture(char** argv)
   
   moveWindow("source", 15, 15);
   moveWindow("aligned", 185, 15);
-  moveWindow("canvas", 750, 250);
+  moveWindow("canvas", 750, 15);
 }
 
 void testAppearance()
@@ -292,45 +290,143 @@ void testAppearance()
 
   moveWindow("resized", (CANVAS_SIZE+15)*2, 0);
   waitKey(300);
+
+  // Recentre
+  auto trans = Point2d(75, -15);
+  cout << "... Recentring Appearance model ..." << endl;
+  appr.recentre(trans);
+  auto tSize = appr.getSpannedSize();
+  IO::WindowIO ioTrans("translated");
+  Mat canvasTranslated = Mat::zeros(tSize, CV_8UC3);
+  appr.render(&ioTrans, canvasTranslated);
+
+  waitKey(300);
+}
+
+void testAAMFitting()
+{
+  const int TRAIN_SET_SIZE = 16;
+  const int SHAPE_SIZE = 6;
+  const int MAX_DIM = 3 * 8000;
+
+  // Initialise AAM Model
+  cout << "Generating collection of Shapes and Appearances ..." << endl;
+  auto aamCollection = initialAppearanceCollection(TRAIN_SET_SIZE, SHAPE_SIZE);
+  auto shapeCollection = aamCollection->toShapeCollection();
+  
+  // Find means
+  auto meanAppearance = dynamic_cast<Appearance*>(aamCollection->procrustesMean());
+  auto meanShape = dynamic_cast<Shape*>(shapeCollection->procrustesMean());
+  auto meanMeshShape = MeshShape(*meanShape);
+
+  IO::WindowIO ioMean("meanApp");
+  IO::WindowIO ioMeanShape("meanShape");
+
+  auto size = meanAppearance->getSpannedSize();
+  cout << "roi of mean appearance : " << size << endl;
+  meanAppearance->render(&ioMean, Mat::zeros(size, CV_8UC3));
+  meanMeshShape.render(&ioMeanShape, Mat::zeros(size, CV_8UC3));
+  moveWindow("meanApp", CANVAS_SIZE*2-40, 0);
+  moveWindow("meanShape", CANVAS_SIZE*2-20+size.width, 0);
+  waitKey(300);
+
+  // Find PCAs
+  cout << "Finding PCAs ..." << endl;
+  auto pcaAppearance = dynamic_cast<AppearanceModelPCA*>(aamCollection->pca(meanAppearance, MAX_DIM));
+  auto pcaShape = dynamic_cast<ShapeModelPCA*>(shapeCollection->pca(meanShape, -1));
+
+  cout << "PCA dimension of shape      : " << pcaShape->dimension() << endl;
+  cout << "PCA dimension of appearance : " << pcaAppearance->dimension() << endl;
+
+  // Generate unknown sample we want to try fitting the model on
+  double sampleScale = 512;
+  auto sampleCentre = Point2d(35, 36);
+  cout << "Generating unknown sample ..." << endl;
+  auto sampleShape = MeshShape(*meanShape);
+  auto sampleAppearance = Appearance(*meanAppearance);
+  sampleShape.addRandomNoise(Point2d(8.5, 9.5));
+  cout << "Distorting unknown sample ..." << endl;
+  sampleAppearance.realignTo(sampleShape);
+  sampleAppearance.resizeTo(sampleScale);
+  sampleAppearance.recentre(sampleCentre);
+
+  // Render sample without vertices nor edges
+  auto ioSample = IO::MatIO();
+  auto sizeSample = sampleAppearance.getSpannedSize();
+  sampleAppearance.render(&ioSample, Mat::zeros(sizeSample, CV_8UC3), false, false);
+  Mat sampleMat = ioSample.get();
+  namedWindow("generated sample");
+  moveWindow("generated sample", CANVAS_SIZE, CANVAS_SIZE);
+  imshow("generated sample", sampleMat);
+  waitKey(1000);
+
+  // Try fitting the model onto an unknown sample
+  int maxIters = 20;
+  double eps = 1e-3;
+  double initScale = 1;
+  unique_ptr<AAMPCA> aamPCA{ new AAMPCA(*pcaShape, *pcaAppearance) };
+  unique_ptr<ModelFitter> fitter{ new ModelFitter(aamPCA) };
+  unique_ptr<BaseFittedModel> initModel{ new FittedAAM(aamPCA) };
+
+  cout << "AAM model fitting started ..." << endl;
+  auto alignedModel = fitter->fit(initModel, sampleMat, FittingCriteria { maxIters, eps, initScale, sampleCentre });
+  auto alignedAAM = alignedModel->toAppearance();
+
+  auto ioAligned = IO::WindowIO("aligned");
+  alignedAAM->render(&ioAligned, Mat::zeros(alignedAAM->getSpannedSize(), CV_8UC3), false, false);
+  moveWindow("aligned", CANVAS_SIZE + sizeSample.width, CANVAS_SIZE);
+  waitKey(0);
 }
 
 int main(int argc, char** argv)
 {
-  cout << MAGENTA << "**********************" << RESET << endl;
-  cout << MAGENTA << " Mesh shape testing  "  << RESET << endl;
-  cout << MAGENTA << "**********************" << RESET << endl;
+  signal(SIGSEGV, segFaultHandler);
+  adjustStackSize();
 
-  testMeshShape(argv);
+  // cout << MAGENTA << "**********************" << RESET << endl;
+  // cout << MAGENTA << " Mesh shape testing  "  << RESET << endl;
+  // cout << MAGENTA << "**********************" << RESET << endl;
 
-  cout << MAGENTA << "**********************" << RESET << endl;
-  cout << MAGENTA << " Shape model testing  " << RESET << endl;
-  cout << MAGENTA << "**********************" << RESET << endl;
+  // testMeshShape(argv);
 
-  testShape(argv);
+  // cout << MAGENTA << "**********************" << RESET << endl;
+  // cout << MAGENTA << " Shape model testing  " << RESET << endl;
+  // cout << MAGENTA << "**********************" << RESET << endl;
 
-  cout << MAGENTA << "***********************************************" << RESET << endl;
-  cout << MAGENTA << " Hit a key to proceed to texture model testing " << RESET << endl;
-  cout << MAGENTA << "***********************************************" << RESET << endl;
-  waitKey(2000);
-  destroyAllWindows();
+  // testShape(argv);
 
-  testTexture(argv);
+  // cout << MAGENTA << "***********************************************" << RESET << endl;
+  // cout << MAGENTA << " Hit a key to proceed to texture model testing " << RESET << endl;
+  // cout << MAGENTA << "***********************************************" << RESET << endl;
+  // waitKey(2000);
+  // destroyAllWindows();
 
-  cout << MAGENTA << "***********************************************" << RESET << endl;
-  cout << MAGENTA << " Hit a key to proceed to appearance testing " << RESET << endl;
-  cout << MAGENTA << "***********************************************" << RESET << endl;
-  waitKey(2000);
-  destroyAllWindows();
+  // testTexture(argv);
+
+  // cout << MAGENTA << "***********************************************" << RESET << endl;
+  // cout << MAGENTA << " Hit a key to proceed to appearance testing " << RESET << endl;
+  // cout << MAGENTA << "***********************************************" << RESET << endl;
+  // waitKey(2000);
+  // destroyAllWindows();
   
-  testAppearance();
+  // testAppearance();
 
-  cout << MAGENTA << "***********************************************" << RESET << endl;
-  cout << MAGENTA << " Hit a key to proceed to AAM collection test" << RESET << endl;
-  cout << MAGENTA << "***********************************************" << RESET << endl;
-  waitKey(2000);
-  destroyAllWindows();
+  // cout << MAGENTA << "***********************************************" << RESET << endl;
+  // cout << MAGENTA << " Hit a key to proceed to AAM collection test" << RESET << endl;
+  // cout << MAGENTA << "***********************************************" << RESET << endl;
+  // waitKey(2000);
+  // destroyAllWindows();
 
-  testAAMCollection();
+  // testAAMCollection();
+
+  // cout << MAGENTA << "***********************************************" << RESET << endl;
+  // cout << MAGENTA << " Hit a key to proceed to AAM fitting test" << RESET << endl;
+  // cout << MAGENTA << "***********************************************" << RESET << endl;
+  // waitKey(2000);
+  // destroyAllWindows();
+
+  testAAMFitting();  
+
 
   cout << GREEN << "***********************************************" << RESET << endl;
   cout << GREEN << " All tests done" << RESET << endl;

@@ -30,6 +30,7 @@ public:
   vector<Point> convexHull() const;
   const double sumSquareDistanceToPoint(const Point2d& p) const;
   const double procrustesDistance(const BaseModel* that) const;
+  const double getScale() const;
 
   //------ I/O ------
   unique_ptr<BaseModel> clone() const;

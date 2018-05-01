@@ -13,7 +13,6 @@
 #include "ShapeCollection.h"
 #include "ModelPCA.h"
 
-// TAOTODO: Create a constructor which converts from RowVector to [[Appearance]]
 class AppearanceCollection : public ModelCollection
 {
 public:

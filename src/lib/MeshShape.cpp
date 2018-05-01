@@ -92,10 +92,6 @@ const int MeshShape::findIndex(const Point2d& p) const
 
 void MeshShape::repopulateCache()
 {
-  #ifdef DEBUG
-  cout << "MeshShape::repopulateCache" << endl;
-  #endif
-
   this->trianglesCache.clear();
 
   vector<Vec6f> triangles;
@@ -155,7 +151,7 @@ Mat MeshShape::render(IO::GenericIO* io, Mat background, double scaleFactor, Poi
   auto hull = this->convexHull();
 
   #ifdef DEBUG
-  cout << "MeshShape::render ~ num triangles = " << triangles.size() << endl;
+  cout << "MeshShape::render : num triangles = " << triangles.size() << endl;
   #endif
 
   // Render edges

@@ -19,10 +19,6 @@ Appearance::Appearance(const MeshShape& shape, const Mat& img)
 
 void Appearance::reinitTextures()
 {
-  #ifdef DEBUG
-  cout << "Appearance::reinitTextures" << endl;
-  #endif
-
   this->textureList.clear();  
   auto triangles = this->mesh.getTriangles();
 
@@ -136,8 +132,9 @@ void Appearance::realignTo(MeshShape& newShape)
   assert(this->textureList.size() == targetTriangles.size());
 
   // Warp the attached graphic onto the target
+  const int span = 16;
   auto newSize = newShape.getSpannedSize();
-  Mat warped = Mat::zeros(newSize, CV_8UC3);
+  Mat warped = Mat::zeros(newSize.height + span, newSize.width + span, CV_8UC3);
   for (int ti=0; ti<targetTriangles.size(); ti++)
   {
     this->textureList[ti].realignTo(targetTriangles[ti], &newShape.mat, &warped);
@@ -154,29 +151,39 @@ void Appearance::realignTo(MeshShape& newShape)
   this->graphic = warped;
 }
 
+void Appearance::recentre(Point2d t)
+{
+  auto bound = this->mesh.getBound();
+  this->mesh = MeshShape(this->mesh >> t);
+
+  // Correction of boundary
+  auto newBound = this->mesh.getBound();
+  newBound.width = bound.width;
+  newBound.height = bound.height; 
+  int h = this->graphic.rows + t.y;
+  int w = this->graphic.cols + t.x;
+  Mat newGraphic = Mat::zeros(h, w, this->graphic.type());
+
+  #ifdef DEBUG
+  cout << "Appearance recentering : " << bound << " => " << newBound << endl;
+  #endif
+
+  this->graphic(bound).copyTo(newGraphic(newBound));
+  swap(this->graphic, newGraphic);
+}
+
 void Appearance::resizeTo(double newScale)
 {
   auto centre = this->mesh.centroid();
-
-  // Find the current scale
-  auto points = this->mesh.toPoints();
-  double maxDist = 0;
-  for (auto p : points)
-  {
-    double dist = Aux::sqrt(Aux::squareDistance(p, centre));
-    maxDist = max(dist, maxDist);
-  }
-
-  double ratio = newScale / Aux::sqrt(maxDist);
+  double originalScale = this->mesh.getScale();
+  double ratio = newScale / originalScale;
 
   #ifdef DEBUG
-  cout << "Appearance::resizeTo : from " << maxDist << " -> " << newScale << " (scale = " << ratio << ")" << endl;
+  cout << "Appearance::resizeTo : from " << originalScale << " -> " << newScale << " (scale = " << ratio << ")" << endl;
   #endif
-
 
   // Resize shape without translation
   this->mesh = MeshShape(this->mesh * ratio);
-
 
   // Resize texture without translation
   auto bound = this->mesh.getBound();

@@ -36,20 +36,4 @@ public:
   inline vector<Texture> getTextures() const { return this->textures; };
 };
 
-/**
- * Trainset collection for the AAM
- */
-// class GenericTrainset
-// {
-// private:
-// protected:
-//   ShapeCollection shapeEntries;
-//   AppearanceCollection appEntries;
-// public:
-//   GenericTrainset(const ShapeCollection &annotations, const AppearanceCollection &appearances);
-//   virtual inline ~GenericTrainset(){};
-//   virtual GenericAAM train(bool verbose) const = 0;
-// };
-
-
 #endif
