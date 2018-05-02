@@ -52,8 +52,8 @@ public:
     this->aamPCA.reset();
   };
 
-  const ShapeModelPCA& getShapePCA() { return aamPCA->getShapePCA(); } const;
-  const AppearanceModelPCA& getAppearancePCA() { return aamPCA->getAppearancePCA(); } const;
+  const ShapeModelPCA& getShapePCA() const { return aamPCA->getShapePCA(); };
+  const AppearanceModelPCA& getAppearancePCA() const { return aamPCA->getAppearancePCA(); };
 
   virtual unique_ptr<BaseFittedModel> fit(unique_ptr<BaseFittedModel>& initModel, const Mat& sample, const FittingCriteria& crit = FittingCriteria::getDefault()) const;
 };
