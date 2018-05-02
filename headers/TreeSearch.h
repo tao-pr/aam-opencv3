@@ -9,25 +9,32 @@
 #include "ModelPCA.h"
 #include "BaseFittedModel.h"
 #include "ModelFitter.h"
+#include "BaseFittedModel.h"
 
 class TreeSearch 
 {
 private:
 protected:
-  unique_ptr<ModelFitter> fitter;
+  unique_ptr<BaseFittedModel> fitter;
   vector<unique_ptr<TreeSearch>> branches;
+  double bestError;
+  bool isOrphan;
+
 public:
   TreeSearch();
-  TreeSearch(const unique_ptr<ModelFitter> &fitter);
+  TreeSearch(const unique_ptr<BaseFittedModel> &fitter);
   virtual ~TreeSearch(){};
 
-  unique_ptr<ModelFitter> get() const;
-
-  unique_ptr<TreeSearch> clone() const;
-  unique_ptr<TreeSearch> generateNextRoutes() const;
-  void prune();
+  // Properties
+  unique_ptr<BaseFittedModel> get() const;
   bool isTerminal() const;
-  const unique_ptr<TreeSearch>
+  const double getBestError(){ return this->bestError; } const;
+
+  // Methods
+  unique_ptr<TreeSearch> clone() const;
+  unique_ptr<TreeSearch> expandBranches() const;
+  void prune(double decayRatio = 0.667);
+
 };
 
 #endif
