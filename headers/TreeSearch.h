@@ -15,24 +15,26 @@ class TreeSearch
 {
 private:
 protected:
-  unique_ptr<BaseFittedModel> model;
   vector<unique_ptr<TreeSearch>> branches;
   double bestError;
   bool isOrphan;
 
 public:
+  unique_ptr<BaseFittedModel> model;
+
   TreeSearch();
-  TreeSearch(const unique_ptr<BaseFittedModel> &model, double error);
+  TreeSearch(unique_ptr<BaseFittedModel> model, double error);
   virtual ~TreeSearch(){};
 
   // Properties
-  unique_ptr<BaseFittedModel> get() const;
   bool isTerminal() const;
-  const double getBestError(){ return this->bestError; } const;
+  const double getBestError() const { return this->bestError; };
+  const int getLevel() const;
 
   // Methods
   unique_ptr<TreeSearch> expandBranches(unique_ptr<ModelFitter> fitter) const;
-  void prune(double decayRatio = 0.667);
+  bool prune(double decayRatio = 0.667);
+  void deleteAllBranches();
 
 };
 

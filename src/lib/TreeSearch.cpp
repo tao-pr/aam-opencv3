@@ -7,16 +7,11 @@ TreeSearch::TreeSearch()
   isOrphan = true;
 }
 
-TreeSearch::TreeSearch(const unique_ptr<BaseFittedModel> &_model, double error)
+TreeSearch::TreeSearch(unique_ptr<BaseFittedModel> _model, double error)
+: model(move(_model))
 {
-  this->model = move(_model);
   bestError = error;
   isOrphan = false;
-}
-
-unique_ptr<BaseFittedModel> TreeSearch::get() const
-{
-  return this->model;
 }
 
 bool TreeSearch::isTerminal() const
@@ -29,7 +24,34 @@ unique_ptr<TreeSearch> TreeSearch::expandBranches(unique_ptr<ModelFitter> fitter
   // TAOTODO:
 }
 
-void TreeSearch::prune(double decayRatio)
+bool TreeSearch::prune(double decayRatio)
 {
+  for (auto& b : this->branches)
+  {
+    bool toBeRemoved = b->prune(decayRatio);
+  }
+}
 
+const int TreeSearch::getLevel() const
+{
+  if (this->branches.size()==0) return 1;
+  else
+  {
+    int m = 0;
+    for (auto& b : this->branches)
+    {
+      m = max(m, b->getLevel());
+    }
+    return m;
+  }
+}
+
+void TreeSearch::deleteAllBranches()
+{
+  for (auto& b : this->branches)
+  {
+    b->deleteAllBranches();
+  }
+
+  this->branches.clear();
 }
