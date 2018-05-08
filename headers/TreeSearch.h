@@ -17,6 +17,7 @@ private:
 protected:
   vector<unique_ptr<TreeSearch>> branches;
   double bestError;
+  double error; // Error of current model
   bool isOrphan;
 
 public:
@@ -29,10 +30,10 @@ public:
   // Properties
   bool isTerminal() const;
   const double getBestError() const { return this->bestError; };
-  const int getLevel() const;
+  const int getDepth() const;
 
   // Methods
-  unique_ptr<TreeSearch> expandBranches(unique_ptr<ModelFitter> fitter) const;
+  unique_ptr<TreeSearch> expandBranches(unique_ptr<ModelFitter> &fitter, const Mat& sample) const;
   bool prune(double decayRatio = 0.667);
   void deleteAllBranches();
 
