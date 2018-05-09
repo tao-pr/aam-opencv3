@@ -364,18 +364,26 @@ void testAAMFitting()
   int maxIters = 20;
   double eps = 1e-3;
   double initScale = 1;
+  double initError = numeric_limits<double>::max();
+  int maxDepth = 30;
   unique_ptr<AAMPCA> aamPCA{ new AAMPCA(*pcaShape, *pcaAppearance) };
   unique_ptr<ModelFitter> fitter{ new ModelFitter(aamPCA) };
   unique_ptr<BaseFittedModel> initModel{ new FittedAAM(aamPCA) };
 
-  cout << "AAM model fitting started ..." << endl;
-  auto alignedModel = fitter->fit(initModel, sampleMat, FittingCriteria { maxIters, eps, initScale, sampleCentre });
-  auto alignedAAM = alignedModel->toAppearance();
+  cout << GREEN << "AAM model fitting started ..." << RESET << endl;
+  unique_ptr<TreeSearch> treeSearch(new TreeSearch(initModel, initError));
 
-  auto ioAligned = IO::WindowIO("aligned");
-  alignedAAM->render(&ioAligned, Mat::zeros(alignedAAM->getSpannedSize(), CV_8UC3), false, false);
-  moveWindow("aligned", CANVAS_SIZE + sizeSample.width, CANVAS_SIZE);
-  waitKey(0);
+  double error = treeSearch->searchForBestModel(
+    sampleMat,
+    maxDepth);
+
+  // auto alignedModel = fitter->fit(initModel, sampleMat, FittingCriteria { maxIters, eps, initScale, sampleCentre });
+  // auto alignedAAM = alignedModel->toAppearance();
+
+  // auto ioAligned = IO::WindowIO("aligned");
+  // alignedAAM->render(&ioAligned, Mat::zeros(alignedAAM->getSpannedSize(), CV_8UC3), false, false);
+  // moveWindow("aligned", CANVAS_SIZE + sizeSample.width, CANVAS_SIZE);
+  // waitKey(0);
 }
 
 int main(int argc, char** argv)

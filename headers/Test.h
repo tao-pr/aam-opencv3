@@ -11,6 +11,7 @@
 #include "Texture.h"
 #include "FittedAAM.h"
 #include "ModelFitter.h"
+#include "TreeSearch.h"
 
 const double CANVAS_SIZE     = 300.0;
 const double CANVAS_HALFSIZE = CANVAS_SIZE / 2.0;

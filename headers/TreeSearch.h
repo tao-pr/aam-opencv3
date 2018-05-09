@@ -36,6 +36,7 @@ public:
   unique_ptr<TreeSearch> expandBranches(unique_ptr<ModelFitter> &fitter, const Mat& sample) const;
   bool prune(double decayRatio = 0.667);
   void deleteAllBranches();
+  double searchForBestModel(Mat& sample, int maxDepth, double decayRatio = 0.667);
 
 };
 

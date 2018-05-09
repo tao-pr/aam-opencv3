@@ -43,6 +43,8 @@ public:
     this->aamPCA.reset();
   };
 
+  // TAOTODO: clone ?
+
   virtual BaseFittedModel* setOrigin(const Point2d& p) = 0;
   virtual BaseFittedModel* setScale(const double s) = 0;
   virtual BaseFittedModel* setShapeParam(const Mat& param) = 0;
