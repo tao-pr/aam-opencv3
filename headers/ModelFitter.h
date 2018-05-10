@@ -39,6 +39,8 @@ private:
 protected:
   // Static PCA of Shape and Appearance components
   unique_ptr<AAMPCA> aamPCA;
+
+  // TAOTODO: Need another version of thise method, but generates all possible models
   unique_ptr<BaseFittedModel> generateNextBestModel(double prevError, unique_ptr<BaseFittedModel> const& model, const Mat& sample, double* bestError, SearchWith* action = nullptr) const;
 
 public:

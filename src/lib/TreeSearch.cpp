@@ -17,6 +17,13 @@ bool TreeSearch::isTerminal() const
   return (branches.size()==0);
 }
 
+double TreeSearch::searchForBestModel(Mat& sample, int maxDepth, double decayRatio)
+{
+  // TAOTODO:
+
+
+}
+
 unique_ptr<TreeSearch> TreeSearch::expandBranches(unique_ptr<ModelFitter> &fitter, const Mat& sample) const
 {
   bool isLeave = true;
@@ -33,17 +40,8 @@ unique_ptr<TreeSearch> TreeSearch::expandBranches(unique_ptr<ModelFitter> &fitte
       // Generate new child trees if this is a terminal node
       if (b->isTerminal())
       {
-        double nextError;
-        auto nextModels = fitter->generateNextBestModel(
-          this->error,
-          this->model,
-          sample,
-          &nextError);
+        // TAOTODO: Generate all combinations as next models
 
-        if (nextError < bestErrorAfterExpansion)
-          bestErrorAfterExpansion = nextError;
-
-        // TAOTODO: Assign <nextModels> -> this branches
       }
       else
       {
@@ -62,9 +60,13 @@ unique_ptr<TreeSearch> TreeSearch::expandBranches(unique_ptr<ModelFitter> &fitte
 
 bool TreeSearch::prune(double decayRatio)
 {
+  // Remove branches with top errors
+  // and make their parents orphan
   for (auto& b : this->branches)
   {
     bool toBeRemoved = b->prune(decayRatio);
+
+    // TAOTODO:
   }
 }
 
