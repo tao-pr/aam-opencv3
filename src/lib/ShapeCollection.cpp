@@ -118,6 +118,6 @@ void ShapeCollection::renderShapeVariation(IO::GenericIO* io, Size sz, double sc
   {
     auto shape = dynamic_cast<Shape*>(model);
     canvas = shape->render(io, canvas, scaleFactor, recentred);
-    waitKey(100);
+    waitKey(4000);
   }
 }

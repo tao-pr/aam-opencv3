@@ -11,7 +11,7 @@ void testMeshShape(char** argv)
 
   auto ioMesh = IO::WindowIO("mesh");
   mesh.render(&ioMesh, Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3));
-  waitKey(700);
+  waitKey(4000);
 }
 
 void testShape(char** argv)
@@ -140,7 +140,7 @@ void testAAMCollection()
   {
     Appearance* app = static_cast<Appearance*>(m);
     app->render(&ioApp, Mat::zeros(app->getShape().getSpannedSize(), CV_8UC3));
-    waitKey(100);
+    waitKey(4000);
   }
 
   // Reducing the size
@@ -153,7 +153,7 @@ void testAAMCollection()
   auto ioMean = IO::WindowIO("mean");
   meanAppearance->render(&ioMean, Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3));
   moveWindow("mean", CANVAS_SIZE + 10, 0);
-  waitKey(400);
+  waitKey(4000);
 
   // Calculate covariance
   cout << CYAN << "[#] Appearance collection covariance " << RESET << endl;
@@ -186,7 +186,7 @@ void testAAMCollection()
     auto ioB = IO::WindowIO("encoded App");
     encodedAppearance->render(&ioB, Mat::zeros(encodedAppearance->getShape().getSpannedSize(), CV_8UC3));
     moveWindow("encoded App", 0, (CANVAS_SIZE+50));
-    waitKey(400);
+    waitKey(4000);
 
     double error = appearance->procrustesDistance(encodedAppearance);
     cout << "... Estimation error : " << error << endl;
@@ -370,20 +370,16 @@ void testAAMFitting()
   unique_ptr<ModelFitter> fitter{ new ModelFitter(aamPCA) };
   unique_ptr<BaseFittedModel> initModel{ new FittedAAM(aamPCA) };
 
-  cout << GREEN << "AAM model fitting started ..." << RESET << endl;
-  unique_ptr<TreeSearch> treeSearch(new TreeSearch(initModel, initError));
+  cout << GREEN << "Basic AAM model fitting started ..." << RESET << endl;
 
-  double error = treeSearch->searchForBestModel(
-    sampleMat,
-    maxDepth);
+  auto alignedModel = fitter->fit(initModel, sampleMat, FittingCriteria { maxIters, eps, initScale, sampleCentre });
+  auto alignedAAM = alignedModel->toAppearance();
 
-  // auto alignedModel = fitter->fit(initModel, sampleMat, FittingCriteria { maxIters, eps, initScale, sampleCentre });
-  // auto alignedAAM = alignedModel->toAppearance();
+  auto ioAligned = IO::WindowIO("aligned");
+  alignedAAM->render(&ioAligned, Mat::zeros(alignedAAM->getSpannedSize(), CV_8UC3), false, false);
+  moveWindow("aligned", CANVAS_SIZE + sizeSample.width, CANVAS_SIZE);
+  waitKey(5000);
 
-  // auto ioAligned = IO::WindowIO("aligned");
-  // alignedAAM->render(&ioAligned, Mat::zeros(alignedAAM->getSpannedSize(), CV_8UC3), false, false);
-  // moveWindow("aligned", CANVAS_SIZE + sizeSample.width, CANVAS_SIZE);
-  // waitKey(0);
 }
 
 int main(int argc, char** argv)
