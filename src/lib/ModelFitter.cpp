@@ -171,6 +171,14 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     double error;
     auto& prevModel = prevModels.back();
     SearchWith action;
+
+    // TAOTODO: Generate top best K models
+    // and keep all of them
+    // - Each iter:
+    //    + Generate new models from these previously kept models
+    //    + Sort models by errors, remove bottom models each iter
+    //    + Repeat until converge
+    
     auto newModel = generateNextBestModel(prevError, prevModel, sample, &error, &action);
 
     recordedActions.push_back(action);
