@@ -8,6 +8,9 @@
 #include "Appearance.h"
 #include "ModelPCA.h"
 #include "BaseFittedModel.h"
+#include "PriorityLinkedList.h"
+
+typedef PriorityLinkedList<BaseFittedModel> ModelList;
 
 enum SearchWith
 {
@@ -40,8 +43,14 @@ protected:
   // Static PCA of Shape and Appearance components
   unique_ptr<AAMPCA> aamPCA;
 
-  // TAOTODO: Need another version of thise method, but generates all possible models
-  unique_ptr<BaseFittedModel> generateNextBestModel(double prevError, unique_ptr<BaseFittedModel> const& model, const Mat& sample, double* bestError, SearchWith* action = nullptr) const;
+  unique_ptr<ModelList> generateNextBestModels(
+    double prevError, 
+    unique_ptr<BaseFittedModel> 
+    const& model, 
+    const Mat& sample, 
+    double* bestError, 
+    int numModels = 1,
+    SearchWith* action = nullptr) const;
 
 public:
   inline ModelFitter(unique_ptr<AAMPCA> const & aamPCA)

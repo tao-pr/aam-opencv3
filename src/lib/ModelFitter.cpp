@@ -13,14 +13,16 @@ ostream &operator<<(ostream &os, SearchWith const &s)
   return os << str;
 }
 
-unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(double prevError, unique_ptr<BaseFittedModel> const& model, const Mat& sample, double* bestError, SearchWith* action) const
+unique_ptr<ModelList> ModelFitter::generateNextBestModels(double prevError, unique_ptr<BaseFittedModel> const& model, const Mat& sample, double* bestError, int numModels, SearchWith* action) const
 {
   vector<SearchWith> actions = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
   vector<unique_ptr<BaseFittedModel>> candidates;
   vector<SearchWith> candidateActions;
 
+  unique_ptr<ModelList> outputs{new ModelList()};
+
   #ifdef DEBUG
-  cout << CYAN << "Fitter : Generating next best model" << RESET << endl;
+  cout << CYAN << "Fitter : Generating next best " << numModels << " models" << RESET << endl;
   #endif
 
   // Generate action params
@@ -90,10 +92,10 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(double prevError,
   #endif
 
   // Identify the best model
-  *bestError = numeric_limits<double>::max();
-  int bestId = 0;
+  // *bestError = numeric_limits<double>::max();
+  // int bestId = 0;
 
-  int i = 0;
+  // int i = 0;
   for (auto& c : candidates)
   {
     #ifdef DEBUG
@@ -101,28 +103,32 @@ unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(double prevError,
     #endif
 
     double e = c->measureError(sample);
-    if (e <= *bestError && e != prevError)
-    {
-      *bestError = e;
-      bestId = i;
-    }
-    ++i;
+    // if (e <= *bestError && e != prevError)
+    // {
+    //   *bestError = e;
+    //   bestId = i;
+    // }
+    // ++i;
+    outputs->push(c, e);
   }
 
-  if (i > 0)
-  {
-    auto p = candidates[bestId]->clone();
-    #ifdef DEBUG
-    cout << "best candidate index = " << bestId << endl;
-    #endif
+  return move(outputs);
+
+  // if (i > 0)
+  // {
+  //   auto p = candidates[bestId]->clone();
+  //   #ifdef DEBUG
+  //   cout << "best candidate index = " << bestId << endl;
+  //   #endif
     
-    if (action)
-    {
-      *action = candidateActions[bestId];
-    }
-    return move(p);
-  }
-  else return nullptr;
+  //   if (action)
+  //   {
+  //     *action = candidateActions[bestId];
+  //   }
+  //   return move(p);
+
+  // }
+  // else return nullptr;
 }
 
 unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initModel, const Mat& sample, const FittingCriteria& crit) const 
