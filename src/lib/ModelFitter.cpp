@@ -141,7 +141,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
   vector<unique_ptr<BaseFittedModel>> prevModels;
 
   // Start with the given initial model
-  prevModels.push_back(move(initModel->clone()));
+  prevModels.push_back(initModel->clone());
   prevModels.back()->setOrigin(crit.initPos);
   prevModels.back()->setScale(crit.initScale);
 
@@ -185,7 +185,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     //    + Sort models by errors, remove bottom models each iter
     //    + Repeat until converge
     
-    auto newModel = generateNextBestModel(prevError, prevModel, sample, &error, &action);
+    auto newModels = generateNextBestModels(prevError, prevModel, sample, &error, &action);
 
     recordedActions.push_back(action);
 

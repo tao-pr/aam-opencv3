@@ -16,7 +16,7 @@ public:
   unique_ptr<T> ptr;
   unique_ptr<PriorityLinkedList<T>> next;
 
-  virtual void push(unique_ptr<T> n, double v);
+  virtual void push(unique_ptr<T>& n, double v);
   void take(int n);
 
   // TAOTOREVIEW: add cout 

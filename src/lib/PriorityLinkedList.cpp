@@ -1,7 +1,7 @@
 #include "PriorityLinkedList.h"
 
 template<class T>
-void PriorityLinkedList<T>::push(unique_ptr<T> n, double v)
+void PriorityLinkedList<T>::push(unique_ptr<T>& n, double v)
 {
   // TAOTODO:
   if (this->next == nullptr)
