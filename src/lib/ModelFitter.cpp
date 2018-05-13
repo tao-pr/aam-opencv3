@@ -160,6 +160,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
 
     // TAOTODO: Iterate throught [models] and generateNextBestModels from each of them
     
+        
     const int numModelsToGenerate = 8;
     auto newModels = generateNextBestModels(
       prevError, 
