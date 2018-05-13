@@ -24,13 +24,15 @@ enum SearchWith
 struct FittingCriteria
 {
   int numMaxIter;
+  int maxTreeSize;
+  int numModelsToGeneratePerIter;
   double eps;
   double initScale;
   Point2d initPos; // Coordinate of the upper-left origin
 
   static FittingCriteria getDefault()
   {
-    return FittingCriteria{ 10, 1e-3, 100, Point2d(0,0) };
+    return FittingCriteria{ 10, 16, 8, 1e-3, 100, Point2d(0,0) };
   };
 };
 

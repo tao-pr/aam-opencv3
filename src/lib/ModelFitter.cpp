@@ -149,7 +149,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     cout << YELLOW << "... Error so far : " << prevError << RESET << endl;
     #endif
 
-    SearchWith action;
+    // SearchWith action;
 
     // Generate top best K models
     // and keep all of them
@@ -158,40 +158,44 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     //    + Sort models by errors, remove bottom models each iter
     //    + Repeat until converge
 
-    // TAOTODO: Iterate throught [models] and generateNextBestModels from each of them
-    
-        
-    const int numModelsToGenerate = 8;
+    // TAOTODO: Iterate through [models] and generateNextBestModels from each of them
+
     auto newModels = generateNextBestModels(
       prevError, 
       prevModel, 
       sample, 
-      numModelsToGenerate);
+      crit.numModelsToGeneratePerIter);
 
-    if (error == 0)
-    {
-      #ifdef DEBUG
-      cout << CYAN << "... Fitting error approaches ZERO" << RESET << endl;
-      #endif
-      prevModels.push_back(move(newModel));
-      prevError = 0;
-      break;
-    }
-    else if (error == prevError)
-    {
-      errorDiff = 0;
-    }
-    else if (isinf(prevError))
-    {
-      errorDiff = 1;
-    }
-    else errorDiff = (prevError - error)/prevError;
 
-    #ifdef DEBUG
-    cout << RED << "... Error diff : " << errorDiff << RESET << endl;
-    cout << YELLOW << "... Last Error : " << prevError << RESET << endl;
-    cout << YELLOW << "... Error so far : " << error << RESET << endl;
-    #endif
+    // Prune the tree (models) 
+    // so they have the size as wanted
+    // TAOTODO:
+
+
+    // if (error == 0)
+    // {
+    //   #ifdef DEBUG
+    //   cout << CYAN << "... Fitting error approaches ZERO" << RESET << endl;
+    //   #endif
+    //   prevModels.push_back(move(newModel));
+    //   prevError = 0;
+    //   break;
+    // }
+    // else if (error == prevError)
+    // {
+    //   errorDiff = 0;
+    // }
+    // else if (isinf(prevError))
+    // {
+    //   errorDiff = 1;
+    // }
+    // else errorDiff = (prevError - error)/prevError;
+
+    // #ifdef DEBUG
+    // cout << RED << "... Error diff : " << errorDiff << RESET << endl;
+    // cout << YELLOW << "... Last Error : " << prevError << RESET << endl;
+    // cout << YELLOW << "... Error so far : " << error << RESET << endl;
+    // #endif
 
     iter++;
     prevModels.push_back(move(newModel));

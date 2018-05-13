@@ -33,6 +33,22 @@ void PriorityLinkedList<T>::push(unique_ptr<T>& n, double v)
 }
 
 template<class T>
+bool PriorityLinkedList::pop()
+{
+  if (this->ptr)
+  {
+    if (this->next)
+    {
+      this->ptr = move(this->next->ptr);
+    }
+    else this->ptr.release();
+
+    return true;
+  }
+  else return false;
+}
+
+template<class T>
 void PriorityLinkedList<T>::take(int n)
 {
   if (this->ptr == nullptr) return;

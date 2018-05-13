@@ -17,6 +17,7 @@ public:
   unique_ptr<PriorityLinkedList<T>> next;
 
   virtual void push(unique_ptr<T>& n, double v);
+  virtual bool pop();
   void take(int n);
   int size() const;
   void iter(function<void (T)> f) const;
