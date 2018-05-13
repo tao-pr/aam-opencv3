@@ -18,6 +18,7 @@ public:
 
   virtual void push(unique_ptr<T>& n, double v);
   void take(int n);
+  int size() const;
 
   // TAOTOREVIEW: add cout 
 };

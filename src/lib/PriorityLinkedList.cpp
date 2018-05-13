@@ -30,3 +30,11 @@ void PriorityLinkedList<T>::take(int n)
     }
   }
 }
+
+template<class T>
+int PriorityLinkedList<T>::size() const
+{
+  if (this->ptr == nullptr) return 0;
+  else if (this->next == nullptr) return 1;
+  else return 1 + this->next.size();
+}

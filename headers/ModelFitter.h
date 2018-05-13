@@ -48,9 +48,7 @@ protected:
     unique_ptr<BaseFittedModel> 
     const& model, 
     const Mat& sample, 
-    double* bestError, 
-    int numModels = 1,
-    SearchWith* action = nullptr) const;
+    int numModels = 1) const;
 
 public:
   inline ModelFitter(unique_ptr<AAMPCA> const & aamPCA)

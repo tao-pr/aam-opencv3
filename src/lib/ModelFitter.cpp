@@ -13,11 +13,11 @@ ostream &operator<<(ostream &os, SearchWith const &s)
   return os << str;
 }
 
-unique_ptr<ModelList> ModelFitter::generateNextBestModels(double prevError, unique_ptr<BaseFittedModel> const& model, const Mat& sample, double* bestError, int numModels, SearchWith* action) const
+unique_ptr<ModelList> ModelFitter::generateNextBestModels(double prevError, unique_ptr<BaseFittedModel> const& model, const Mat& sample, int numModels) const
 {
   vector<SearchWith> actions = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
-  vector<unique_ptr<BaseFittedModel>> candidates;
-  vector<SearchWith> candidateActions;
+  //vector<unique_ptr<BaseFittedModel>> candidates;
+  //vector<SearchWith> candidateActions;
 
   unique_ptr<ModelList> outputs{new ModelList()};
 
@@ -48,8 +48,9 @@ unique_ptr<ModelList> ModelFitter::generateNextBestModels(double prevError, uniq
         {
           auto ptrModel = model->clone();
           ptrModel->setScale(s * model->scale);
-          candidates.push_back(move(ptrModel));
-          candidateActions.push_back(a);
+          outputs->push(ptrModel, ptrModel->measureError(sample));
+          //candidates.push_back(move(ptrModel));
+          //candidateActions.push_back(a);
         }
         break;
 
@@ -58,8 +59,9 @@ unique_ptr<ModelList> ModelFitter::generateNextBestModels(double prevError, uniq
         {
           auto ptrModel = model->clone();
           ptrModel->setOrigin(model->origin + t);
-          candidates.push_back(move(ptrModel));
-          candidateActions.push_back(a);
+          outputs->push(ptrModel, ptrModel->measureError(sample));
+          // candidates.push_back(move(ptrModel));
+          // candidateActions.push_back(a);
         }
         break;
 
@@ -68,8 +70,9 @@ unique_ptr<ModelList> ModelFitter::generateNextBestModels(double prevError, uniq
         {
           auto ptrModel = model->clone();
           ptrModel->setShapeParam(model->shapeParam + *param);
-          candidates.push_back(move(ptrModel));
-          candidateActions.push_back(a);
+          outputs->push(ptrModel, ptrModel->measureError(sample));
+          // candidates.push_back(move(ptrModel));
+          // candidateActions.push_back(a);
         }
         smat.clear();
         break;
@@ -79,8 +82,9 @@ unique_ptr<ModelList> ModelFitter::generateNextBestModels(double prevError, uniq
         {
           auto ptrModel = model->clone();
           ptrModel->setAppearanceParam(model->appearanceParam + *param);
-          candidates.push_back(move(ptrModel));
-          candidateActions.push_back(a);
+          outputs->push(ptrModel, ptrModel->measureError(sample));
+          // candidates.push_back(move(ptrModel));
+          // candidateActions.push_back(a);
         }
         amat.clear();
         break;
@@ -91,44 +95,17 @@ unique_ptr<ModelList> ModelFitter::generateNextBestModels(double prevError, uniq
   cout << "Candidates size : " << candidates.size() << endl;
   #endif
 
-  // Identify the best model
-  // *bestError = numeric_limits<double>::max();
-  // int bestId = 0;
-
-  // int i = 0;
-  for (auto& c : candidates)
-  {
-    #ifdef DEBUG
-    cout << YELLOW << "Assessing candidate ..." << RESET << endl;
-    #endif
-
-    double e = c->measureError(sample);
-    // if (e <= *bestError && e != prevError)
-    // {
-    //   *bestError = e;
-    //   bestId = i;
-    // }
-    // ++i;
-    outputs->push(c, e);
-  }
-
-  return move(outputs);
-
-  // if (i > 0)
+  // for (auto& c : candidates)
   // {
-  //   auto p = candidates[bestId]->clone();
   //   #ifdef DEBUG
-  //   cout << "best candidate index = " << bestId << endl;
+  //   cout << YELLOW << "Assessing candidate ..." << RESET << endl;
   //   #endif
-    
-  //   if (action)
-  //   {
-  //     *action = candidateActions[bestId];
-  //   }
-  //   return move(p);
 
+  //   double e = c->measureError(sample);
+  //   outputs->push(c, e);
   // }
-  // else return nullptr;
+
+  return move(outputs->take(numModels));
 }
 
 unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initModel, const Mat& sample, const FittingCriteria& crit) const 
@@ -136,24 +113,22 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
   double errorDiff = numeric_limits<double>::max();
   int iter = 0;
   double prevError;
-  vector<SearchWith> recordedActions;
 
-  vector<unique_ptr<BaseFittedModel>> prevModels;
+  ModelList models;
 
   // Start with the given initial model
-  prevModels.push_back(initModel->clone());
-  prevModels.back()->setOrigin(crit.initPos);
-  prevModels.back()->setScale(crit.initScale);
+  prevError = initModel->measureError(sample);
+  models.push(initModel->clone(), prevError);
+  models.ptr->setOrigin(crit.initPos);
+  models.ptr->setScale(crit.initScale);
 
   #ifdef DEBUG
   cout << GREEN << "[Model fitting started]" << RESET << endl;
   cout << "[Init model]" << endl;
-  cout << *prevModels.back() << endl;
+  cout << *models.ptr << endl;
   #endif
 
-  prevError = prevModels.back()->measureError(sample);
-
-  // TAOTODO: Generate tree search with taboo path
+  // TAOTOREVIEW: Use prune ratio
 
   // Adjust model parameters until converges
   while (iter < crit.numMaxIter && errorDiff > crit.eps)
@@ -174,20 +149,23 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     cout << YELLOW << "... Error so far : " << prevError << RESET << endl;
     #endif
 
-    double error;
-    auto& prevModel = prevModels.back();
     SearchWith action;
 
-    // TAOTODO: Generate top best K models
+    // Generate top best K models
     // and keep all of them
     // - Each iter:
     //    + Generate new models from these previously kept models
     //    + Sort models by errors, remove bottom models each iter
     //    + Repeat until converge
-    
-    auto newModels = generateNextBestModels(prevError, prevModel, sample, &error, &action);
 
-    recordedActions.push_back(action);
+    // TAOTODO: Iterate throught [models] and generateNextBestModels from each of them
+    
+    const int numModelsToGenerate = 8;
+    auto newModels = generateNextBestModels(
+      prevError, 
+      prevModel, 
+      sample, 
+      numModelsToGenerate);
 
     if (error == 0)
     {
