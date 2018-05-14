@@ -9,8 +9,9 @@ class PriorityLinkedList
 public:
   PriorityLinkedList(const PriorityLinkedList<T>& ) = delete;
   PriorityLinkedList() : ptr(nullptr), v(0), next(nullptr) {};
-  PriorityLinkedList(unique_ptr<T> t, double v) : ptr(move(t)), v(v), next(nullptr) {};
-  virtual ~PriorityLinkedList(){};
+  PriorityLinkedList(unique_ptr<T> t, double v) 
+    : ptr(move(t)), v(v), next(nullptr) {};
+  virtual ~PriorityLinkedList();
 
   double v;
   unique_ptr<T> ptr;
@@ -20,7 +21,6 @@ public:
   virtual bool pop();
   void take(int n);
   int size() const;
-  void iter(function<void (T)> f) const;
 
   // TAOTOREVIEW: add cout 
 };

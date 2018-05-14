@@ -26,13 +26,13 @@ struct FittingCriteria
   int numMaxIter;
   int maxTreeSize;
   int numModelsToGeneratePerIter;
-  double eps;
+  double minError;
   double initScale;
   Point2d initPos; // Coordinate of the upper-left origin
 
   static FittingCriteria getDefault()
   {
-    return FittingCriteria{ 10, 16, 8, 1e-3, 100, Point2d(0,0) };
+    return FittingCriteria{ 10, 16, 8, 1e-4, 100, Point2d(0,0) };
   };
 };
 
@@ -45,7 +45,8 @@ protected:
   // Static PCA of Shape and Appearance components
   unique_ptr<AAMPCA> aamPCA;
 
-  unique_ptr<ModelList> generateNextBestModels(
+  void generateNextBestModels(
+    unique_ptr<ModelList>& container,
     double prevError, 
     unique_ptr<BaseFittedModel> 
     const& model, 

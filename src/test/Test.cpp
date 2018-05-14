@@ -362,7 +362,9 @@ void testAAMFitting()
 
   // Try fitting the model onto an unknown sample
   int maxIters = 20;
-  double eps = 1e-3;
+  int maxTreeSize = 10;
+  int numModelsToGeneratePerIter = 8;
+  double minError = 1e-3;
   double initScale = 1;
   double initError = numeric_limits<double>::max();
   int maxDepth = 30;
@@ -372,7 +374,10 @@ void testAAMFitting()
 
   cout << GREEN << "Basic AAM model fitting started ..." << RESET << endl;
 
-  auto alignedModel = fitter->fit(initModel, sampleMat, FittingCriteria { maxIters, eps, initScale, sampleCentre });
+  auto alignedModel = fitter->fit(
+    initModel, 
+    sampleMat, 
+    FittingCriteria { maxIters, maxTreeSize, numModelsToGeneratePerIter, minError, initScale, sampleCentre });
   auto alignedAAM = alignedModel->toAppearance();
 
   auto ioAligned = IO::WindowIO("aligned");

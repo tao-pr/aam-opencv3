@@ -13,13 +13,9 @@ ostream &operator<<(ostream &os, SearchWith const &s)
   return os << str;
 }
 
-unique_ptr<ModelList> ModelFitter::generateNextBestModels(double prevError, unique_ptr<BaseFittedModel> const& model, const Mat& sample, int numModels) const
+void ModelFitter::generateNextBestModels(unique_ptr<ModelList>& container, double prevError, unique_ptr<BaseFittedModel> const& model, const Mat& sample, int numModels) const
 {
   vector<SearchWith> actions = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
-  //vector<unique_ptr<BaseFittedModel>> candidates;
-  //vector<SearchWith> candidateActions;
-
-  unique_ptr<ModelList> outputs{new ModelList()};
 
   #ifdef DEBUG
   cout << CYAN << "Fitter : Generating next best " << numModels << " models" << RESET << endl;
@@ -48,9 +44,7 @@ unique_ptr<ModelList> ModelFitter::generateNextBestModels(double prevError, uniq
         {
           auto ptrModel = model->clone();
           ptrModel->setScale(s * model->scale);
-          outputs->push(ptrModel, ptrModel->measureError(sample));
-          //candidates.push_back(move(ptrModel));
-          //candidateActions.push_back(a);
+          container->push(ptrModel, ptrModel->measureError(sample));
         }
         break;
 
@@ -59,9 +53,7 @@ unique_ptr<ModelList> ModelFitter::generateNextBestModels(double prevError, uniq
         {
           auto ptrModel = model->clone();
           ptrModel->setOrigin(model->origin + t);
-          outputs->push(ptrModel, ptrModel->measureError(sample));
-          // candidates.push_back(move(ptrModel));
-          // candidateActions.push_back(a);
+          container->push(ptrModel, ptrModel->measureError(sample));
         }
         break;
 
@@ -70,9 +62,7 @@ unique_ptr<ModelList> ModelFitter::generateNextBestModels(double prevError, uniq
         {
           auto ptrModel = model->clone();
           ptrModel->setShapeParam(model->shapeParam + *param);
-          outputs->push(ptrModel, ptrModel->measureError(sample));
-          // candidates.push_back(move(ptrModel));
-          // candidateActions.push_back(a);
+          container->push(ptrModel, ptrModel->measureError(sample));
         }
         smat.clear();
         break;
@@ -82,30 +72,14 @@ unique_ptr<ModelList> ModelFitter::generateNextBestModels(double prevError, uniq
         {
           auto ptrModel = model->clone();
           ptrModel->setAppearanceParam(model->appearanceParam + *param);
-          outputs->push(ptrModel, ptrModel->measureError(sample));
-          // candidates.push_back(move(ptrModel));
-          // candidateActions.push_back(a);
+          container->push(ptrModel, ptrModel->measureError(sample));
         }
         amat.clear();
         break;
     }
   }
 
-  #ifdef DEBUG
-  cout << "Candidates size : " << candidates.size() << endl;
-  #endif
-
-  // for (auto& c : candidates)
-  // {
-  //   #ifdef DEBUG
-  //   cout << YELLOW << "Assessing candidate ..." << RESET << endl;
-  //   #endif
-
-  //   double e = c->measureError(sample);
-  //   outputs->push(c, e);
-  // }
-
-  return move(outputs->take(numModels));
+  container->take(numModels);
 }
 
 unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initModel, const Mat& sample, const FittingCriteria& crit) const 
@@ -118,7 +92,8 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
 
   // Start with the given initial model
   prevError = initModel->measureError(sample);
-  models.push(initModel->clone(), prevError);
+  auto cloneInitModel = initModel->clone();
+  models.push(cloneInitModel, prevError);
   models.ptr->setOrigin(crit.initPos);
   models.ptr->setScale(crit.initScale);
 
@@ -128,10 +103,8 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
   cout << *models.ptr << endl;
   #endif
 
-  // TAOTOREVIEW: Use prune ratio
-
   // Adjust model parameters until converges
-  while (iter < crit.numMaxIter && errorDiff > crit.eps)
+  while (iter < crit.numMaxIter)
   {
     #ifdef DEBUG
     cout << CYAN << "Fitting model #" << iter << RESET << endl;
@@ -149,72 +122,49 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     cout << YELLOW << "... Error so far : " << prevError << RESET << endl;
     #endif
 
-    // SearchWith action;
+    // Iterate through existing best [models] 
+    // and generate next models from them, sorted by fitting error
+    unique_ptr<ModelList> iterOutputs{new ModelList()};
+    ModelList* p = &models;
+    while (p != nullptr)
+    {
+      generateNextBestModels(
+        iterOutputs,
+        p->v, 
+        p->ptr, 
+        sample);  
 
-    // Generate top best K models
-    // and keep all of them
-    // - Each iter:
-    //    + Generate new models from these previously kept models
-    //    + Sort models by errors, remove bottom models each iter
-    //    + Repeat until converge
+      if (p->next)
+        p = p->next.get();
+      else   
+        break;
+    }
 
-    // TAOTODO: Iterate through [models] and generateNextBestModels from each of them
+    // Take best K models
+    iterOutputs->take(crit.numModelsToGeneratePerIter);
+    p = iterOutputs.get();
+    while (true)
+    {
+      models.push(p->ptr, p->v);
 
-    auto newModels = generateNextBestModels(
-      prevError, 
-      prevModel, 
-      sample, 
-      crit.numModelsToGeneratePerIter);
+      if (p->next)
+        p = p->next.get();
+      else
+        break;
+    }
 
+    models.take(crit.maxTreeSize);
 
-    // Prune the tree (models) 
-    // so they have the size as wanted
-    // TAOTODO:
-
-
-    // if (error == 0)
-    // {
-    //   #ifdef DEBUG
-    //   cout << CYAN << "... Fitting error approaches ZERO" << RESET << endl;
-    //   #endif
-    //   prevModels.push_back(move(newModel));
-    //   prevError = 0;
-    //   break;
-    // }
-    // else if (error == prevError)
-    // {
-    //   errorDiff = 0;
-    // }
-    // else if (isinf(prevError))
-    // {
-    //   errorDiff = 1;
-    // }
-    // else errorDiff = (prevError - error)/prevError;
-
-    // #ifdef DEBUG
-    // cout << RED << "... Error diff : " << errorDiff << RESET << endl;
-    // cout << YELLOW << "... Last Error : " << prevError << RESET << endl;
-    // cout << YELLOW << "... Error so far : " << error << RESET << endl;
-    // #endif
+    #ifdef DEBUG
+    cout << "-----------------------------" << endl;
+    cout << "[Model Iter #" << iter << "]" << endl;
+    cout << "... Best error so far   : " << models.v << endl;
+    cout << "... Best error new iter : " << iterOutputs->v << endl;
+    cout << "... Tree size : " << models.size() << endl;
+    #endif
 
     iter++;
-    prevModels.push_back(move(newModel));
-    prevError = error;
   };
 
-  #ifdef DEBUG
-  cout << GREEN << "[Model fitting finished]" << endl;
-  cout << "... " << iter << " iteration(s)" << endl;
-  cout << "... best error : " << prevError << endl;
-  cout << "... actions : ";
-  for (auto& a : recordedActions)
-  {
-    cout << a << " -> ";
-  }
-  cout << "end" << endl;
-  cout << *prevModels.back() << RESET << endl;
-  #endif
-
-  auto selectedModel = move(prevModels.back());
-  return selectedModel;
+  return move(models.ptr);
 }

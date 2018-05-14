@@ -1,6 +1,12 @@
 #include "PriorityLinkedList.h"
 
 template<class T>
+PriorityLinkedList<T>::~PriorityLinkedList()
+{
+  // TAOTODO: Should we take care of this?
+}
+
+template<class T>
 void PriorityLinkedList<T>::push(unique_ptr<T>& n, double v)
 {
   if (this->ptr == nullptr)
@@ -33,13 +39,19 @@ void PriorityLinkedList<T>::push(unique_ptr<T>& n, double v)
 }
 
 template<class T>
-bool PriorityLinkedList::pop()
+bool PriorityLinkedList<T>::pop()
 {
   if (this->ptr)
   {
     if (this->next)
     {
+      // Remove head, and next becomes this
       this->ptr = move(this->next->ptr);
+      if (this->next->next)
+      {
+        auto nnext = move(this->next->next);
+        this->next.reset(*nnext);
+      }
     }
     else this->ptr.release();
 
@@ -71,15 +83,4 @@ int PriorityLinkedList<T>::size() const
   if (this->ptr == nullptr) return 0;
   else if (this->next == nullptr) return 1;
   else return 1 + this->next.size();
-}
-
-template<class T>
-void PriorityLinkedList<T>::iter(function<void (T)> f) const
-{
-  if (this->ptr == nullptr) return;
-  else 
-  {
-    f(ptr);
-    this->next->iter(f);
-  }
 }
