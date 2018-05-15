@@ -14,7 +14,7 @@ void PriorityLinkedList<T>::push(unique_ptr<T>& n, double v)
     if (this->v >= v)
     {
       // Insert an intermediate node here
-      unique_ptr<PriorityLinkedList<T>> nn{new PriorityLinkedList(n, v)};
+      unique_ptr<PriorityLinkedList<T>> nn{new PriorityLinkedList(move(n), v)};
       nn->next = move(this->next);
       this->next = move(nn);
     }
@@ -25,7 +25,7 @@ void PriorityLinkedList<T>::push(unique_ptr<T>& n, double v)
         this->next->push(n, v);
       else
       {
-        unique_ptr<PriorityLinkedList<T>> nn{new PriorityLinkedList(n, v)};
+        unique_ptr<PriorityLinkedList<T>> nn{new PriorityLinkedList(move(n), v)};
         this->next = move(nn);
       }
     }
@@ -43,8 +43,8 @@ bool PriorityLinkedList<T>::pop()
       this->ptr = move(this->next->ptr);
       if (this->next->next)
       {
-        auto nnext = move(this->next->next);
-        this->next.reset(*nnext);
+        auto vn = next->next.get();
+        this->next.reset(vn);
       }
     }
     else this->ptr.release();
@@ -76,7 +76,7 @@ int PriorityLinkedList<T>::size() const
 {
   if (this->ptr == nullptr) return 0;
   else if (this->next == nullptr) return 1;
-  else return 1 + this->next.size();
+  else return 1 + this->next->size();
 }
 
 template class PriorityLinkedList<BaseFittedModel>;
