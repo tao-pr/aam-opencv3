@@ -7,11 +7,11 @@ template <class T>
 class PriorityLinkedList
 {
 public:
-  PriorityLinkedList(const PriorityLinkedList<T>& ) = delete;
-  PriorityLinkedList() : ptr(nullptr), v(0), next(nullptr) {};
-  PriorityLinkedList(unique_ptr<T> t, double v) 
-    : ptr(move(t)), v(v), next(nullptr) {};
-  virtual ~PriorityLinkedList();
+  inline PriorityLinkedList(const PriorityLinkedList<T>& ) = delete;
+  inline PriorityLinkedList() : v(0), ptr(nullptr), next(nullptr) {};
+  inline PriorityLinkedList(unique_ptr<T> t, double v) 
+    : v(v), ptr(move(t)), next(nullptr) {};
+  virtual inline ~PriorityLinkedList(){};
 
   double v;
   unique_ptr<T> ptr;

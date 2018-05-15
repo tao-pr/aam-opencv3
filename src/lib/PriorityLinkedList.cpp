@@ -1,10 +1,10 @@
 #include "PriorityLinkedList.h"
 
-template<class T>
-PriorityLinkedList<T>::~PriorityLinkedList()
-{
-  // TAOTODO: Should we take care of this?
-}
+// template<class T>
+// PriorityLinkedList<T>::~PriorityLinkedList()
+// {
+//   // TAOTODO: Should we take care of this?
+// }
 
 template<class T>
 void PriorityLinkedList<T>::push(unique_ptr<T>& n, double v)
