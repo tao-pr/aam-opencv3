@@ -78,3 +78,5 @@ int PriorityLinkedList<T>::size() const
   else if (this->next == nullptr) return 1;
   else return 1 + this->next.size();
 }
+
+template class PriorityLinkedList<BaseFittedModel>;

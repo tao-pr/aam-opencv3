@@ -2,6 +2,7 @@
 #define PRIORITY_LLIST
 
 #include "master.h"
+#include "BaseFittedModel.h"
 
 template <class T>
 class PriorityLinkedList

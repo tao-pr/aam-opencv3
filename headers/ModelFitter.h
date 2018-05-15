@@ -7,7 +7,9 @@
 #include "MeshShape.h"
 #include "Appearance.h"
 #include "ModelPCA.h"
-#include "ModelList.h"
+#include "PriorityLinkedList.h"
+
+typedef PriorityLinkedList<BaseFittedModel> ModelList;
 
 enum SearchWith
 {
