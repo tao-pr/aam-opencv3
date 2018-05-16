@@ -149,6 +149,10 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     // and generate next models from them, sorted by fitting error
     unique_ptr<ModelList> iterOutputs{ new ModelList() };
     ModelList* p = &models;
+
+    // TAODEBUG:
+    cout << "num models so far : " << models.size() << endl;
+
     while (p != nullptr)
     {
       generateNextBestModels(

@@ -17,7 +17,7 @@ void PriorityLinkedList<T>::push(unique_ptr<T>& n, double v)
   }
   else
   {
-    if (this->v >= v)
+    if (this->v <= v)
     {
       // Insert an intermediate node here
       #ifdef DEBUG_PRIORITY_LIST
