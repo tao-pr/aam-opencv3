@@ -92,11 +92,11 @@ int PriorityLinkedList<T>::size() const
 }
 
 template<class T>
-void PriorityLinkedList<T>::iter(function<void (T*)> f)
+void PriorityLinkedList<T>::iter(function<void (T*, double)> f)
 {
   if (this->ptr != nullptr)
   {
-    f(this->ptr.get());
+    f(this->ptr.get(), this->v);
     if (this->next != nullptr) this->next->iter(f);
   }
 }
