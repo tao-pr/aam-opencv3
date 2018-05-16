@@ -47,8 +47,7 @@ protected:
   void generateNextBestModels(
     unique_ptr<ModelList>& container,
     double prevError, 
-    unique_ptr<BaseFittedModel> 
-    const& model, 
+    unique_ptr<BaseFittedModel> const& model, 
     const Mat& sample, 
     int numModels = 1) const;
 

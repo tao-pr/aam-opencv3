@@ -13,6 +13,17 @@ ostream &operator<<(ostream &os, SearchWith const &s)
   return os << str;
 }
 
+ostream &operator<<(ostream &os, FittingCriteria const &c)
+{
+  return os << "Fitting criteria :" << endl
+    << "...num Max iter = " << c.numMaxIter << endl
+    << "...max Tree size = " << c.maxTreeSize << endl 
+    << "...num models to gen = " << c.numModelsToGeneratePerIter << endl
+    << "...min Error = " << c.minError << endl
+    << "...init scale = " << c.initScale << endl
+    << "...init pos = " << c.initPos << endl;
+}
+
 void ModelFitter::generateNextBestModels(unique_ptr<ModelList>& container, double prevError, unique_ptr<BaseFittedModel> const& model, const Mat& sample, int numModels) const
 {
   vector<SearchWith> actions = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
@@ -99,6 +110,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
 
   #ifdef DEBUG
   cout << GREEN << "[Model fitting started]" << RESET << endl;
+  cout << crit << endl;
   cout << "[Init model]" << endl;
   cout << *models.ptr << endl;
   #endif
@@ -132,7 +144,8 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
         iterOutputs,
         p->v, 
         p->ptr, 
-        sample);  
+        sample,
+        crit.numModelsToGeneratePerIter);  
 
       if (p->next)
         p = p->next.get();
@@ -141,7 +154,6 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     }
 
     // Take best K models
-    iterOutputs->take(crit.numModelsToGeneratePerIter);
     p = iterOutputs.get();
     while (true)
     {

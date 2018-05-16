@@ -28,20 +28,22 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define DEBUG
-
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+// Build modes
+#define DEBUG
+#define DEBUG_PRIORITY_LIST
+
 #ifdef DEBUG
 #include "backward.h"
+using namespace backward;
+
+extern StackTrace stacktrace;
 #endif
 
 using namespace cv;
 using namespace std;
-using namespace backward;
-
-extern StackTrace stacktrace;
 
 const std::string RED("\033[0;31m");
 const std::string GREEN("\033[1;32m");
