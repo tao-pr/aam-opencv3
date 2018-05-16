@@ -61,8 +61,11 @@ void ModelFitter::generateNextBestModels(
       case SCALING:
         for (auto& s : scales) 
         {
+          cout << "CLONING..." << endl; // TAODEBUG:
           auto ptrModel = model->clone();
+          cout << "SCALING..." << endl; // TAODEBUG:
           ptrModel->setScale(s * model->scale);
+          cout << "PUSHING..." << endl; // TAODEBUG:
           container->push(ptrModel, ptrModel->measureError(sample));
         }
         break;
