@@ -24,7 +24,12 @@ ostream &operator<<(ostream &os, FittingCriteria const &c)
     << "...init pos = " << c.initPos << endl;
 }
 
-void ModelFitter::generateNextBestModels(unique_ptr<ModelList>& container, double prevError, unique_ptr<BaseFittedModel> const& model, const Mat& sample, int numModels) const
+void ModelFitter::generateNextBestModels(
+  unique_ptr<ModelList>& container, 
+  double prevError, 
+  unique_ptr<BaseFittedModel>& model, 
+  const Mat& sample, 
+  int numModels) const
 {
   vector<SearchWith> actions = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
 
@@ -39,12 +44,15 @@ void ModelFitter::generateNextBestModels(unique_ptr<ModelList>& container, doubl
                         1.5, 0.5, 
                         1.33, 0.67,
                         2.5, 0.4};
-  Point2d trans[]    = {//Point2d(-1,0), Point2d(0,-1), Point2d(1,0), Point2d(0,1),
-                        Point2d(-5,0), Point2d(0,-5), Point2d(5,0), Point2d(0,5),
+  Point2d trans[]    = {Point2d(-5,0), Point2d(0,-5), Point2d(5,0), Point2d(0,5),
                         Point2d(-10,0), Point2d(0,-10), Point2d(10,0), Point2d(0,10),
                         Point2d(-25,0), Point2d(0,-25), Point2d(25,0), Point2d(0,25)};
   auto smat          = pcaShape.permutationOfParams();
   auto amat          = pcaAppearance.permutationOfParams();
+
+  #ifdef DEBUG
+  cout << "Actions prepared, generating models ..." << endl;
+  #endif
 
   for (auto& a : actions)
   {
@@ -143,11 +151,12 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
       generateNextBestModels(
         iterOutputs,
         p->v, 
-        p->ptr, 
+        p->ptr,
         sample,
         crit.numModelsToGeneratePerIter);  
 
-      if (p->next)
+      // TAOTODO: 2nd iter will break
+      if (p->next != nullptr)
         p = p->next.get();
       else   
         break;
@@ -159,7 +168,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     {
       models.push(p->ptr, p->v);
 
-      if (p->next)
+      if (p->next != nullptr)
         p = p->next.get();
       else
         break;
