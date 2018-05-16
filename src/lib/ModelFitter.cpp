@@ -147,7 +147,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
 
     // Iterate through existing best [models] 
     // and generate next models from them, sorted by fitting error
-    unique_ptr<ModelList> iterOutputs{new ModelList()};
+    unique_ptr<ModelList> iterOutputs{ new ModelList() };
     ModelList* p = &models;
     while (p != nullptr)
     {
@@ -159,7 +159,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
         crit.numModelsToGeneratePerIter);  
 
       // TAOTODO: 2nd iter will break
-      if (p->next != nullptr)
+      if (p->next != nullptr && p->next->ptr != nullptr)
         p = p->next.get();
       else   
         break;
