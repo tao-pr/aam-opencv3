@@ -22,6 +22,7 @@ public:
   virtual bool pop();
   void take(int n);
   int size() const;
+  void iter(function<void (T*)> f);
 
   // TAOTOREVIEW: add cout 
 };

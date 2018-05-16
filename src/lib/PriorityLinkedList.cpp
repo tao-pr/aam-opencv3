@@ -91,4 +91,14 @@ int PriorityLinkedList<T>::size() const
   else return 1 + this->next->size();
 }
 
+template<class T>
+void PriorityLinkedList<T>::iter(function<void (T*)> f)
+{
+  if (this->ptr != nullptr)
+  {
+    f(this->ptr.get());
+    if (this->next != nullptr) this->next->iter(f);
+  }
+}
+
 template class PriorityLinkedList<BaseFittedModel>;

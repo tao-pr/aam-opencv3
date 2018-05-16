@@ -155,6 +155,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
 
     while (p != nullptr)
     {
+      // TAOTODO: Loop does not iterate properly
       generateNextBestModels(
         iterOutputs,
         p->v, 
@@ -162,10 +163,9 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
         sample,
         crit.numModelsToGeneratePerIter);  
 
-      // TAOTODO: 2nd iter will break
       if (p->next != nullptr && p->next->ptr != nullptr)
         p = p->next.get();
-      else   
+      else
         break;
     }
 
@@ -173,6 +173,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     p = iterOutputs.get();
     while (true)
     {
+      // TAOTODO: Loop doesnt iterate properly
       models.push(p->ptr, p->v);
 
       if (p->next != nullptr)
