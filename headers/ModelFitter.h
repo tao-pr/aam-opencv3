@@ -11,6 +11,8 @@
 
 typedef PriorityLinkedList<BaseFittedModel> ModelList;
 
+struct GenerateModels;
+
 enum SearchWith
 {
   SCALING = 0,
@@ -44,13 +46,6 @@ protected:
   // Static PCA of Shape and Appearance components
   unique_ptr<AAMPCA> aamPCA;
 
-  void generateNextBestModels(
-    unique_ptr<ModelList>& container,
-    double prevError, 
-    unique_ptr<BaseFittedModel>& model, 
-    const Mat& sample, 
-    int numModels = 1) const;
-
 public:
   inline ModelFitter(unique_ptr<AAMPCA> const & aamPCA)
   {
@@ -62,10 +57,37 @@ public:
     this->aamPCA.reset();
   };
 
+  void generateNextBestModels(
+    unique_ptr<ModelList>& container,
+    double prevError, 
+    BaseFittedModel const* model, 
+    const Mat& sample, 
+    int numModels = 1) const;
+
   const ShapeModelPCA& getShapePCA() const { return aamPCA->getShapePCA(); };
   const AppearanceModelPCA& getAppearancePCA() const { return aamPCA->getAppearancePCA(); };
 
   virtual unique_ptr<BaseFittedModel> fit(unique_ptr<BaseFittedModel>& initModel, const Mat& sample, const FittingCriteria& crit = FittingCriteria::getDefault()) const;
+};
+
+struct GenerateModels
+{
+  void operator()(
+    unique_ptr<ModelList>& mlist, 
+    ModelFitter* fitter, 
+    Mat& sample,
+    int numModelsToGen,
+    BaseFittedModel* m, 
+    double v) const
+  {
+    fitter->generateNextBestModels(
+      mlist,
+      v,
+      m,
+      sample,
+      numModelsToGen
+    );
+  };
 };
 
 #endif

@@ -27,7 +27,7 @@ ostream &operator<<(ostream &os, FittingCriteria const &c)
 void ModelFitter::generateNextBestModels(
   unique_ptr<ModelList>& container, 
   double prevError, 
-  unique_ptr<BaseFittedModel>& model, 
+  BaseFittedModel const* model, 
   const Mat& sample, 
   int numModels) const
 {
@@ -156,7 +156,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
       generateNextBestModels(
         iterOutputs,
         p->v, 
-        p->ptr,
+        p->ptr.get(),
         sample,
         crit.numModelsToGeneratePerIter);  
 
