@@ -155,17 +155,14 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
   auto N = bound.width * bound.height;
   auto K = pca.mean.cols/3;
 
-  // TAOTODO: This doesn't support scaling
-  // which makes size of [bound] != [offsetbound]
-
-  #ifdef DEBUG
-  cout << "Converting PCA -> Appearance Model" << endl;
-  cout << "-> bound        : " << bound << endl;
-  cout << "-> offset bound : " << offsetBound << endl;
-  cout << "-> pca mean     : " << this->pca.mean.size() << endl;
-  cout << "-> eigenvectors : " << this->pca.eigenvectors.size() << endl;
-  cout << "-> params       : " << param.size() << endl;
-  #endif
+  // #ifdef DEBUG
+  // cout << "Converting PCA -> Appearance Model" << endl;
+  // cout << "-> bound        : " << bound << endl;
+  // cout << "-> offset bound : " << offsetBound << endl;
+  // cout << "-> pca mean     : " << this->pca.mean.size() << endl;
+  // cout << "-> eigenvectors : " << this->pca.eigenvectors.size() << endl;
+  // cout << "-> params       : " << param.size() << endl;
+  // #endif
 
   // Backprojection of appearance params
   Mat backPrj = this->pca.backProject(param);

@@ -33,7 +33,7 @@
 
 // Build modes
 #define DEBUG
-#define DEBUG_PRIORITY_LIST
+//#define DEBUG_PRIORITY_LIST
 
 #ifdef DEBUG
 #include "backward.h"
