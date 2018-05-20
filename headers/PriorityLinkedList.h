@@ -18,6 +18,7 @@ public:
   unique_ptr<T> ptr;
   unique_ptr<PriorityLinkedList<T>> next;
 
+  // TAOTODO: This is incorrectly implemented
   virtual void push(unique_ptr<T>& n, double d)
   {
     if (this->ptr == nullptr)
@@ -31,9 +32,10 @@ public:
       if (this->v >= d)
       {
         // Insert an intermediate node here
-        unique_ptr<PriorityLinkedList<T>> nn{new PriorityLinkedList(move(n), d)};
-        nn->next = move(this->next);
-        this->next = move(nn);
+        unique_ptr<PriorityLinkedList<T>> asNext{new PriorityLinkedList(move(ptr), v)};
+        this->ptr = move(n);
+        this->v = d;
+        this->next = move(asNext);
       }
       else
       {
