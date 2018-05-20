@@ -1,43 +1,31 @@
 #include "PriorityLinkedList.h"
 
 template<class T>
-void PriorityLinkedList<T>::push(unique_ptr<T>& n, double v)
+void PriorityLinkedList<T>::push(unique_ptr<T>& n, double d)
 {
-  #ifdef DEBUG_PRIORITY_LIST
-  cout << "-> push" << endl;
-  #endif
   if (this->ptr == nullptr)
   {
     // Itself empty, assign in-place
-    #ifdef DEBUG_PRIORITY_LIST
-    cout << "-> push self" << endl;
-    #endif
     this->ptr = move(n);
-    this->v = v;
+    this->v = d;
   }
   else
   {
-    if (this->v <= v)
+    if (this->v >= d)
     {
       // Insert an intermediate node here
-      #ifdef DEBUG_PRIORITY_LIST
-      cout << "-> push insert" << endl;
-      #endif
-      unique_ptr<PriorityLinkedList<T>> nn{new PriorityLinkedList(move(n), v)};
+      unique_ptr<PriorityLinkedList<T>> nn{new PriorityLinkedList(move(n), d)};
       nn->next = move(this->next);
       this->next = move(nn);
     }
     else
     {
       // Add to next
-      #ifdef DEBUG_PRIORITY_LIST
-      cout << "-> push next" << endl;
-      #endif
-      if (this->next)
-        this->next->push(n, v);
+      if (this->next != nullptr)
+        this->next->push(n, d);
       else
       {
-        unique_ptr<PriorityLinkedList<T>> nn{new PriorityLinkedList(move(n), v)};
+        unique_ptr<PriorityLinkedList<T>> nn{new PriorityLinkedList(move(n), d)};
         this->next = move(nn);
       }
     }

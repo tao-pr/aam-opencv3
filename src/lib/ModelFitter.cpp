@@ -60,7 +60,9 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
         {
           auto ptrModel = modelPtr->ptr->clone();
           ptrModel->setScale(s * modelPtr->ptr->scale);
+          TRY
           buffer.push(ptrModel, ptrModel->measureError(sample));
+          END_TRY
         }
         break;
 
@@ -69,7 +71,9 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
         {
           auto ptrModel = modelPtr->ptr->clone();
           ptrModel->setOrigin(modelPtr->ptr->origin + t);
+          TRY
           buffer.push(ptrModel, ptrModel->measureError(sample));
+          END_TRY
         }
         break;
 
@@ -78,7 +82,9 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
         {
           auto ptrModel = modelPtr->ptr->clone();
           ptrModel->setShapeParam(modelPtr->ptr->shapeParam + *param);
+          TRY
           buffer.push(ptrModel, ptrModel->measureError(sample));
+          END_TRY
         }
         smat.clear();
         break;
@@ -88,7 +94,9 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
         {
           auto ptrModel = modelPtr->ptr->clone();
           ptrModel->setAppearanceParam(modelPtr->ptr->appearanceParam + *param);
+          TRY
           buffer.push(ptrModel, ptrModel->measureError(sample));
+          END_TRY
         }
         amat.clear();
         break;

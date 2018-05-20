@@ -1,5 +1,29 @@
 #include "Test.h"
 
+struct F
+{ 
+  string s; 
+  F(const string& s) : s(s) {};
+};
+
+template class PriorityLinkedList<F>;
+
+void testPriorityList()
+{
+  PriorityLinkedList<F> ls;
+  unique_ptr<F> a{new F("a")};
+  unique_ptr<F> b{new F("b")};
+  unique_ptr<F> c{new F("c")};
+  unique_ptr<F> d{new F("d")};
+  unique_ptr<F> e{new F("e")};
+  ls.push(a, 250);
+  ls.push(b, 0);
+  ls.push(c, 150);
+  ls.push(d, 30);
+  ls.push(e, 450);
+  ls.printValueList("Sorted priority values : ");
+}
+
 void testMeshShape(char** argv)
 {
   const int NUM_VERTICES = 32;
@@ -393,6 +417,8 @@ int main(int argc, char** argv)
 {
   signal(SIGSEGV, segFaultHandler);
   adjustStackSize();
+
+  testPriorityList();
 
   // cout << MAGENTA << "**********************" << RESET << endl;
   // cout << MAGENTA << " Mesh shape testing  "  << RESET << endl;

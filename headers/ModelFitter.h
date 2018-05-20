@@ -2,6 +2,7 @@
 #define MODEL_FITTER
 
 #include "master.h"
+#include "Try.h"
 #include "BaseModel.h"
 #include "Shape.h"
 #include "MeshShape.h"
