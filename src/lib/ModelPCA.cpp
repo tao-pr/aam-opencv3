@@ -197,10 +197,10 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
     return new Appearance(meanShapeOffset, graphic);
   else
   {
-    #ifdef DEBUG
-    cout << "-> scaling     : " << scale << endl;
-    cout << "-> translation : " << translation << endl;
-    #endif
+    // #ifdef DEBUG
+    // cout << "-> scaling     : " << scale << endl;
+    // cout << "-> translation : " << translation << endl;
+    // #endif
 
     MeshShape meanOffsetShape(meanShape.recentreAndScale(translation, scale));  
     return new Appearance(meanOffsetShape, graphic);

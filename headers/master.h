@@ -16,6 +16,7 @@
 #include <math.h>
 #include <assert.h>
 #include <algorithm>
+#include <functional>
 #include <fmt/format.h>
 #include <stdio.h>
 #include <dirent.h>
@@ -44,6 +45,7 @@ extern StackTrace stacktrace;
 
 using namespace cv;
 using namespace std;
+using namespace std::placeholders;
 
 const std::string RED("\033[0;31m");
 const std::string GREEN("\033[1;32m");

@@ -45,6 +45,19 @@ void PriorityLinkedList<T>::push(unique_ptr<T>& n, double v)
 }
 
 template<class T>
+void PriorityLinkedList<T>::transferTo(PriorityLinkedList* another, int num=-1)
+{
+  // TAOTODO: ??
+}
+
+
+bool PriorityLinkedList<T>::clear()
+{
+  while (this->pop());
+  this->ptr = nullptr;
+}
+
+template<class T>
 bool PriorityLinkedList<T>::pop()
 {
   if (this->ptr)
@@ -81,6 +94,20 @@ void PriorityLinkedList<T>::take(int n)
       if (this->next) this->next.release();
     }
   }
+}
+
+template<class T>
+void PriorityLinkedList<T>::printValueList(string prefix) const
+{
+  cout << prefix;
+  if (this->ptr)
+    cout << this->v;
+  if (this->next != nullptr)
+  {
+    cout << ", ";
+    this->next->printValueList();
+  }
+  else cout << endl;
 }
 
 template<class T>

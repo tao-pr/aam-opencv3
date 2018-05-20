@@ -25,11 +25,10 @@ ostream &operator<<(ostream &os, FittingCriteria const &c)
 }
 
 void ModelFitter::generateNextBestModels(
-  unique_ptr<ModelList>& container, 
   double prevError, 
   BaseFittedModel const* model, 
   const Mat& sample, 
-  int numModels) const
+  int numModels)
 {
   vector<SearchWith> actions = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
 
@@ -107,8 +106,6 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
   int iter = 0;
   double prevError;
 
-  ModelList models;
-
   // Start with the given initial model
   prevError = initModel->measureError(sample);
   auto cloneInitModel = initModel->clone();
@@ -145,26 +142,29 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     // Iterate through existing best [models] 
     // and generate next models from them, sorted by fitting error
     unique_ptr<ModelList> iterOutputs{ new ModelList() };
-    ModelList* p = &models;
 
     // TAODEBUG:
     cout << "num models so far : " << models.size() << endl;
+    models.printValueList("Errors : ");
 
-    while (p != nullptr)
-    {
-      // TAOTODO: Loop does not iterate properly
-      generateNextBestModels(
-        iterOutputs,
-        p->v, 
-        p->ptr.get(),
-        sample,
-        crit.numModelsToGeneratePerIter);  
+    // TAOTODO: Add loop creating new models
+    models.iter(fGenerateModels);
 
-      if (p->next != nullptr && p->next->ptr != nullptr)
-        p = p->next.get();
-      else
-        break;
-    }
+    // while (p != nullptr)
+    // {
+    //   // TAOTODO: Loop does not iterate properly
+    //   generateNextBestModels(
+    //     iterOutputs,
+    //     p->v, 
+    //     p->ptr.get(),
+    //     sample,
+    //     crit.numModelsToGeneratePerIter);  
+
+    //   if (p->next != nullptr && p->next->ptr != nullptr)
+    //     p = p->next.get();
+    //   else
+    //     break;
+    // }
 
     // Take best K models
     p = iterOutputs.get();
@@ -183,7 +183,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
 
     #ifdef DEBUG
     cout << "-----------------------------" << endl;
-    cout << "[Model Iter #" << iter << "]" << endl;
+    cout << CYAN << "[Model Iter #" << iter << "]" << RESET << endl;
     cout << "... Best error so far   : " << models.v << endl;
     cout << "... Best error new iter : " << iterOutputs->v << endl;
     cout << "... Tree size : " << models.size() << endl;
