@@ -31,6 +31,7 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
   #endif
 
   // Generate action params
+  const vector<SearchWith> ACTIONS = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
   auto pcaShape      = aamPCA->getShapePCA();
   auto pcaAppearance = aamPCA->getAppearancePCA();
   double scales[]    = {1.01, 0.99, 
@@ -47,7 +48,7 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
   cout << "Actions prepared, generating models ..." << endl;
   #endif
 
-  for (auto& a : actions)
+  for (auto& a : ACTIONS)
   {
     switch (a)
     {
@@ -96,7 +97,7 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
     iterateModelExpansion(modelPtr->next.get());
 }
 
-unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initModel, const Mat& sample, const FittingCriteria& crit)
+unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initModel)
 {
   double errorDiff = numeric_limits<double>::max();
   double prevError;

@@ -20,8 +20,6 @@ enum SearchWith
   // TAOTOREVIEW: Rotation?
 };
 
-vector<SearchWith> actions = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
-
 struct FittingCriteria
 {
   int numMaxIter;
@@ -81,7 +79,7 @@ public:
   const ShapeModelPCA& getShapePCA() const { return aamPCA->getShapePCA(); };
   const AppearanceModelPCA& getAppearancePCA() const { return aamPCA->getAppearancePCA(); };
 
-  virtual unique_ptr<BaseFittedModel> fit(unique_ptr<BaseFittedModel>& initModel, const Mat& sample, const FittingCriteria& crit = FittingCriteria::getDefault());
+  virtual unique_ptr<BaseFittedModel> fit(unique_ptr<BaseFittedModel>& initModel);
 };
 
 

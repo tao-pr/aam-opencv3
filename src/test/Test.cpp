@@ -368,16 +368,18 @@ void testAAMFitting()
   double initScale = 1;
   double initError = numeric_limits<double>::max();
   int maxDepth = 30;
+  auto crit = FittingCriteria { maxIters, maxTreeSize, numModelsToGeneratePerIter, minError, initScale, sampleCentre };
   unique_ptr<AAMPCA> aamPCA{ new AAMPCA(*pcaShape, *pcaAppearance) };
-  unique_ptr<ModelFitter> fitter{ new ModelFitter(aamPCA) };
+  unique_ptr<ModelFitter> fitter{ new ModelFitter(
+    aamPCA,
+    crit,
+    sampleMat
+  )};
   unique_ptr<BaseFittedModel> initModel{ new FittedAAM(aamPCA) };
 
   cout << GREEN << "Basic AAM model fitting started ..." << RESET << endl;
 
-  auto alignedModel = fitter->fit(
-    initModel, 
-    sampleMat, 
-    FittingCriteria { maxIters, maxTreeSize, numModelsToGeneratePerIter, minError, initScale, sampleCentre });
+  auto alignedModel = fitter->fit(initModel);
   auto alignedAAM = alignedModel->toAppearance();
 
   auto ioAligned = IO::WindowIO("aligned");
