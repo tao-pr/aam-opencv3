@@ -100,8 +100,27 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
     iterateModelExpansion(modelPtr->next.get());
 }
 
+void ModelFitter::transferFromBuffer(int nLeft)
+{
+  if (nLeft <= 0 || buffer.ptr == nullptr) return;
+  models.push(buffer.ptr, buffer.v);
+  if (buffer.next != nullptr)
+  {
+    // Replace self with next element
+    buffer.ptr = move(buffer.next->ptr);
+    buffer.v = buffer.next->v;
+    if (buffer.next->next != nullptr)
+      buffer.next = move(buffer.next->next);
+    else 
+      buffer.next = nullptr;
+
+    transferFromBuffer(nLeft-1);
+  }
+}
+
 unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initModel)
 {
+  assert(initModel != nullptr);
   double errorDiff = numeric_limits<double>::max();
   double prevError;
 
@@ -131,8 +150,8 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
   while (iter < crit.numMaxIter)
   {
     #ifdef DEBUG
-    cout << CYAN << "Fitting model #" << iter << RESET;
-    cout << YELLOW << ": Best error so far : " << prevError << RESET << endl;
+    cout << CYAN << "Fitting model #" << iter << RESET << endl;
+    cout << YELLOW << "... Best error so far : " << prevError << RESET << endl;
     #endif
 
     this->buffer.clear();
@@ -144,22 +163,17 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     iterateModelExpansion(&this->models);
 
     #ifdef DEBUG
-    cout << "num generated models : " << buffer.size() << endl;
+    cout << "... New models generated : " << min(buffer.size(), crit.numModelsToGeneratePerIter) << endl;
+    cout << "... Best error this iter : " << buffer.v << endl;
     #endif
 
-    break; // TAODEBUG:
-
+    // Take best K buffered models into [models]
+    transferFromBuffer(crit.numModelsToGeneratePerIter);
     models.take(crit.maxTreeSize);
 
     #ifdef DEBUG
-    cout << "-----------------------------" << endl;
-    cout << CYAN << "[Model Iter #" << iter << "]" << RESET << endl;
-    cout << "... Best error so far   : " << models.v << endl;
-    cout << "... Best error new iter : " << buffer.v << endl;
     cout << "... Tree size : " << models.size() << endl;
     #endif
-
-    // TAOTODO: Take best K buffered models into [models]
 
     iter++;
   };

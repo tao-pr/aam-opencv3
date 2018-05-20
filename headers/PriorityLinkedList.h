@@ -19,7 +19,6 @@ public:
   unique_ptr<PriorityLinkedList<T>> next;
 
   virtual void push(unique_ptr<T>& n, double v);
-  virtual bool pop();
   virtual bool clear();
   void take(int n);
   int size() const;

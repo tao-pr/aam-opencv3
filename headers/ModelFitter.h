@@ -49,6 +49,7 @@ protected:
   Mat sample;
 
   void iterateModelExpansion(ModelList* const modelPtr);
+  void transferFromBuffer(int nLeft);
 
 public:
   inline ModelFitter(

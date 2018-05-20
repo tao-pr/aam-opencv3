@@ -47,30 +47,9 @@ void PriorityLinkedList<T>::push(unique_ptr<T>& n, double v)
 template<class T>
 bool PriorityLinkedList<T>::clear()
 {
-  while (this->pop());
   this->ptr = nullptr;
-}
-
-template<class T>
-bool PriorityLinkedList<T>::pop()
-{
-  if (this->ptr)
-  {
-    if (this->next)
-    {
-      // Remove head, and next becomes this
-      this->ptr = move(this->next->ptr);
-      if (this->next->next)
-      {
-        auto vn = next->next.get();
-        this->next.reset(vn);
-      }
-    }
-    else this->ptr.release();
-
-    return true;
-  }
-  else return false;
+  if (this->next != nullptr)
+    this->next->clear();
 }
 
 template<class T>
@@ -84,8 +63,12 @@ void PriorityLinkedList<T>::take(int n)
 
     if (n <= 0)
     {
-      if (this->ptr) this->ptr.release();
-      if (this->next) this->next.release();
+      if (this->ptr != nullptr) this->ptr.release();
+      if (this->next != nullptr) 
+      {
+        this->next->clear();
+        this->next.release();
+      }
     }
   }
 }
