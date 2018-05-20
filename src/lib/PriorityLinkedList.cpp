@@ -45,12 +45,6 @@ void PriorityLinkedList<T>::push(unique_ptr<T>& n, double v)
 }
 
 template<class T>
-void PriorityLinkedList<T>::transferTo(PriorityLinkedList* another, int num=-1)
-{
-  // TAOTODO: ??
-}
-
-
 bool PriorityLinkedList<T>::clear()
 {
   while (this->pop());
@@ -105,7 +99,7 @@ void PriorityLinkedList<T>::printValueList(string prefix) const
   if (this->next != nullptr)
   {
     cout << ", ";
-    this->next->printValueList();
+    this->next->printValueList("");
   }
   else cout << endl;
 }
@@ -116,16 +110,6 @@ int PriorityLinkedList<T>::size() const
   if (this->ptr == nullptr) return 0;
   else if (this->next == nullptr) return 1;
   else return 1 + this->next->size();
-}
-
-template<class T>
-void PriorityLinkedList<T>::iter(function<void (T*, double)> f)
-{
-  if (this->ptr != nullptr)
-  {
-    f(this->ptr.get(), this->v);
-    if (this->next != nullptr) this->next->iter(f);
-  }
 }
 
 template class PriorityLinkedList<BaseFittedModel>;

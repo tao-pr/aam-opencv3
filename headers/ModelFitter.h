@@ -20,6 +20,8 @@ enum SearchWith
   // TAOTOREVIEW: Rotation?
 };
 
+vector<SearchWith> actions = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
+
 struct FittingCriteria
 {
   int numMaxIter;
@@ -42,31 +44,44 @@ private:
 
 protected:
   // Static PCA of Shape and Appearance components
+  FittingCriteria crit;
   unique_ptr<AAMPCA> aamPCA;
-  unique_ptr<ModelList> models;
-  unique_ptr<ModelList> buffer;
+  ModelList models;
+  ModelList buffer;
+  Mat sample;
+
+  void iterateModelExpansion(ModelList* const modelPtr);
 
 public:
-  inline ModelFitter(unique_ptr<AAMPCA> const & aamPCA)
-  {
-    this->aamPCA = aamPCA->clone();
-  };
+  inline ModelFitter(
+    unique_ptr<AAMPCA> const & aamPCA,
+    FittingCriteria const& crit,
+    Mat& sample) 
+    : crit(crit)
+    {
+      this->aamPCA = aamPCA->clone();
+      sample.copyTo(this->sample);
+    };
   
   virtual inline ~ModelFitter()
   {
     this->aamPCA.reset();
   };
 
-  void generateNextBestModels(
-    double prevError, 
-    BaseFittedModel const* model, 
-    const Mat& sample, 
-    int numModels = 1);
+  void setSample(Mat& sample)
+  {
+    sample.copyTo(this->sample);
+  };
+
+  void setCriteria(FittingCriteria& crit)
+  {
+    this->crit = crit;
+  };
 
   const ShapeModelPCA& getShapePCA() const { return aamPCA->getShapePCA(); };
   const AppearanceModelPCA& getAppearancePCA() const { return aamPCA->getAppearancePCA(); };
 
-  virtual unique_ptr<BaseFittedModel> fit(unique_ptr<BaseFittedModel>& initModel, const Mat& sample, const FittingCriteria& crit = FittingCriteria::getDefault()) const;
+  virtual unique_ptr<BaseFittedModel> fit(unique_ptr<BaseFittedModel>& initModel, const Mat& sample, const FittingCriteria& crit = FittingCriteria::getDefault());
 };
 
 

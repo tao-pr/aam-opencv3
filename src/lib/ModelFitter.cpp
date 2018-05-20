@@ -24,16 +24,10 @@ ostream &operator<<(ostream &os, FittingCriteria const &c)
     << "...init pos = " << c.initPos << endl;
 }
 
-void ModelFitter::generateNextBestModels(
-  double prevError, 
-  BaseFittedModel const* model, 
-  const Mat& sample, 
-  int numModels)
+void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
 {
-  vector<SearchWith> actions = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
-
   #ifdef DEBUG
-  cout << CYAN << "Fitter : Generating next best " << numModels << " models" << RESET << endl;
+  cout << CYAN << "Fitter : Generating next best models." << RESET << endl;
   #endif
 
   // Generate action params
@@ -60,27 +54,27 @@ void ModelFitter::generateNextBestModels(
       case SCALING:
         for (auto& s : scales) 
         {
-          auto ptrModel = model->clone();
-          ptrModel->setScale(s * model->scale);
-          container->push(ptrModel, ptrModel->measureError(sample));
+          auto ptrModel = modelPtr->ptr->clone();
+          ptrModel->setScale(s * modelPtr->ptr->scale);
+          buffer.push(ptrModel, ptrModel->measureError(sample));
         }
         break;
 
       case TRANSLATION:
         for (auto& t : trans)
         {
-          auto ptrModel = model->clone();
-          ptrModel->setOrigin(model->origin + t);
-          container->push(ptrModel, ptrModel->measureError(sample));
+          auto ptrModel = modelPtr->ptr->clone();
+          ptrModel->setOrigin(modelPtr->ptr->origin + t);
+          buffer.push(ptrModel, ptrModel->measureError(sample));
         }
         break;
 
       case RESHAPING:
         for (auto param : smat)
         {
-          auto ptrModel = model->clone();
-          ptrModel->setShapeParam(model->shapeParam + *param);
-          container->push(ptrModel, ptrModel->measureError(sample));
+          auto ptrModel = modelPtr->ptr->clone();
+          ptrModel->setShapeParam(modelPtr->ptr->shapeParam + *param);
+          buffer.push(ptrModel, ptrModel->measureError(sample));
         }
         smat.clear();
         break;
@@ -88,96 +82,68 @@ void ModelFitter::generateNextBestModels(
       case REAPPEARANCING:
         for (auto param : amat)
         {
-          auto ptrModel = model->clone();
-          ptrModel->setAppearanceParam(model->appearanceParam + *param);
-          container->push(ptrModel, ptrModel->measureError(sample));
+          auto ptrModel = modelPtr->ptr->clone();
+          ptrModel->setAppearanceParam(modelPtr->ptr->appearanceParam + *param);
+          buffer.push(ptrModel, ptrModel->measureError(sample));
         }
         amat.clear();
         break;
     }
   }
 
-  container->take(numModels);
+  // Repeat until the model pointer reaches the end
+  if (modelPtr->next != nullptr && modelPtr->next->ptr != nullptr)
+    iterateModelExpansion(modelPtr->next.get());
 }
 
-unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initModel, const Mat& sample, const FittingCriteria& crit) const 
+unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initModel, const Mat& sample, const FittingCriteria& crit)
 {
   double errorDiff = numeric_limits<double>::max();
-  int iter = 0;
   double prevError;
+
+  // Clear all previous fitting states
+  #ifdef DEBUG
+  cout << "Initialising fitting states." << endl;
+  #endif
+  this->models.clear();
+  this->buffer.clear();
 
   // Start with the given initial model
   prevError = initModel->measureError(sample);
   auto cloneInitModel = initModel->clone();
-  models.push(cloneInitModel, prevError);
-  models.ptr->setOrigin(crit.initPos);
-  models.ptr->setScale(crit.initScale);
+  buffer.push(cloneInitModel, prevError);
+  buffer.ptr->setOrigin(crit.initPos);
+  buffer.ptr->setScale(crit.initScale);
 
   #ifdef DEBUG
   cout << GREEN << "[Model fitting started]" << RESET << endl;
   cout << crit << endl;
   cout << "[Init model]" << endl;
-  cout << *models.ptr << endl;
+  cout << *buffer.ptr << endl;
   #endif
 
   // Adjust model parameters until converges
+  int iter = 0;
   while (iter < crit.numMaxIter)
   {
     #ifdef DEBUG
     cout << CYAN << "Fitting model #" << iter << RESET << endl;
-    #endif
-
-    if (prevError == 0)
-    {
-      #ifdef DEBUG
-      cout << RED << "-- stopping, fitting error already is zero." << RESET << endl;
-      #endif
-      break;
-    }
-
-    #ifdef DEBUG
     cout << YELLOW << "... Error so far : " << prevError << RESET << endl;
     #endif
 
-    // Iterate through existing best [models] 
-    // and generate next models from them, sorted by fitting error
-    unique_ptr<ModelList> iterOutputs{ new ModelList() };
+    this->buffer.clear();
 
     // TAODEBUG:
     cout << "num models so far : " << models.size() << endl;
     models.printValueList("Errors : ");
 
-    // TAOTODO: Add loop creating new models
-    models.iter(fGenerateModels);
+    iterateModelExpansion(&this->models);
 
-    // while (p != nullptr)
-    // {
-    //   // TAOTODO: Loop does not iterate properly
-    //   generateNextBestModels(
-    //     iterOutputs,
-    //     p->v, 
-    //     p->ptr.get(),
-    //     sample,
-    //     crit.numModelsToGeneratePerIter);  
+    #ifdef DEBUG
+    cout << "num generated models : " << buffer.size() << endl;
+    #endif
 
-    //   if (p->next != nullptr && p->next->ptr != nullptr)
-    //     p = p->next.get();
-    //   else
-    //     break;
-    // }
-
-    // Take best K models
-    p = iterOutputs.get();
-    while (true)
-    {
-      // TAOTODO: Loop doesnt iterate properly
-      models.push(p->ptr, p->v);
-
-      if (p->next != nullptr)
-        p = p->next.get();
-      else
-        break;
-    }
+    break; // TAODEBUG:
 
     models.take(crit.maxTreeSize);
 
@@ -185,9 +151,11 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     cout << "-----------------------------" << endl;
     cout << CYAN << "[Model Iter #" << iter << "]" << RESET << endl;
     cout << "... Best error so far   : " << models.v << endl;
-    cout << "... Best error new iter : " << iterOutputs->v << endl;
+    cout << "... Best error new iter : " << buffer.v << endl;
     cout << "... Tree size : " << models.size() << endl;
     #endif
+
+    // TAOTODO: Take best K buffered models into [models]
 
     iter++;
   };

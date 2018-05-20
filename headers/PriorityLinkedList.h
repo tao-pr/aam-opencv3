@@ -23,8 +23,6 @@ public:
   virtual bool clear();
   void take(int n);
   int size() const;
-  void transferTo(PriorityLinkedList* another, int num=-1);
-  void iter(function<void (T*, double)> f);
   virtual void printValueList(string prefix) const;
 
   // TAOTOREVIEW: add cout 
