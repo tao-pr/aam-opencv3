@@ -30,6 +30,9 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
   cout << CYAN << "Fitter : Generating next best models." << RESET << endl;
   #endif
 
+  assert(modelPtr != nullptr);
+  assert(modelPtr->ptr != nullptr);
+
   // Generate action params
   const vector<SearchWith> ACTIONS = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
   auto pcaShape      = aamPCA->getShapePCA();
@@ -112,15 +115,15 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
   // Start with the given initial model
   prevError = initModel->measureError(sample);
   auto cloneInitModel = initModel->clone();
-  buffer.push(cloneInitModel, prevError);
-  buffer.ptr->setOrigin(crit.initPos);
-  buffer.ptr->setScale(crit.initScale);
+  models.push(cloneInitModel, prevError);
+  models.ptr->setOrigin(crit.initPos);
+  models.ptr->setScale(crit.initScale);
 
   #ifdef DEBUG
   cout << GREEN << "[Model fitting started]" << RESET << endl;
   cout << crit << endl;
   cout << "[Init model]" << endl;
-  cout << *buffer.ptr << endl;
+  cout << *models.ptr << endl;
   #endif
 
   // Adjust model parameters until converges
@@ -128,14 +131,14 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
   while (iter < crit.numMaxIter)
   {
     #ifdef DEBUG
-    cout << CYAN << "Fitting model #" << iter << RESET << endl;
-    cout << YELLOW << "... Error so far : " << prevError << RESET << endl;
+    cout << CYAN << "Fitting model #" << iter << RESET;
+    cout << YELLOW << ": Best error so far : " << prevError << RESET << endl;
     #endif
 
     this->buffer.clear();
 
     // TAODEBUG:
-    cout << "num models so far : " << models.size() << endl;
+    cout << "... num models so far : " << models.size() << endl;
     models.printValueList("Errors : ");
 
     iterateModelExpansion(&this->models);
