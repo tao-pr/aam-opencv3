@@ -16,12 +16,14 @@ void testPriorityList()
   unique_ptr<F> c{new F("c")};
   unique_ptr<F> d{new F("d")};
   unique_ptr<F> e{new F("e")};
-  ls.push(a, 250);
-  ls.push(b, 0);
-  ls.push(c, 150);
-  ls.push(d, 30);
-  ls.push(e, 450);
-  ls.printValueList("Sorted priority values : ");
+  unique_ptr<F> f{new F("f")};
+  ls.push(a, 250);  ls.printValueList("Adding 250 : ");
+  ls.push(b, 0);    ls.printValueList("Adding 0   : ");
+  ls.push(c, 150);  ls.printValueList("Adding 150 : ");
+  ls.push(d, 30);   ls.printValueList("Adding 30  : ");
+  ls.push(e, 450);  ls.printValueList("Adding 450 : ");
+  ls.push(f, 410);  ls.printValueList("Adding 410 : ");
+  ls.take(4);       ls.printValueList("Taking 4   : ");
 }
 
 void testMeshShape(char** argv)

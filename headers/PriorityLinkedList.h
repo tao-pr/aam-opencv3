@@ -61,19 +61,19 @@ public:
   void take(int n)
   {
     if (this->ptr == nullptr) return;
-    else 
+    else if (this->next != nullptr)
     {
-      if (this->next)
-        this->next->take(n-1);
-
       if (n <= 0)
       {
-        if (this->ptr != nullptr) this->ptr.release();
-        if (this->next != nullptr) 
-        {
-          this->next->clear();
-          this->next.release();
-        }
+        this->ptr.release();
+        this->ptr = nullptr;
+      }
+      this->next->take(n-1);
+      
+      if (n <= 1)
+      {
+        this->next.release();
+        this->next = nullptr;
       }
     }
   };
