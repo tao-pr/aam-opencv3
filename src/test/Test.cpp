@@ -17,12 +17,14 @@ void testPriorityList()
   unique_ptr<F> d{new F("d")};
   unique_ptr<F> e{new F("e")};
   unique_ptr<F> f{new F("f")};
+  unique_ptr<F> g{new F("g")};
   ls.push(a, 250);  ls.printValueList("Adding 250 : ");
   ls.push(b, 0);    ls.printValueList("Adding 0   : ");
   ls.push(c, 150);  ls.printValueList("Adding 150 : ");
   ls.push(d, 30);   ls.printValueList("Adding 30  : ");
   ls.push(e, 450);  ls.printValueList("Adding 450 : ");
-  ls.push(f, 410);  ls.printValueList("Adding 410 : ");
+  ls.push(f, 240);  ls.printValueList("Adding 240 : ");
+  ls.push(g, 550);  ls.printValueList("Adding 550 : ");
   ls.take(4);       ls.printValueList("Taking 4   : ");
 }
 
