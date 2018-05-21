@@ -27,7 +27,7 @@ ostream &operator<<(ostream &os, FittingCriteria const &c)
 void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
 {
   #ifdef DEBUG
-  cout << CYAN << "Fitter : Generating next best models." << RESET << endl;
+  cout << "... Fitter : Generating next best models." << endl;
   #endif
 
   assert(modelPtr != nullptr);
@@ -46,10 +46,6 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
                         Point2d(-25,0), Point2d(0,-25), Point2d(25,0), Point2d(0,25)};
   auto smat          = pcaShape.permutationOfParams();
   auto amat          = pcaAppearance.permutationOfParams();
-
-  #ifdef DEBUG
-  cout << "Actions prepared, generating models ..." << endl;
-  #endif
 
   for (auto& a : ACTIONS)
   {
@@ -159,14 +155,15 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
   {
     #ifdef DEBUG
     cout << CYAN << "Fitting model #" << iter << RESET << endl;
-    cout << YELLOW << "... Best error so far : " << prevError << RESET << endl;
+    cout << YELLOW << "... Best error so far : " << models.v << RESET << endl;
     #endif
 
     this->buffer.clear();
 
-    // TAODEBUG:
-    cout << "... num models so far : " << models.size() << endl;
-    models.printValueList("Errors : ");
+    #ifdef DEBUG
+    cout << "... Num models so far : " << models.size() << endl;
+    models.printValueList("... Errors : ");
+    #endif
 
     iterateModelExpansion(&this->models);
 
