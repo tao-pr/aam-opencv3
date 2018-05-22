@@ -45,8 +45,8 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
   Point2d trans[]    = {Point2d(-5,0), Point2d(0,-5), Point2d(5,0), Point2d(0,5),
                         Point2d(-10,0), Point2d(0,-10), Point2d(10,0), Point2d(0,10),
                         Point2d(-25,0), Point2d(0,-25), Point2d(25,0), Point2d(0,25)};
-  Mat **smat; 
-  Mat **amat;
+  Mat *smat; 
+  Mat *amat;
   int smatSize       = pcaShape.permutationOfParams(smat);
   int amatSize       = pcaAppearance.permutationOfParams(amat);
 
@@ -83,12 +83,12 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
       case RESHAPING:
         for (int i=0; i<smatSize; i++)
         {
+          cout << "adding shape #" << i << endl; // TAODEBUG:
           TRY
           auto ptrModel = modelPtr->ptr->clone();
-          ptrModel->setShapeParam(modelPtr->ptr->shapeParam + *smat[i]);
+          ptrModel->setShapeParam(modelPtr->ptr->shapeParam + smat[i]);
           double e = ptrModel->measureError(sample);
           buffer.push(ptrModel, e);
-          delete smat[i];
           END_TRY
         }
         break;
@@ -96,12 +96,12 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
       case REAPPEARANCING:
         for (int i=0; i<amatSize; i++)
         {
+          cout << "adding app #" << i << endl; // TAODEBUG:
           TRY
           auto ptrModel = modelPtr->ptr->clone();
-          ptrModel->setAppearanceParam(modelPtr->ptr->appearanceParam + *amat[i]);
+          ptrModel->setAppearanceParam(modelPtr->ptr->appearanceParam + amat[i]);
           double e = ptrModel->measureError(sample);
           buffer.push(ptrModel, e);
-          delete amat[i];
           END_TRY
         }
         break;
