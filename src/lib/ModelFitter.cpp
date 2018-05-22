@@ -37,6 +37,7 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
   const vector<SearchWith> ACTIONS = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
   auto pcaShape      = aamPCA->getShapePCA();
   auto pcaAppearance = aamPCA->getAppearancePCA();
+  cout << "get pcas" << endl; // TAODEBUG:
   double scales[]    = {1.01, 0.99, 
                         1.5, 0.5, 
                         1.33, 0.67,
@@ -44,8 +45,12 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
   Point2d trans[]    = {Point2d(-5,0), Point2d(0,-5), Point2d(5,0), Point2d(0,5),
                         Point2d(-10,0), Point2d(0,-10), Point2d(10,0), Point2d(0,10),
                         Point2d(-25,0), Point2d(0,-25), Point2d(25,0), Point2d(0,25)};
-  auto smat          = pcaShape.permutationOfParams();
-  auto amat          = pcaAppearance.permutationOfParams();
+  Mat **smat; 
+  Mat **amat;
+  int smatSize       = pcaShape.permutationOfParams(smat);
+  int amatSize       = pcaAppearance.permutationOfParams(amat);
+
+  cout << "... adding new action" << endl; // TAODEBUG:
 
   for (auto& a : ACTIONS)
   {
@@ -54,9 +59,9 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
       case SCALING:
         for (auto& s : scales) 
         {
+          TRY
           auto ptrModel = modelPtr->ptr->clone();
           ptrModel->setScale(s * modelPtr->ptr->scale);
-          TRY
           double e = ptrModel->measureError(sample);
           buffer.push(ptrModel, e);
           END_TRY
@@ -66,9 +71,9 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
       case TRANSLATION:
         for (auto& t : trans)
         {
+          TRY
           auto ptrModel = modelPtr->ptr->clone();
           ptrModel->setOrigin(modelPtr->ptr->origin + t);
-          TRY
           double e = ptrModel->measureError(sample);
           buffer.push(ptrModel, e);
           END_TRY
@@ -76,36 +81,45 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
         break;
 
       case RESHAPING:
-        for (auto param : smat)
+        for (int i=0; i<smatSize; i++)
         {
-          auto ptrModel = modelPtr->ptr->clone();
-          ptrModel->setShapeParam(modelPtr->ptr->shapeParam + *param);
           TRY
+          auto ptrModel = modelPtr->ptr->clone();
+          ptrModel->setShapeParam(modelPtr->ptr->shapeParam + *smat[i]);
           double e = ptrModel->measureError(sample);
           buffer.push(ptrModel, e);
+          delete smat[i];
           END_TRY
         }
-        smat.clear();
         break;
 
       case REAPPEARANCING:
-        for (auto param : amat)
+        for (int i=0; i<amatSize; i++)
         {
-          auto ptrModel = modelPtr->ptr->clone();
-          ptrModel->setAppearanceParam(modelPtr->ptr->appearanceParam + *param);
           TRY
+          auto ptrModel = modelPtr->ptr->clone();
+          ptrModel->setAppearanceParam(modelPtr->ptr->appearanceParam + *amat[i]);
           double e = ptrModel->measureError(sample);
           buffer.push(ptrModel, e);
+          delete amat[i];
           END_TRY
         }
-        amat.clear();
         break;
     }
   }
 
+  cout << "... cleaning matrices" << endl; // TAODEBUG:
+  delete[] smat;
+  delete[] amat;
+
+  cout << "... checking next" << endl; // TAODEBUG:
+
   // Repeat until the model pointer reaches the end
   if (modelPtr->next != nullptr && modelPtr->next->ptr != nullptr)
     iterateModelExpansion(modelPtr->next.get());
+
+  // TAODEBUG:
+  cout << "... end of model expansion" << endl;
 }
 
 void ModelFitter::transferFromBuffer(int nLeft)
