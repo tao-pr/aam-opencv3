@@ -33,29 +33,31 @@ ShapeModelPCA ShapeModelPCA::cloneWithNewScale(double newScale, const Point2d& n
 int ShapeModelPCA::permutationOfParams(Mat* out) const
 {
   double steps[] = {0.01, -0.01, 0.1, -0.1, 1, -1};
-  int K = dimension()*2;
-  out = new Mat[12 * K];
+  int K = dimension();
+  int M = 12 * K;
+  out = new Mat[M];
   int n = 0;
   for (auto step : steps)
   {
-    for (int i=0; i<K; i++)
+    for (int i=0; i<K*2; i++)
     {
       if (i%2 == 0)
       {
         //out[n] = new Mat(1, dimension(), CV_64FC1);
-        out[n] = Mat::zeros(1, dimension(), CV_64FC1);
-        out[n].at<double>(0, i) = step;
+        out[n] = Mat::zeros(1, K, CV_64FC1);
+        out[n].at<double>(0, i/2) = step;
       }
       else
       {
         //out[n] = new Mat(1, dimension(), CV_64FC1);
-        out[n] = Mat::zeros(1, dimension(), CV_64FC1);
-        out[n].at<double>(0, i) = -step;
+        out[n] = Mat::zeros(1, K, CV_64FC1);
+        out[n].at<double>(0, (i-1)/2) = -step;
       }
       ++n;
     }
   }
-  return 12 * K;
+  assert(M == n);
+  return M;
 }
 
 BaseModel* AppearanceModelPCA::mean() const
@@ -105,29 +107,31 @@ void AppearanceModelPCA::overrideMeanShape(const MeshShape& newMeanShape)
 int AppearanceModelPCA::permutationOfParams(Mat* out) const
 {
   double steps[] = {0.1, -0.1, 0.01, -0.01, 1, -1};
-  int dim = dimension();
-  out = new Mat[12 * dim * 2];
+  int K = dimension();
+  int M = 6 * K * 2;
+  out = new Mat[M];
   int n = 0;
   for (auto step : steps)
   {
-    for (int i=0; i<dimension()*2; i++)
+    for (int i=0; i<K*2; i++)
     {
       if (i%2 == 0)
       {
         //out[n] = new Mat(1, dimension(), CV_64FC1);
-        out[n] = Mat::zeros(1, dimension(), CV_64FC1);
-        out[n].at<double>(0, i) = step;
+        out[n] = Mat::zeros(1, K, CV_64FC1);
+        out[n].at<double>(0, i/2) = step;
       }
       else
       {
         //out[n] = new Mat(1, dimension(), CV_64FC1);
-        out[n] = Mat::zeros(1, dimension(), CV_64FC1);
-        out[n].at<double>(0, i) = -step;
+        out[n] = Mat::zeros(1, K, CV_64FC1);
+        out[n].at<double>(0, (i-1)/2) = -step;
       }
       ++n;
     }
   }
-  return 12 * dim * 2;
+  assert(M == n);
+  return M;
 }
 
 Rect AppearanceModelPCA::getBound() const
