@@ -390,8 +390,8 @@ void testAAMFitting()
 
   // Try fitting the model onto an unknown sample
   int maxIters = 20;
-  int maxTreeSize = 10;
-  int numModelsToGeneratePerIter = 8;
+  int maxTreeSize = 4;
+  int numModelsToGeneratePerIter = 4;
   double minError = 1e-3;
   double initScale = 1;
   double initError = numeric_limits<double>::max();
