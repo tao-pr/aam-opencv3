@@ -31,7 +31,7 @@ public:
   virtual BaseModel* toModel(const Mat& param) const = 0;
 
   // Generate permutation of parameter matrix
-  virtual int permutationOfParams(Mat* out) const = 0;
+  virtual int permutationOfParams(Mat** out) const = 0;
 
   const int dimension() const { return this->pca.eigenvalues.rows; };
   Point2d getTranslation() const { return this->translation; };
@@ -49,7 +49,7 @@ public:
   BaseModel* mean() const; 
   BaseModel* toModel(const Mat& param) const;
   MeshShape* toShape(const Mat& param) const;
-  int permutationOfParams(Mat* out) const;
+  int permutationOfParams(Mat** out) const;
 
   ShapeModelPCA cloneWithNewScale(double newScale, const Point2d& newTranslation) const;
 };
@@ -73,7 +73,7 @@ public:
   Mat toParam(const BaseModel* m) const;
   BaseModel* toModel(const Mat& param) const;
   Appearance* toAppearance(const Mat& param) const;
-  int permutationOfParams(Mat* out) const;
+  int permutationOfParams(Mat** out) const;
   
   void overrideMeanShape(const MeshShape& newMeanShape);
   Rect getBound() const;
