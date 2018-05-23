@@ -37,7 +37,6 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
   const vector<SearchWith> ACTIONS = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
   auto pcaShape      = aamPCA->getShapePCA();
   auto pcaAppearance = aamPCA->getAppearancePCA();
-  cout << "get pcas" << endl; // TAODEBUG:
   double scales[]    = {1.01, 0.99, 
                         1.5, 0.5, 
                         1.33, 0.67,
@@ -111,18 +110,12 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
     }
   }
 
-  cout << "... cleaning matrices" << endl; // TAODEBUG:
   delete[] smat;
   delete[] amat;
-
-  cout << "... checking next" << endl; // TAODEBUG:
 
   // Repeat until the model pointer reaches the end
   if (modelPtr->next != nullptr && modelPtr->next->ptr != nullptr)
     iterateModelExpansion(modelPtr->next.get());
-
-  // TAODEBUG:
-  cout << "... end of model expansion" << endl;
 }
 
 void ModelFitter::transferFromBuffer(int nLeft)
