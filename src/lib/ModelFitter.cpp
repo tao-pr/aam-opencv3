@@ -45,12 +45,15 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
   Point2d trans[]    = {Point2d(-5,0), Point2d(0,-5), Point2d(5,0), Point2d(0,5),
                         Point2d(-10,0), Point2d(0,-10), Point2d(10,0), Point2d(0,10),
                         Point2d(-25,0), Point2d(0,-25), Point2d(25,0), Point2d(0,25)};
-  Mat **smat; 
-  Mat **amat;
-  int smatSize       = pcaShape.permutationOfParams(smat);
-  int amatSize       = pcaAppearance.permutationOfParams(amat);
-
-  cout << "... adding new action" << endl; // TAODEBUG:
+  
+  int smatSize = pcaShape.getSizeOfPermutationOfParams();
+  int amatSize = pcaAppearance.getSizeOfPermutationOfParams();
+  Mat *smat = new Mat[smatSize]; 
+  Mat *amat = new Mat[amatSize];
+  for (int i=0; i<smatSize; i++) smat[i] = Mat::zeros(1, pcaShape.dimension(), CV_64FC1);
+  for (int i=0; i<amatSize; i++) amat[i] = Mat::zeros(1, pcaAppearance.dimension(), CV_64FC1);
+  pcaShape.permutationOfParams(smat);
+  pcaAppearance.permutationOfParams(amat);
 
   for (auto& a : ACTIONS)
   {
@@ -83,23 +86,12 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
       case RESHAPING:
         for (int i=0; i<smatSize; i++)
         {
-          cout << "adding shape #" << i << endl; // TAODEBUG:
           TRY
           auto ptrModel = modelPtr->ptr->clone();
-
-          cout << "smat[i]" << endl; // TAODEBUG:
-          cout << *smat[i] << endl;
-
-          Mat param = modelPtr->ptr->shapeParam + *smat[i];
-
-          #ifdef DEBUG
-          cout << param << endl;
-          #endif
-
+          Mat param = modelPtr->ptr->shapeParam + smat[i];
           ptrModel->setShapeParam(param);
           double e = ptrModel->measureError(sample);
           buffer.push(ptrModel, e);
-          delete smat[i];
           END_TRY
         }
         break;
@@ -107,19 +99,12 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
       case REAPPEARANCING:
         for (int i=0; i<amatSize; i++)
         {
-          cout << "adding app #" << i << endl; // TAODEBUG:
           TRY
           auto ptrModel = modelPtr->ptr->clone();
-          Mat param = modelPtr->ptr->appearanceParam + *amat[i];
-
-          #ifdef DEBUG
-          cout << param << endl;
-          #endif
-
+          Mat param = modelPtr->ptr->appearanceParam + amat[i];
           ptrModel->setAppearanceParam(param);
           double e = ptrModel->measureError(sample);
           buffer.push(ptrModel, e);
-          delete amat[i];
           END_TRY
         }
         break;
