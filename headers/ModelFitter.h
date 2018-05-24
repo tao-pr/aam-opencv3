@@ -26,7 +26,7 @@ struct FittingCriteria
   int numMaxIter;
   int maxTreeSize;
   int numModelsToGeneratePerIter;
-  double minError;
+  double minErrorImprovement;
   double initScale;
   Point2d initPos; // Coordinate of the upper-left origin
 

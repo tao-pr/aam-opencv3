@@ -19,7 +19,7 @@ ostream &operator<<(ostream &os, FittingCriteria const &c)
     << "...num Max iter = " << c.numMaxIter << endl
     << "...max Tree size = " << c.maxTreeSize << endl 
     << "...num models to gen = " << c.numModelsToGeneratePerIter << endl
-    << "...min Error = " << c.minError << endl
+    << "...min err diff = " << c.minErrorImprovement << endl
     << "...init scale = " << c.initScale << endl
     << "...init pos = " << c.initPos << endl;
 }
@@ -186,6 +186,9 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     cout << "... Best error this iter : " << buffer.v << endl;
     #endif
 
+    double bestPrevError = models.v;
+    double bestNewError = buffer.v;
+
     // Take best K buffered models into [models]
     transferFromBuffer(crit.numModelsToGeneratePerIter);
     models.take(crit.maxTreeSize);
@@ -193,6 +196,14 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     #ifdef DEBUG
     cout << "... Tree size : " << models.size() << endl;
     #endif
+
+    if (bestPrevError - bestNewError < crit.minErrorImprovement)
+    {
+      #ifdef DEBUG
+      cout << YELLOW << "... Stopping, steady error so far" << RESET << endl;
+      #endif
+      break;
+    }
 
     iter++;
   };

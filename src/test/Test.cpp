@@ -392,11 +392,11 @@ void testAAMFitting()
   int maxIters = 20;
   int maxTreeSize = 4;
   int numModelsToGeneratePerIter = 4;
-  double minError = 1e-3;
+  double minImprovement = 1e-8;
   double initScale = 1;
   double initError = numeric_limits<double>::max();
   int maxDepth = 30;
-  auto crit = FittingCriteria { maxIters, maxTreeSize, numModelsToGeneratePerIter, minError, initScale, sampleCentre };
+  auto crit = FittingCriteria { maxIters, maxTreeSize, numModelsToGeneratePerIter, minImprovement, initScale, sampleCentre };
   unique_ptr<AAMPCA> aamPCA{ new AAMPCA(*pcaShape, *pcaAppearance) };
   unique_ptr<ModelFitter> fitter{ new ModelFitter(
     aamPCA,
@@ -409,6 +409,18 @@ void testAAMFitting()
 
   auto alignedModel = fitter->fit(initModel);
   auto alignedAAM = alignedModel->toAppearance();
+
+  cout << GREEN << "[Init Parameters]" << RESET << endl;
+  cout << "Coordinate  : " << initModel->origin << endl;
+  cout << "Scale       : " << initModel->scale << endl;
+  cout << "Shape Param : " << initModel->shapeParam << endl;
+  cout << "App Param   : " << initModel->appearanceParam << endl;
+
+  cout << GREEN << "[Fitted Parameters]" << RESET << endl;
+  cout << "Coordinate  : " << alignedModel->origin << endl;
+  cout << "Scale       : " << alignedModel->scale << endl;
+  cout << "Shape Param : " << alignedModel->shapeParam << endl;
+  cout << "App Param   : " << alignedModel->appearanceParam << endl;
 
   auto ioAligned = IO::WindowIO("aligned");
   alignedAAM->render(&ioAligned, Mat::zeros(alignedAAM->getSpannedSize(), CV_8UC3), false, false);
