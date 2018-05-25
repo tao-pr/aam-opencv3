@@ -51,7 +51,8 @@ protected:
 
   void iterateModelExpansion(
     ModelList* const modelPtr,
-    SearchWith action = TRANSLATION);
+    SearchWith action = TRANSLATION,
+    double scale = 1.0);
   
   void transferFromBuffer(int nLeft);
 

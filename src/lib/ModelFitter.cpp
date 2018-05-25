@@ -26,7 +26,8 @@ ostream &operator<<(ostream &os, FittingCriteria const &c)
 
 void ModelFitter::iterateModelExpansion(
   ModelList* const modelPtr,
-  SearchWith action)
+  SearchWith action,
+  double scale)
 {
   #ifdef DEBUG
   string actionStr = "";
@@ -46,13 +47,12 @@ void ModelFitter::iterateModelExpansion(
   // Generate action params
   auto pcaShape      = aamPCA->getShapePCA();
   auto pcaAppearance = aamPCA->getAppearancePCA();
-  double scales[]    = {1.01, 0.99, 
-                        1.5, 0.5, 
-                        1.33, 0.67,
-                        2.5, 0.4};
-  Point2d trans[]    = {Point2d(-5,0), Point2d(0,-5), Point2d(5,0), Point2d(0,5),
-                        Point2d(-10,0), Point2d(0,-10), Point2d(10,0), Point2d(0,10),
-                        Point2d(-25,0), Point2d(0,-25), Point2d(25,0), Point2d(0,25)};
+  double scales[]    = {1.01, 0.99, 1.0, 1.5, 0.5};
+  Point2d trans[]    = {Point2d(-1,0), Point2d(0,-1), 
+                        Point2d(1,0), Point2d(0,1),
+                        Point2d(1,1), Point2d(1,-1),
+                        Point2d(-1,1), Point2d(-1,-1)
+                      };
   
   int smatSize = pcaShape.getSizeOfPermutationOfParams();
   int amatSize = pcaAppearance.getSizeOfPermutationOfParams();
@@ -73,7 +73,7 @@ void ModelFitter::iterateModelExpansion(
       {
         TRY
         auto ptrModel = modelPtr->ptr->clone();
-        ptrModel->setScale(s * modelPtr->ptr->scale);
+        ptrModel->setScale(s * modelPtr->ptr->scale * scale);
         double e = ptrModel->measureError(sample);
         buffer.push(ptrModel, e);
         END_TRY
@@ -85,7 +85,7 @@ void ModelFitter::iterateModelExpansion(
       {
         TRY
         auto ptrModel = modelPtr->ptr->clone();
-        ptrModel->setOrigin(modelPtr->ptr->origin + t);
+        ptrModel->setOrigin(modelPtr->ptr->origin + t * scale);
         double e = ptrModel->measureError(sample);
         buffer.push(ptrModel, e);
         END_TRY
@@ -97,7 +97,7 @@ void ModelFitter::iterateModelExpansion(
       {
         TRY
         auto ptrModel = modelPtr->ptr->clone();
-        Mat param = modelPtr->ptr->shapeParam + smat[i];
+        Mat param = modelPtr->ptr->shapeParam * scale + smat[i];
         ptrModel->setShapeParam(param);
         double e = ptrModel->measureError(sample);
         buffer.push(ptrModel, e);
@@ -110,7 +110,7 @@ void ModelFitter::iterateModelExpansion(
       {
         TRY
         auto ptrModel = modelPtr->ptr->clone();
-        Mat param = modelPtr->ptr->appearanceParam + amat[i];
+        Mat param = modelPtr->ptr->appearanceParam * scale + amat[i];
         ptrModel->setAppearanceParam(param);
         double e = ptrModel->measureError(sample);
         buffer.push(ptrModel, e);
@@ -174,6 +174,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
 
   // Adjust model parameters until converges
   int iter = 0;
+  double scale = 1;
   deque<SearchWith> ACTIONS = {TRANSLATION, SCALING, RESHAPING, REAPPEARANCING};
   
   while (iter < crit.numMaxIter)
@@ -190,7 +191,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     models.printValueList("... Errors : ");
     #endif
 
-    iterateModelExpansion(&this->models, ACTIONS[0]);
+    iterateModelExpansion(&this->models, ACTIONS[0], scale);
 
     #ifdef DEBUG
     cout << "... New models generated : " << min(buffer.size(), crit.numModelsToGeneratePerIter) << endl;
@@ -210,14 +211,24 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
 
     if (bestPrevError - bestNewError < crit.minErrorImprovement)
     {
-      // Iterate to the next action
-      if (ACTIONS.size()>0)
+      // Shrink scale
+      if (scale > 0.125)
       {
-        #ifdef DEBUG
-        cout << "... Steady error, iterate to next action" << endl;
-        #endif
-        ACTIONS.pop_front();
+        scale *= 0.5;
       }
+      else
+      {
+        // Iterate to the next action
+        if (ACTIONS.size()>0)
+        {
+          #ifdef DEBUG
+          cout << "... Steady error, iterate to next action" << endl;
+          #endif
+          ACTIONS.pop_front();
+          scale = 1;
+        }
+      }
+        
       break;
     }
 
