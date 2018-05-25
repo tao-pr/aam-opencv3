@@ -69,7 +69,7 @@ Mat MeshShape::convexFill() const
 
 const int MeshShape::findIndex(const Point2d& p) const
 {
-  const double PRECISION = 0.75;
+  const double PRECISION = 1e-3;
   int rows = this->mat.rows;
   for (int j=0; j<rows; j++)
   {

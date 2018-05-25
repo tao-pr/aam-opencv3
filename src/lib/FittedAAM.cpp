@@ -71,21 +71,19 @@ double FittedAAM::measureError(const Mat& sample)
 
   // RMSE
   double e = 0;
-  double MAX_ERR = exp(4096);
+  double MAX_ERR = 255*255;
   int n = 0;
   for (int i=0; i<canvas.cols; i++)
     for (int j=0; j<canvas.rows; j++)
     {
       if (shapeConvex.at<unsigned char>(j,i) > 0)
-          // sample.cols > i && 
-          // sample.rows > j)
       {
         if (sample.cols > i && sample.rows > j)
         {
           auto a = overlay.at<Vec3b>(j,i);
           auto b = sample.at<Vec3b>(j,i);
           auto d = a - b;
-          e += exp(abs(d[0]) + abs(d[1]) + abs(d[2]));
+          e += abs(d[0]) + abs(d[1]) + abs(d[2]);
         }
         else
         {
@@ -94,15 +92,6 @@ double FittedAAM::measureError(const Mat& sample)
           e += MAX_ERR;
         }
         ++n;
-        // if (sample.cols > i && sample.rows > j)
-        // {
-        //   auto a = overlay.at<Vec3b>(j,i);
-        //   auto b = sample.at<Vec3b>(j,i);
-        //   auto d = a - b;
-        //   e += exp(abs(d[0]) + abs(d[1]) + abs(d[2]));
-        // }
-        // else
-        //   e += MAX_ERR;
       }
     }
 

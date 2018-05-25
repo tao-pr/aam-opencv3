@@ -393,7 +393,7 @@ void testAAMFitting()
   int maxTreeSize = 5;
   int numModelsToGeneratePerIter = 5;
   double minImprovement = 1e-5;
-  double initScale = sampleScale * 0.75;
+  double initScale = 1;
   double initError = numeric_limits<double>::max();
   auto crit = FittingCriteria { maxIters, maxTreeSize, numModelsToGeneratePerIter, minImprovement, initScale, sampleCentre };
   unique_ptr<AAMPCA> aamPCA{ new AAMPCA(*pcaShape, *pcaAppearance) };
@@ -403,7 +403,6 @@ void testAAMFitting()
     sampleMat
   )};
   unique_ptr<BaseFittedModel> initModel{ new FittedAAM(aamPCA) };
-  initModel->setScale(initScale);
 
   cout << "Converting initial model to appearance..." << endl;
   auto wndInitModel = IO::WindowIO("init model");
@@ -414,7 +413,7 @@ void testAAMFitting()
     Mat::zeros(initAAM->getSpannedSize(), CV_8UC3),
     false, false
   );
-  moveWindow("init model", CANVAS_SIZE, CANVAS_SIZE*2-16);
+  moveWindow("init model", CANVAS_SIZE*2, CANVAS_SIZE);
 
   cout << GREEN << "Basic AAM model fitting started ..." << RESET << endl;
 
@@ -435,7 +434,7 @@ void testAAMFitting()
 
   auto ioAligned = IO::WindowIO("aligned");
   alignedAAM->render(&ioAligned, Mat::zeros(alignedAAM->getSpannedSize(), CV_8UC3), false, false);
-  moveWindow("aligned", CANVAS_SIZE + sizeSample.width, CANVAS_SIZE);
+  moveWindow("aligned", CANVAS_SIZE*2 + sizeSample.width, CANVAS_SIZE);
   waitKey(5000);
 
 }
