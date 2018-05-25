@@ -245,9 +245,8 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
           ACTIONS.pop_front();
           scale = 1;
         }
+        else break;
       }
-        
-      break;
     }
 
     iter++;
