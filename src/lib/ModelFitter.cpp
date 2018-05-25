@@ -51,7 +51,8 @@ void ModelFitter::iterateModelExpansion(
   Point2d trans[]    = {Point2d(-1,0), Point2d(0,-1), 
                         Point2d(1,0), Point2d(0,1),
                         Point2d(1,1), Point2d(1,-1),
-                        Point2d(-1,1), Point2d(-1,-1)
+                        Point2d(-1,1), Point2d(-1,-1),
+                        Point2d(0,0)
                       };
   
   int smatSize = pcaShape.getSizeOfPermutationOfParams();
@@ -73,9 +74,13 @@ void ModelFitter::iterateModelExpansion(
       {
         TRY
         auto ptrModel = modelPtr->ptr->clone();
-        ptrModel->setScale(s * modelPtr->ptr->scale * scale);
-        double e = ptrModel->measureError(sample);
-        buffer.push(ptrModel, e);
+        double newScale = s * modelPtr->ptr->scale * scale;
+        if (newScale > 0)
+        {
+          ptrModel->setScale(newScale);
+          double e = ptrModel->measureError(sample);
+          buffer.push(ptrModel, e);  
+        }
         END_TRY
       }
       break;
@@ -85,9 +90,13 @@ void ModelFitter::iterateModelExpansion(
       {
         TRY
         auto ptrModel = modelPtr->ptr->clone();
-        ptrModel->setOrigin(modelPtr->ptr->origin + t * scale);
-        double e = ptrModel->measureError(sample);
-        buffer.push(ptrModel, e);
+        auto newOrigin = modelPtr->ptr->origin + t * scale;
+        if (newOrigin.x >= 0 && newOrigin.y >= 0)
+        {
+          ptrModel->setOrigin(newOrigin);
+          double e = ptrModel->measureError(sample);
+          buffer.push(ptrModel, e);
+        }
         END_TRY
       }
       break;
@@ -98,9 +107,12 @@ void ModelFitter::iterateModelExpansion(
         TRY
         auto ptrModel = modelPtr->ptr->clone();
         Mat param = modelPtr->ptr->shapeParam * scale + smat[i];
-        ptrModel->setShapeParam(param);
-        double e = ptrModel->measureError(sample);
-        buffer.push(ptrModel, e);
+        if (countNonZero(param) > 0)
+        {
+          ptrModel->setShapeParam(param);
+          double e = ptrModel->measureError(sample);
+          buffer.push(ptrModel, e);
+        }
         END_TRY
       }
       break;
@@ -111,9 +123,12 @@ void ModelFitter::iterateModelExpansion(
         TRY
         auto ptrModel = modelPtr->ptr->clone();
         Mat param = modelPtr->ptr->appearanceParam * scale + amat[i];
-        ptrModel->setAppearanceParam(param);
-        double e = ptrModel->measureError(sample);
-        buffer.push(ptrModel, e);
+        if (countNonZero(param) > 0)
+        {
+          ptrModel->setAppearanceParam(param);
+          double e = ptrModel->measureError(sample);
+          buffer.push(ptrModel, e);
+        }
         END_TRY
       }
       break;
@@ -215,6 +230,9 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
       if (scale > 0.125)
       {
         scale *= 0.5;
+        #ifdef DEBUG
+        cout << "... Steady error, shrinking scale to " << scale << endl;
+        #endif
       }
       else
       {
