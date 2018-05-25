@@ -367,7 +367,7 @@ void testAAMFitting()
   cout << "PCA dimension of appearance : " << pcaAppearance->dimension() << endl;
 
   // Generate unknown sample we want to try fitting the model on
-  double sampleScale = 512;
+  double sampleScale = 240;
   auto sampleCentre = Point2d(35, 36);
   cout << "Generating unknown sample ..." << endl;
   auto sampleShape = MeshShape(*meanShape);
@@ -375,7 +375,7 @@ void testAAMFitting()
   sampleShape.addRandomNoise(Point2d(21.5, 10.5));
   cout << "Distorting unknown sample ..." << endl;
   sampleAppearance.realignTo(sampleShape);
-  //sampleAppearance.resizeTo(sampleScale);
+  sampleAppearance.resizeTo(sampleScale);
   sampleAppearance.recentre(sampleCentre);
 
   // Render sample without vertices nor edges
@@ -389,13 +389,12 @@ void testAAMFitting()
   waitKey(1000);
 
   // Try fitting the model onto an unknown sample
-  int maxIters = 20;
-  int maxTreeSize = 4;
-  int numModelsToGeneratePerIter = 4;
+  int maxIters = 50;
+  int maxTreeSize = 5;
+  int numModelsToGeneratePerIter = 5;
   double minImprovement = 1e-5;
-  double initScale = 1;
+  double initScale = sampleScale * 0.75;
   double initError = numeric_limits<double>::max();
-  int maxDepth = 30;
   auto crit = FittingCriteria { maxIters, maxTreeSize, numModelsToGeneratePerIter, minImprovement, initScale, sampleCentre };
   unique_ptr<AAMPCA> aamPCA{ new AAMPCA(*pcaShape, *pcaAppearance) };
   unique_ptr<ModelFitter> fitter{ new ModelFitter(
@@ -404,6 +403,18 @@ void testAAMFitting()
     sampleMat
   )};
   unique_ptr<BaseFittedModel> initModel{ new FittedAAM(aamPCA) };
+  initModel->setScale(initScale);
+
+  cout << "Converting initial model to appearance..." << endl;
+  auto wndInitModel = IO::WindowIO("init model");
+  auto initAAM = initModel->toAppearance();
+  cout << "Rendering initial model ..." << endl;
+  initAAM->render(
+    &wndInitModel,
+    Mat::zeros(initAAM->getSpannedSize(), CV_8UC3),
+    false, false
+  );
+  moveWindow("init model", CANVAS_SIZE, CANVAS_SIZE*2-16);
 
   cout << GREEN << "Basic AAM model fitting started ..." << RESET << endl;
 

@@ -166,15 +166,6 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
   auto N = bound.width * bound.height;
   auto K = pca.mean.cols/3;
 
-  // #ifdef DEBUG
-  // cout << "Converting PCA -> Appearance Model" << endl;
-  // cout << "-> bound        : " << bound << endl;
-  // cout << "-> offset bound : " << offsetBound << endl;
-  // cout << "-> pca mean     : " << this->pca.mean.size() << endl;
-  // cout << "-> eigenvectors : " << this->pca.eigenvectors.size() << endl;
-  // cout << "-> params       : " << param.size() << endl;
-  // #endif
-
   // Backprojection of appearance params
   Mat backPrj = this->pca.backProject(param);
 
@@ -208,11 +199,6 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
     return new Appearance(meanShapeOffset, graphic);
   else
   {
-    // #ifdef DEBUG
-    // cout << "-> scaling     : " << scale << endl;
-    // cout << "-> translation : " << translation << endl;
-    // #endif
-
     MeshShape meanOffsetShape(meanShape.recentreAndScale(translation, scale));  
     return new Appearance(meanOffsetShape, graphic);
   }

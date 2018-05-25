@@ -139,7 +139,7 @@ void ModelFitter::iterateModelExpansion(
 
   // Repeat until the model pointer reaches the end
   if (modelPtr->next != nullptr && modelPtr->next->ptr != nullptr)
-    iterateModelExpansion(modelPtr->next.get());
+    iterateModelExpansion(modelPtr->next.get(), action, scale);
 }
 
 void ModelFitter::transferFromBuffer(int nLeft)
