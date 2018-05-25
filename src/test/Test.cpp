@@ -372,10 +372,10 @@ void testAAMFitting()
   cout << "Generating unknown sample ..." << endl;
   auto sampleShape = MeshShape(*meanShape);
   auto sampleAppearance = Appearance(*meanAppearance);
-  sampleShape.addRandomNoise(Point2d(8.5, 9.5));
+  sampleShape.addRandomNoise(Point2d(21.5, 10.5));
   cout << "Distorting unknown sample ..." << endl;
   sampleAppearance.realignTo(sampleShape);
-  sampleAppearance.resizeTo(sampleScale);
+  //sampleAppearance.resizeTo(sampleScale);
   sampleAppearance.recentre(sampleCentre);
 
   // Render sample without vertices nor edges
@@ -392,7 +392,7 @@ void testAAMFitting()
   int maxIters = 20;
   int maxTreeSize = 4;
   int numModelsToGeneratePerIter = 4;
-  double minImprovement = 1e-8;
+  double minImprovement = 1e-5;
   double initScale = 1;
   double initError = numeric_limits<double>::max();
   int maxDepth = 30;

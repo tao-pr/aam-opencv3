@@ -49,7 +49,10 @@ protected:
   ModelList buffer;
   Mat sample;
 
-  void iterateModelExpansion(ModelList* const modelPtr);
+  void iterateModelExpansion(
+    ModelList* const modelPtr,
+    SearchWith action = TRANSLATION);
+  
   void transferFromBuffer(int nLeft);
 
 public:

@@ -76,11 +76,10 @@ double FittedAAM::measureError(const Mat& sample)
   for (int i=0; i<canvas.cols; i++)
     for (int j=0; j<canvas.rows; j++)
     {
-      if (shapeConvex.at<unsigned char>(j,i) > 0 &&
-          sample.cols > i && 
-          sample.rows > j)
+      if (shapeConvex.at<unsigned char>(j,i) > 0)
+          // sample.cols > i && 
+          // sample.rows > j)
       {
-        ++n;
         if (sample.cols > i && sample.rows > j)
         {
           auto a = overlay.at<Vec3b>(j,i);
@@ -89,7 +88,21 @@ double FittedAAM::measureError(const Mat& sample)
           e += exp(abs(d[0]) + abs(d[1]) + abs(d[2]));
         }
         else
+        {
+          // Out of range
+          // Pay with penalty
           e += MAX_ERR;
+        }
+        ++n;
+        // if (sample.cols > i && sample.rows > j)
+        // {
+        //   auto a = overlay.at<Vec3b>(j,i);
+        //   auto b = sample.at<Vec3b>(j,i);
+        //   auto d = a - b;
+        //   e += exp(abs(d[0]) + abs(d[1]) + abs(d[2]));
+        // }
+        // else
+        //   e += MAX_ERR;
       }
     }
 

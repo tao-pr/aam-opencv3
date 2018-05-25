@@ -8,6 +8,7 @@
 
 #include <string>
 #include <vector>
+#include <deque>
 #include <tuple>
 #include <stack>
 #include <stdlib.h>

@@ -24,17 +24,26 @@ ostream &operator<<(ostream &os, FittingCriteria const &c)
     << "...init pos = " << c.initPos << endl;
 }
 
-void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
+void ModelFitter::iterateModelExpansion(
+  ModelList* const modelPtr,
+  SearchWith action)
 {
   #ifdef DEBUG
-  cout << "... Fitter : Generating next best models." << endl;
+  string actionStr = "";
+  switch (action)
+  {
+    case TRANSLATION: actionStr = "translation"; break;
+    case SCALING:     actionStr = "scaling"; break;
+    case RESHAPING:   actionStr = "reshaping"; break;
+    case REAPPEARANCING: actionStr = "reappearancing"; break;
+  }
+  cout << "... Generating new models with " << actionStr << endl;
   #endif
 
   assert(modelPtr != nullptr);
   assert(modelPtr->ptr != nullptr);
 
   // Generate action params
-  const vector<SearchWith> ACTIONS = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
   auto pcaShape      = aamPCA->getShapePCA();
   auto pcaAppearance = aamPCA->getAppearancePCA();
   double scales[]    = {1.01, 0.99, 
@@ -54,60 +63,60 @@ void ModelFitter::iterateModelExpansion(ModelList* const modelPtr)
   pcaShape.permutationOfParams(smat);
   pcaAppearance.permutationOfParams(amat);
 
-  for (auto& a : ACTIONS)
+  // TAOTODO: Apply step size and decreasing it iteratively
+
+  // TAOTODO: Reject if shape param or app param is ZERO matrix
+  switch (action)
   {
-    switch (a)
-    {
-      case SCALING:
-        for (auto& s : scales) 
-        {
-          TRY
-          auto ptrModel = modelPtr->ptr->clone();
-          ptrModel->setScale(s * modelPtr->ptr->scale);
-          double e = ptrModel->measureError(sample);
-          buffer.push(ptrModel, e);
-          END_TRY
-        }
-        break;
+    case SCALING:
+      for (auto& s : scales) 
+      {
+        TRY
+        auto ptrModel = modelPtr->ptr->clone();
+        ptrModel->setScale(s * modelPtr->ptr->scale);
+        double e = ptrModel->measureError(sample);
+        buffer.push(ptrModel, e);
+        END_TRY
+      }
+      break;
 
-      case TRANSLATION:
-        for (auto& t : trans)
-        {
-          TRY
-          auto ptrModel = modelPtr->ptr->clone();
-          ptrModel->setOrigin(modelPtr->ptr->origin + t);
-          double e = ptrModel->measureError(sample);
-          buffer.push(ptrModel, e);
-          END_TRY
-        }
-        break;
+    case TRANSLATION:
+      for (auto& t : trans)
+      {
+        TRY
+        auto ptrModel = modelPtr->ptr->clone();
+        ptrModel->setOrigin(modelPtr->ptr->origin + t);
+        double e = ptrModel->measureError(sample);
+        buffer.push(ptrModel, e);
+        END_TRY
+      }
+      break;
 
-      case RESHAPING:
-        for (int i=0; i<smatSize; i++)
-        {
-          TRY
-          auto ptrModel = modelPtr->ptr->clone();
-          Mat param = modelPtr->ptr->shapeParam + smat[i];
-          ptrModel->setShapeParam(param);
-          double e = ptrModel->measureError(sample);
-          buffer.push(ptrModel, e);
-          END_TRY
-        }
-        break;
+    case RESHAPING:
+      for (int i=0; i<smatSize; i++)
+      {
+        TRY
+        auto ptrModel = modelPtr->ptr->clone();
+        Mat param = modelPtr->ptr->shapeParam + smat[i];
+        ptrModel->setShapeParam(param);
+        double e = ptrModel->measureError(sample);
+        buffer.push(ptrModel, e);
+        END_TRY
+      }
+      break;
 
-      case REAPPEARANCING:
-        for (int i=0; i<amatSize; i++)
-        {
-          TRY
-          auto ptrModel = modelPtr->ptr->clone();
-          Mat param = modelPtr->ptr->appearanceParam + amat[i];
-          ptrModel->setAppearanceParam(param);
-          double e = ptrModel->measureError(sample);
-          buffer.push(ptrModel, e);
-          END_TRY
-        }
-        break;
-    }
+    case REAPPEARANCING:
+      for (int i=0; i<amatSize; i++)
+      {
+        TRY
+        auto ptrModel = modelPtr->ptr->clone();
+        Mat param = modelPtr->ptr->appearanceParam + amat[i];
+        ptrModel->setAppearanceParam(param);
+        double e = ptrModel->measureError(sample);
+        buffer.push(ptrModel, e);
+        END_TRY
+      }
+      break;
   }
 
   delete[] smat;
@@ -165,6 +174,8 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
 
   // Adjust model parameters until converges
   int iter = 0;
+  deque<SearchWith> ACTIONS = {TRANSLATION, SCALING, RESHAPING, REAPPEARANCING};
+  
   while (iter < crit.numMaxIter)
   {
     #ifdef DEBUG
@@ -179,7 +190,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     models.printValueList("... Errors : ");
     #endif
 
-    iterateModelExpansion(&this->models);
+    iterateModelExpansion(&this->models, ACTIONS[0]);
 
     #ifdef DEBUG
     cout << "... New models generated : " << min(buffer.size(), crit.numModelsToGeneratePerIter) << endl;
@@ -199,9 +210,14 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
 
     if (bestPrevError - bestNewError < crit.minErrorImprovement)
     {
-      #ifdef DEBUG
-      cout << YELLOW << "... Stopping, steady error so far" << RESET << endl;
-      #endif
+      // Iterate to the next action
+      if (ACTIONS.size()>0)
+      {
+        #ifdef DEBUG
+        cout << "... Steady error, iterate to next action" << endl;
+        #endif
+        ACTIONS.pop_front();
+      }
       break;
     }
 
