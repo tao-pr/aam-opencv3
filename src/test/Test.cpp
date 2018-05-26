@@ -383,7 +383,7 @@ void testAAMFitting()
   // Render sample without vertices nor edges
   auto ioSample = IO::MatIO();
   auto sizeSample = sampleAppearance->getSpannedSize();
-  sampleAppearance->render(&ioSample, Mat::zeros(sizeSample, CV_8UC3), false, false);
+  sampleAppearance->render(&ioSample, Mat::zeros(sizeSample, CV_8UC3), false, true);
   Mat sampleMat = ioSample.get();
   Rect sampleBound = sampleModel->getBound();
   rectangle(sampleMat, sampleBound, Scalar(200,0,0), 1, CV_AA);
@@ -419,7 +419,7 @@ void testAAMFitting()
   initAAM->render(
     &wndInitModel,
     Mat::zeros(initModel->getSpannedSize(), CV_8UC3),
-    false, false
+    false, true
   );
   moveWindow("init model", CANVAS_SIZE*2, CANVAS_SIZE);
 
@@ -440,14 +440,9 @@ void testAAMFitting()
   cout << "Shape Param : " << alignedModel->shapeParam << endl;
   cout << "App Param   : " << alignedModel->appearanceParam << endl;
 
-  // auto ioAligned = IO::WindowIO("aligned");
-  // alignedAAM->render(&ioAligned, Mat::zeros(alignedAAM->getSpannedSize(), CV_8UC3), false, false);
-  // moveWindow("aligned", CANVAS_SIZE*2 + sizeSample.width, CANVAS_SIZE);
-  // waitKey(5000);
-
   auto ioAligned = IO::MatIO();
   auto sizeAligned = alignedModel->getSpannedSize();
-  alignedAAM->render(&ioAligned, Mat::zeros(sizeAligned, CV_8UC3), false, false);
+  alignedAAM->render(&ioAligned, Mat::zeros(sizeAligned, CV_8UC3), false, true);
   Mat alignedMat = ioAligned.get();
   Rect alignedBound = alignedModel->getBound();
   rectangle(alignedMat, alignedBound, Scalar(200,0,0), 1, CV_AA);
