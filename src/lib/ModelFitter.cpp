@@ -64,9 +64,6 @@ void ModelFitter::iterateModelExpansion(
   pcaShape.permutationOfParams(smat);
   pcaAppearance.permutationOfParams(amat);
 
-  // TAOTODO: Apply step size and decreasing it iteratively
-
-  // TAOTODO: Reject if shape param or app param is ZERO matrix
   switch (action)
   {
     case SCALING:
