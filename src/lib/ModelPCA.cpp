@@ -27,6 +27,8 @@ ShapeModelPCA ShapeModelPCA::cloneWithNewScale(double newScale, const Point2d& n
   ShapeModelPCA neue(*this);
   neue.setScale(newScale);
   neue.setTranslation(newTranslation);
+
+  // TAOTODO: Offset and scale the graphic
   return neue;
 }
 
