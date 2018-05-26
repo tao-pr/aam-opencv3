@@ -27,8 +27,6 @@ ShapeModelPCA ShapeModelPCA::cloneWithNewScale(double newScale, const Point2d& n
   ShapeModelPCA neue(*this);
   neue.setScale(newScale);
   neue.setTranslation(newTranslation);
-
-  // TAOTODO: Offset and scale the graphic
   return neue;
 }
 
@@ -155,8 +153,8 @@ Rect AppearanceModelPCA::getBound() const
 AppearanceModelPCA AppearanceModelPCA::cloneWithNewScale(double newScale, const Point2d& newTranslation) const
 {
   AppearanceModelPCA neue(*this);
-  neue.setScale(newScale);
   neue.setTranslation(newTranslation);
+  neue.setScale(newScale);
   return neue;
 }
 
@@ -164,7 +162,7 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
 {
   auto meanShapeOffset = MeshShape(this->meanShape.recentreAndScale(translation, scale));
   auto bound = meanShape.getBound();
-  auto offsetBound = this->getBound();
+  //auto offsetBound = this->getBound();
   auto N = bound.width * bound.height;
   auto K = pca.mean.cols/3;
 
@@ -172,10 +170,10 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
   Mat backPrj = this->pca.backProject(param);
 
   // Reshape the row vector into a spatial graphic for the appearance
-  Mat graphic = Mat(
-    offsetBound.height + offsetBound.y, 
-    offsetBound.width + offsetBound.x, 
-    CV_8UC3, Scalar(0,0,0));
+  // Mat graphic = Mat(
+  //   offsetBound.height + offsetBound.y, 
+  //   offsetBound.width + offsetBound.x, 
+  //   CV_8UC3, Scalar(0,0,0));
   
   // Split backprojected vector into 3 channels, scale them to the expected size
   vector<Mat> bpjChannels;
@@ -190,12 +188,32 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
     bpjChannels.push_back(meanCh.reshape(1, bound.height));
   }
   merge(bpjChannels, bpjGraphic);
-  if (offsetBound.size() != bound.size())
+  // TAOTODO: Following offset and scaling is not 100% correct
+  int w_ = (int)ceil(bpjGraphic.cols*scale);
+  int h_ = (int)ceil(bpjGraphic.rows*scale);
+  Rect offsetBound(
+    translation.x,
+    translation.y,
+    w_,
+    h_);
+  Mat graphic(Mat::zeros(h_ + translation.y, w_ + translation.x, CV_8UC3));
+  if (scale != 1)
   {
-    resize(bpjGraphic, graphic(offsetBound), offsetBound.size());
+    Mat tmp(h_, w_, CV_8UC3);
+    resize(bpjGraphic, tmp, Size(w_, h_));
+
+    // cout << "translating ..." << endl; // TAODEBUG:
+    // cout << "bpj : " << bpjGraphic.size() << endl;
+    // cout << "tmp : " << tmp.size() << endl;
+    // cout << "offsetBound : " << offsetBound << endl;
+
+    tmp.copyTo(graphic(offsetBound));
+    //resize(bpjGraphic, graphic(offsetBound), Size(w_,h_));
   }
   else
+  {
     bpjGraphic.copyTo(graphic(Rect(offsetBound)));
+  }
 
   if (scale == 1 && translation == Point2d(0,0))
     return new Appearance(meanShapeOffset, graphic);

@@ -373,11 +373,10 @@ void testAAMFitting()
   unique_ptr<BaseFittedModel> sampleModel{ new FittedAAM(aamPCA) };
   Mat initShapeParam = Aux::randomMat(sampleModel->shapeParam.size());
   Mat initAppParam = Aux::randomMat(sampleModel->appearanceParam.size());
-  sampleModel->setScale(0.645);
-  sampleModel->setOrigin(15, 34.4);
+  sampleModel->setScale(0.60);
+  sampleModel->setOrigin(25, 34.4);
   sampleModel->setAppearanceParam(initAppParam);
   sampleModel->setShapeParam(initShapeParam);
-  cout << "... Converting to appearance" << endl; // TAODEBUG:
   auto sampleAppearance = sampleModel->toAppearance();
 
   // Render sample without vertices nor edges
@@ -393,9 +392,9 @@ void testAAMFitting()
   waitKey(1000);
 
   // Try fitting the model onto an unknown sample
-  int maxIters = 50;
+  int maxIters = 25;
   int maxTreeSize = 5;
-  int numModelsToGeneratePerIter = 5;
+  int numModelsToGeneratePerIter = 3;
   double minImprovement = 1e-5;
   double initScale = 1;
   double initError = numeric_limits<double>::max();
@@ -442,6 +441,10 @@ void testAAMFitting()
 
   auto ioAligned = IO::MatIO();
   auto sizeAligned = alignedModel->getSpannedSize();
+
+  // TAODEBUG:
+  imshow("aligned graphc", alignedAAM->getGraphic());
+
   alignedAAM->render(&ioAligned, Mat::zeros(sizeAligned, CV_8UC3), false, true);
   Mat alignedMat = ioAligned.get();
   Rect alignedBound = alignedModel->getBound();
