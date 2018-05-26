@@ -418,7 +418,7 @@ void testAAMFitting()
   cout << "Rendering initial model ..." << endl;
   initAAM->render(
     &wndInitModel,
-    Mat::zeros(initAAM->getSpannedSize(), CV_8UC3),
+    Mat::zeros(initModel->getSpannedSize(), CV_8UC3),
     false, false
   );
   moveWindow("init model", CANVAS_SIZE*2, CANVAS_SIZE);
@@ -429,23 +429,31 @@ void testAAMFitting()
   auto alignedAAM = alignedModel->toAppearance();
 
   cout << GREEN << "[Sample Parameters]" << RESET << endl;
-  cout << "Coordinate  : " << initModel->origin << endl;
-  cout << "Scale       : " << initModel->scale << endl; // TAOTODO: determine the scale factor
-  cout << "Shape Param : " << initModel->shapeParam << endl;
-  cout << "App Param   : " << initModel->appearanceParam << endl;
+  cout << "Coordinate  : " << sampleModel->origin << endl;
+  cout << "Scale       : " << sampleModel->scale << endl;
+  cout << "Shape Param : " << sampleModel->shapeParam << endl;
+  cout << "App Param   : " << sampleModel->appearanceParam << endl;
 
   cout << GREEN << "[Fitted Parameters]" << RESET << endl;
   cout << "Coordinate  : " << alignedModel->origin << endl;
   cout << "Scale       : " << alignedModel->scale << endl;
   cout << "Shape Param : " << alignedModel->shapeParam << endl;
   cout << "App Param   : " << alignedModel->appearanceParam << endl;
-  cout << "Span size   : " << alignedAAM->getSpannedSize() << endl;
 
-  auto ioAligned = IO::WindowIO("aligned");
-  alignedAAM->render(&ioAligned, Mat::zeros(alignedAAM->getSpannedSize(), CV_8UC3), false, false);
+  // auto ioAligned = IO::WindowIO("aligned");
+  // alignedAAM->render(&ioAligned, Mat::zeros(alignedAAM->getSpannedSize(), CV_8UC3), false, false);
+  // moveWindow("aligned", CANVAS_SIZE*2 + sizeSample.width, CANVAS_SIZE);
+  // waitKey(5000);
+
+  auto ioAligned = IO::MatIO();
+  auto sizeAligned = alignedModel->getSpannedSize();
+  alignedAAM->render(&ioAligned, Mat::zeros(sizeAligned, CV_8UC3), false, false);
+  Mat alignedMat = ioAligned.get();
+  Rect alignedBound = alignedModel->getBound();
+  rectangle(alignedMat, alignedBound, Scalar(200,0,0), 1, CV_AA);
+  imshow("aligned", alignedMat);
   moveWindow("aligned", CANVAS_SIZE*2 + sizeSample.width, CANVAS_SIZE);
   waitKey(5000);
-
 }
 
 int main(int argc, char** argv)

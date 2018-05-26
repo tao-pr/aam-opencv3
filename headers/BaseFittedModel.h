@@ -33,8 +33,10 @@ public:
   inline BaseFittedModel(unique_ptr<AAMPCA> const& aamPCA)
   {
     this->aamPCA = aamPCA->clone();
-    shapeParam = Mat::zeros(1, aamPCA->dimensionShape(), CV_64FC1);
-    appearanceParam = Mat::zeros(1, aamPCA->dimensionAppearance(), CV_64FC1);
+    this->shapeParam = Mat(1, aamPCA->dimensionShape(), CV_64FC1, Scalar(1));
+    this->appearanceParam = Mat(1, aamPCA->dimensionAppearance(), CV_64FC1, Scalar(1));
+    // shapeParam = Mat::zeros(1, aamPCA->dimensionShape(), CV_64FC1);
+    // appearanceParam = Mat::zeros(1, aamPCA->dimensionAppearance(), CV_64FC1);
     this->origin = Point2d(0,0);
     this->scale = 1;
   };
@@ -57,6 +59,7 @@ public:
   virtual MeshShape* toShape() const = 0;
   virtual unique_ptr<BaseFittedModel> clone() const = 0;
   virtual Rect getBound() const = 0;
+  virtual Size getSpannedSize() const = 0;
 
   virtual double measureError(const Mat& sample) = 0;
   virtual Mat drawOverlay(Mat& canvas, bool withEdges = false) = 0;

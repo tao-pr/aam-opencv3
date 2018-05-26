@@ -43,6 +43,12 @@ MeshShape* FittedAAM::toShape() const
   return shape_;
 }
 
+Size FittedAAM::getSpannedSize() const
+{
+  Rect bound = getBound();
+  return Size(bound.x + bound.width, bound.y + bound.height);
+}
+
 Rect FittedAAM::getBound() const
 {
   // Offset and scaled bound of the shape
