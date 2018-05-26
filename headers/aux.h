@@ -148,6 +148,13 @@ namespace Aux
     return e;
   }
 
+  inline Mat randomMat(Size dim, double mean = 0, double std = 1)
+  {
+    Mat m(dim, CV_32FC1);
+    randn(m, Scalar(mean), Scalar(std));
+    return m;
+  }
+
 }
 
 namespace Draw

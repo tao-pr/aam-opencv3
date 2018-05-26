@@ -366,23 +366,27 @@ void testAAMFitting()
   cout << "PCA dimension of shape      : " << pcaShape->dimension() << endl;
   cout << "PCA dimension of appearance : " << pcaAppearance->dimension() << endl;
 
-  // Generate unknown sample we want to try fitting the model on
-  double sampleScale = 240;
-  auto sampleCentre = Point2d(35, 36);
   cout << "Generating unknown sample ..." << endl;
-  auto sampleShape = MeshShape(*meanShape);
-  auto sampleAppearance = Appearance(*meanAppearance);
-  sampleShape.addRandomNoise(Point2d(21.5, 10.5));
-  cout << "Distorting unknown sample ..." << endl;
-  sampleAppearance.realignTo(sampleShape);
-  sampleAppearance.resizeTo(sampleScale);
-  sampleAppearance.recentre(sampleCentre);
+
+  // Generate unknown sample out of the trained PCA
+  unique_ptr<AAMPCA> aamPCA{ new AAMPCA(*pcaShape, *pcaAppearance) };
+  unique_ptr<BaseFittedModel> sampleModel{ new FittedAAM(aamPCA) };
+  Mat initShapeParam = Aux::randomMat(sampleModel->shapeParam.size());
+  Mat initAppParam = Aux::randomMat(sampleModel->appearanceParam.size());
+  sampleModel->setScale(0.645);
+  sampleModel->setOrigin(15, 34.4);
+  sampleModel->setAppearanceParam(initAppParam);
+  sampleModel->setShapeParam(initShapeParam);
+  cout << "... Converting to appearance" << endl; // TAODEBUG:
+  auto sampleAppearance = sampleModel->toAppearance();
 
   // Render sample without vertices nor edges
   auto ioSample = IO::MatIO();
-  auto sizeSample = sampleAppearance.getSpannedSize();
-  sampleAppearance.render(&ioSample, Mat::zeros(sizeSample, CV_8UC3), false, false);
+  auto sizeSample = sampleAppearance->getSpannedSize();
+  sampleAppearance->render(&ioSample, Mat::zeros(sizeSample, CV_8UC3), false, false);
   Mat sampleMat = ioSample.get();
+  Rect sampleBound = sampleModel->getBound();
+  rectangle(sampleMat, sampleBound, Scalar(200,0,0), 1, CV_AA);
   namedWindow("generated sample");
   moveWindow("generated sample", CANVAS_SIZE, CANVAS_SIZE);
   imshow("generated sample", sampleMat);
@@ -395,8 +399,12 @@ void testAAMFitting()
   double minImprovement = 1e-5;
   double initScale = 1;
   double initError = numeric_limits<double>::max();
-  auto crit = FittingCriteria { maxIters, maxTreeSize, numModelsToGeneratePerIter, minImprovement, initScale, sampleCentre };
-  unique_ptr<AAMPCA> aamPCA{ new AAMPCA(*pcaShape, *pcaAppearance) };
+  Point2d initCentre(10, 20);
+  auto crit = FittingCriteria { 
+    maxIters, maxTreeSize, 
+    numModelsToGeneratePerIter, 
+    minImprovement, initScale, initCentre };
+  
   unique_ptr<ModelFitter> fitter{ new ModelFitter(
     aamPCA,
     crit,
@@ -420,9 +428,9 @@ void testAAMFitting()
   auto alignedModel = fitter->fit(initModel);
   auto alignedAAM = alignedModel->toAppearance();
 
-  cout << GREEN << "[Init Parameters]" << RESET << endl;
+  cout << GREEN << "[Sample Parameters]" << RESET << endl;
   cout << "Coordinate  : " << initModel->origin << endl;
-  cout << "Scale       : " << initModel->scale << endl;
+  cout << "Scale       : " << initModel->scale << endl; // TAOTODO: determine the scale factor
   cout << "Shape Param : " << initModel->shapeParam << endl;
   cout << "App Param   : " << initModel->appearanceParam << endl;
 
@@ -431,6 +439,7 @@ void testAAMFitting()
   cout << "Scale       : " << alignedModel->scale << endl;
   cout << "Shape Param : " << alignedModel->shapeParam << endl;
   cout << "App Param   : " << alignedModel->appearanceParam << endl;
+  cout << "Span size   : " << alignedAAM->getSpannedSize() << endl;
 
   auto ioAligned = IO::WindowIO("aligned");
   alignedAAM->render(&ioAligned, Mat::zeros(alignedAAM->getSpannedSize(), CV_8UC3), false, false);

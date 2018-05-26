@@ -107,12 +107,9 @@ void ModelFitter::iterateModelExpansion(
         TRY
         auto ptrModel = modelPtr->ptr->clone();
         Mat param = modelPtr->ptr->shapeParam * scale + smat[i];
-        if (countNonZero(param) > 0)
-        {
-          ptrModel->setShapeParam(param);
-          double e = ptrModel->measureError(sample);
-          buffer.push(ptrModel, e);
-        }
+        ptrModel->setShapeParam(param);
+        double e = ptrModel->measureError(sample);
+        buffer.push(ptrModel, e);
         END_TRY
       }
       break;
@@ -123,12 +120,9 @@ void ModelFitter::iterateModelExpansion(
         TRY
         auto ptrModel = modelPtr->ptr->clone();
         Mat param = modelPtr->ptr->appearanceParam * scale + amat[i];
-        if (countNonZero(param) > 0)
-        {
-          ptrModel->setAppearanceParam(param);
-          double e = ptrModel->measureError(sample);
-          buffer.push(ptrModel, e);
-        }
+        ptrModel->setAppearanceParam(param);
+        double e = ptrModel->measureError(sample);
+        buffer.push(ptrModel, e);
         END_TRY
       }
       break;
