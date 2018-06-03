@@ -186,11 +186,6 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
   }
   merge(bpjChannels, modelInitGraphic);
 
-  // TAODEBUG:
-  cout << "nonZeros [0] = " << countNonZero(bpjChannels[0]) << endl;
-  cout << "nonZeros [1] = " << countNonZero(bpjChannels[1]) << endl;
-  cout << "nonZeros [2] = " << countNonZero(bpjChannels[2]) << endl;
-
   // Rescale and re-position the graphic
   int tx = translation.x;
   int ty = translation.y;
@@ -204,79 +199,13 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
     modelGraphic(Rect(tx, ty, w0, h0)),
     Size(w0, h0));
 
-  // TAODEBUG:
-  cout << "bound : " << bound << endl;
-  cout << param << endl;
-  imshow("init graphic", modelInitGraphic);
-  imshow("resized graphic", modelGraphic);
-  waitKey(0);
-
   // Rescale and re-position the shape
-  cout << "Rescaling shape ..." << endl; // TAODEBUG:
   auto modelShape = MeshShape(meanShape);
   modelShape.recentreAndScale(translation, scale);
 
   // Create an appearance out of the rescaled and translated shapes & graphic
-  cout << "creating appearance model..." << endl; // TAODEBUG:
   auto appearance = new Appearance(modelShape, modelGraphic);
   return appearance;
-
-  // auto originalOffset = meanShape.getBound();
-  // auto meanShapeOffset = MeshShape(this->meanShape.recentreAndScale(translation, scale));
-  // auto bound = meanShape.getBound();
-  // auto newOffset = meanShapeOffset.getBound();
-  // auto N = bound.width * bound.height;
-  // auto K = pca.mean.cols/3;
-
-  // // Backprojection of appearance params
-  // Mat backPrj = this->pca.backProject(param);
-  
-  // // Split backprojected vector into 3 channels, scale them to the expected size
-  // vector<Mat> bpjChannels;
-  // Mat bpjGraphic;
-  // for (int i=0; i<3; i++)
-  // {
-  //   Mat m = backPrj(Rect(i*K, 0, K, 1)).clone();
-  //   Mat c = Mat(1, N, CV_64FC1);
-  //   resize(m, c, Size(N, 1));
-  //   Mat meanCh = Mat(Size(N, 1), CV_8UC1);
-  //   c.convertTo(meanCh, CV_8UC1);
-  //   bpjChannels.push_back(meanCh.reshape(1, bound.height));
-  // }
-  // merge(bpjChannels, bpjGraphic);
-  // int w_ = (int)ceil(bpjGraphic.cols*scale);
-  // int h_ = (int)ceil(bpjGraphic.rows*scale);
-  // Rect offsetBound(
-  //   translation.x + originalOffset.x,
-  //   translation.y + originalOffset.y,
-  //   w_,
-  //   h_);
-  // Mat graphic(Mat::zeros(
-  //   h_ + translation.y + originalOffset.y, 
-  //   w_ + translation.x + originalOffset.x, 
-  //   CV_8UC3));
-  // if (scale != 1)
-  // {
-  //   Mat tmp(h_, w_, CV_8UC3);
-  //   resize(bpjGraphic, tmp, Size(w_, h_));
-  //   tmp.copyTo(graphic(offsetBound));
-
-  //   // TAODEBUG:
-  //   rectangle(graphic, originalOffset.tl(), originalOffset.br(), Scalar(200,0,0), 1);
-  //   rectangle(graphic, newOffset.tl(), newOffset.br(), Scalar(0,150,250), 3);
-  // }
-  // else
-  // {
-  //   bpjGraphic.copyTo(graphic(Rect(offsetBound)));
-  // }
-
-  // if (scale == 1 && translation == Point2d(0,0))
-  //   return new Appearance(meanShapeOffset, graphic);
-  // else
-  // {
-  //   // MeshShape meanOffsetShape(meanShape.recentreAndScale(translation, scale));  
-  //   return new Appearance(meanShapeOffset, graphic);
-  // }
 }
 
 
