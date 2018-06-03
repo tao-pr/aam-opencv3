@@ -29,7 +29,11 @@ Appearance* FittedAAM::toAppearance() const
   assert(this->origin.x >= 0);
   assert(this->origin.y >= 0);
 
-  // TAOTODO: Correct shape, but incorrect offset of graphic
+  // TAOTODO:
+  // - Generate new appearance from [pcaAppearance]
+  // - Generate new MeshShape from [pcaShape]
+  // - Realign appearance to the generated MeshShape
+
   return this->pcaAppearance()
     .cloneWithNewScale(scale, origin)
     .toAppearance(appearanceParam);
