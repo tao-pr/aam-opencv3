@@ -29,19 +29,26 @@ Appearance* FittedAAM::toAppearance() const
   assert(this->origin.x >= 0);
   assert(this->origin.y >= 0);
 
-  // TAOTODO:
-  // - Generate new appearance from [pcaAppearance]
-  // - Generate new MeshShape from [pcaShape]
-  // - Realign appearance to the generated MeshShape
-
-  return this->pcaAppearance()
+  cout << "toShape..." << endl; // TAODEBUG:
+  auto shape = toShape();
+  cout << "toAppearance..." << endl; // TAODEBUG:
+  auto appearance = this->pcaAppearance()
     .cloneWithNewScale(scale, origin)
     .toAppearance(appearanceParam);
+
+  // Realign the appearance with the decoded shape
+  cout << "realignTo..." << endl; // TAODEBUG:
+  appearance->realignTo(*shape);
+  return appearance;
 }
 
 MeshShape* FittedAAM::toShape() const
 {
-  // With scaling and translation
+  // TAOTODO: Following has an issue
+  // After a conversion from PCA to shape,
+  // the outcome may generate a different MeshShape triangle sequence.
+  // This has to be synchronised with the original (mean) shape.
+
   auto shape = this->pcaShape().toShape(this->shapeParam);
   shape->recentreAndScale(origin, scale);
   auto shape_ = new MeshShape(*shape);

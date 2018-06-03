@@ -80,7 +80,6 @@ public:
   
   void overrideMeanShape(const MeshShape& newMeanShape);
   Rect getBound() const;
-  // TAOTODO: Following is now conforming the state scaling and translation
   const double getMeanShapeScale() const { return this->meanShape.getScale(); };
 };
 
