@@ -36,20 +36,28 @@ Appearance* FittedAAM::toAppearance() const
     .cloneWithNewScale(scale, origin)
     .toAppearance(appearanceParam);
 
+  // TAODEBUG:
+  cout << "meanshape vertices count = " << appearance->getShape().getMat().size() << endl;
+
   // Realign the appearance with the decoded shape
   cout << "realignTo..." << endl; // TAODEBUG:
+  cout << "old bound : " << appearance->getSpannedSize() << endl;
+  cout << "new bound : " << shape->getSpannedSize() << endl;
+
+  // TAOTODO: Bug in the following triangle realignment
   appearance->realignTo(*shape);
   return appearance;
 }
 
 MeshShape* FittedAAM::toShape() const
 {
-  // TAOTODO: Following has an issue
+  // TAOTOREVIEW: Following has an issue if the shape param is big (high variation).
   // After a conversion from PCA to shape,
   // the outcome may generate a different MeshShape triangle sequence.
   // This has to be synchronised with the original (mean) shape.
 
   auto shape = this->pcaShape().toShape(this->shapeParam);
+  cout << "shape vertices count = " << shape->getMat().size() << endl; // TAODEBUG:
   shape->recentreAndScale(origin, scale);
   auto shape_ = new MeshShape(*shape);
   return shape_;

@@ -137,6 +137,7 @@ void Appearance::realignTo(MeshShape& newShape)
   Mat warped = Mat::zeros(newSize.height + span, newSize.width + span, CV_8UC3);
   for (int ti=0; ti<targetTriangles.size(); ti++)
   {
+    cout << "... realigning triangle #" << ti << endl; // TAODEBUG:
     this->textureList[ti].realignTo(targetTriangles[ti], &newShape.mat, &warped);
   }
 
