@@ -147,6 +147,8 @@ void Appearance::realignTo(MeshShape& newShape)
     auto displacement = targetVertices[n] - originalVertices[n];
     this->mesh.moveVertex(n, displacement);
   }
+
+  // TAOTODO: Crop the excessive whitespace (spanned) from [warped]
   
   // Replace the graphic with the warped one
   this->graphic = warped;

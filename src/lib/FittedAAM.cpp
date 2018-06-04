@@ -44,7 +44,13 @@ Appearance* FittedAAM::toAppearance() const
   cout << "old bound : " << appearance->getSpannedSize() << endl;
   cout << "new bound : " << shape->getSpannedSize() << endl;
 
-  // TAOTODO: Bug in the following triangle realignment
+  cout << "old graphic size : " << appearance->getGraphic().size() << endl;
+
+  cout << "old vertices : "
+        << appearance->getShape().getMat() << endl;
+  cout << "new vertices : "
+        << shape->getMat() << endl; 
+
   appearance->realignTo(*shape);
   return appearance;
 }
@@ -56,11 +62,17 @@ MeshShape* FittedAAM::toShape() const
   // the outcome may generate a different MeshShape triangle sequence.
   // This has to be synchronised with the original (mean) shape.
 
+  // TAOTOREVIEW: Generate the shape from PCA
+
+  // TAOTOREVIEW: Map new vertices with their closest the mean shape vertices (reorder if necessary)
+
+  // TAOTOREVIEW: Update SubDiv2D with the new vertices positions
+
+  // That's it!
+
   auto shape = this->pcaShape().toShape(this->shapeParam);
-  cout << "shape vertices count = " << shape->getMat().size() << endl; // TAODEBUG:
-  shape->recentreAndScale(origin, scale);
-  auto shape_ = new MeshShape(*shape);
-  return shape_;
+  auto shape_ = shape->recentreAndScale(origin, scale);
+  return new MeshShape(shape_);
 }
 
 Size FittedAAM::getSpannedSize() const

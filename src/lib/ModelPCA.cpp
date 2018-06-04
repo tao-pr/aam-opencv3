@@ -152,6 +152,7 @@ Rect AppearanceModelPCA::getBound() const
 
 AppearanceModelPCA AppearanceModelPCA::cloneWithNewScale(double newScale, const Point2d& newTranslation) const
 {
+  // TAOTODO: Resize and translate the associated graphic
   AppearanceModelPCA neue(*this);
   neue.setTranslation(newTranslation);
   neue.setScale(newScale);
@@ -199,12 +200,19 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
     modelGraphic(Rect(tx, ty, w0, h0)),
     Size(w0, h0));
 
+  // TAODEBUG:
+  cout << "PCA->toAppearance" << endl;
+  cout << "old size : " << modelInitGraphic.size() << endl;
+  cout << "new size : " << Rect(tx, ty, w0, h0) << endl;
+  cout << "scale : " << scale << endl;
+  cout << "PCA->toAppearance [END]" << endl;
+
   // Rescale and re-position the shape
   auto modelShape = MeshShape(meanShape);
-  modelShape.recentreAndScale(translation, scale);
+  auto modelShape_ = modelShape.recentreAndScale(translation, scale);
 
   // Create an appearance out of the rescaled and translated shapes & graphic
-  auto appearance = new Appearance(modelShape, modelGraphic);
+  auto appearance = new Appearance(modelShape_, modelGraphic);
   return appearance;
 }
 
