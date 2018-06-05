@@ -371,7 +371,7 @@ void testAAMFitting()
   // Generate unknown sample out of the trained PCA
   unique_ptr<AAMPCA> aamPCA{ new AAMPCA(*pcaShape, *pcaAppearance) };
   unique_ptr<BaseFittedModel> sampleModel{ new FittedAAM(aamPCA) };
-  Mat initShapeParam = Aux::randomMat(sampleModel->shapeParam.size(), 0, 10);
+  Mat initShapeParam = Aux::randomMat(sampleModel->shapeParam.size(), 0, 8.5);
   Mat initAppParam = Aux::randomMat(sampleModel->appearanceParam.size(), 0, 2.5);
   sampleModel->setScale(0.60);
   sampleModel->setOrigin(25, 34.4);
@@ -392,9 +392,9 @@ void testAAMFitting()
   waitKey(1000);
 
   // Try fitting the model onto an unknown sample
-  int maxIters = 25;
-  int maxTreeSize = 5;
-  int numModelsToGeneratePerIter = 3;
+  int maxIters = 20;
+  int maxTreeSize = 16;
+  int numModelsToGeneratePerIter = 4;
   double minImprovement = 1e-5;
   double initScale = 1;
   double minScale = 0.25;
@@ -444,9 +444,6 @@ void testAAMFitting()
 
   auto ioAligned = IO::MatIO();
   auto sizeAligned = alignedModel->getSpannedSize();
-
-  // TAODEBUG:
-  imshow("aligned graphc", alignedAAM->getGraphic());
 
   alignedAAM->render(&ioAligned, Mat::zeros(sizeAligned, CV_8UC3), false, true);
   Mat alignedMat = ioAligned.get();

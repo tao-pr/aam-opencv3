@@ -50,6 +50,7 @@ protected:
   ModelList models;
   ModelList buffer;
   Mat sample;
+  Mat zero;
 
   void iterateModelExpansion(
     ModelList* const modelPtr,
@@ -67,6 +68,7 @@ public:
     {
       this->aamPCA = aamPCA->clone();
       sample.copyTo(this->sample);
+      zero = Mat::zeros(sample.size(), CV_8UC3);
     };
   
   virtual inline ~ModelFitter()
@@ -77,6 +79,7 @@ public:
   void setSample(Mat& sample)
   {
     sample.copyTo(this->sample);
+    zero = Mat::zeros(sample.size(), CV_8UC3);
   };
 
   void setCriteria(FittingCriteria& crit)

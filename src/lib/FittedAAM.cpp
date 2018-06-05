@@ -96,41 +96,52 @@ double FittedAAM::measureError(const Mat& sample)
   // - Measure aggregated error of intensity
 
   Rect bound = getBound();
+
+  // Find overlapping bound between the shape and the sample
+  int minX = max(0, bound.x);
+  int minY = max(0, bound.y);
+  int maxX = min(sample.cols-1, bound.x+bound.width);
+  int maxY = min(sample.rows-1, bound.y+bound.height);
+  Rect obound(minX, minY, maxX-minX, maxY-minY);  
+
   Mat canvas = Mat::zeros(Size(bound.x + bound.width + 1, bound.y + bound.height + 1), CV_8UC3);
-  Mat overlay = drawOverlay(canvas);
+  Mat overlay = drawOverlay(canvas)(obound);
+  Mat sampleCrop = sample(obound);
 
   // Draw contour of appearance as boundary of computation
   auto shape = toShape();
-  Mat shapeConvex = shape->convexFill();
+  Mat shapeConvex = shape->convexFill()(obound);
+  Mat shapeConvexBGR(obound.height, obound.width, CV_8UC3);
+  cvtColor(shapeConvex, shapeConvexBGR, CV_GRAY2BGR);
 
-  // RMSE
+  Mat diff(obound.height, obound.width, CV_8UC3);
+
+  // Geometrically crop the diff between the sample and the overlay
+  absdiff(overlay, sampleCrop, diff);
+  bitwise_and(diff, shapeConvexBGR, diff);
+
+  // Find RMSE error
   double e = 0;
-  double MAX_ERR = 255*255;
-  int n = 0;
-  for (int i=0; i<canvas.cols; i++)
-    for (int j=0; j<canvas.rows; j++)
+  double n = 0;
+  for (int i=0; i<obound.width; i++)
+    for (int j=0; j<obound.height; j++)
     {
       if (shapeConvex.at<unsigned char>(j,i) > 0)
       {
-        if (sample.cols > i && sample.rows > j)
-        {
-          auto a = overlay.at<Vec3b>(j,i);
-          auto b = sample.at<Vec3b>(j,i);
-          auto d = a - b;
-          e += abs(d[0]) + abs(d[1]) + abs(d[2]);
-        }
-        else
-        {
-          // Out of range
-          // Pay with penalty
-          e += MAX_ERR;
-        }
-        ++n;
+        auto d = diff.at<Vec3b>(j,i);
+        e += Aux::square(0.33*(d[0] + d[1] + d[2]));
+        n += 1;
       }
     }
+  e = (n == 0) ? numeric_limits<double>::max() : Aux::sqrt(e/n);
 
-  // Error per pixel
-  return Aux::sqrt(e) / (double)n;
+  // TAODEBUG:
+  // destroyAllWindows();
+  // imshow("overlay", overlay);
+  // imshow("sample", sample);
+  // imshow("diff", diff);
+
+  return e;
 }
 
 Mat FittedAAM::drawOverlay(Mat& canvas, bool withEdges)

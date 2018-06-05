@@ -64,6 +64,8 @@ void ModelFitter::iterateModelExpansion(
   pcaShape.permutationOfParams(smat);
   pcaAppearance.permutationOfParams(amat);
 
+  // Generate new model by varying the parameter
+  // NOTE: A new model may be ignored if it does not produce smaller error than base minimum.
   switch (action)
   {
     case SCALING:
@@ -76,7 +78,8 @@ void ModelFitter::iterateModelExpansion(
         {
           ptrModel->setScale(newScale);
           double e = ptrModel->measureError(sample);
-          buffer.push(ptrModel, e);  
+          double e0 = ptrModel->measureError(zero);
+          if (e<e0) buffer.push(ptrModel, e);
         }
         END_TRY
       }
@@ -92,7 +95,8 @@ void ModelFitter::iterateModelExpansion(
         {
           ptrModel->setOrigin(newOrigin);
           double e = ptrModel->measureError(sample);
-          buffer.push(ptrModel, e);
+          double e0 = ptrModel->measureError(zero);
+          if (e<e0) buffer.push(ptrModel, e);
         }
         END_TRY
       }
@@ -106,7 +110,8 @@ void ModelFitter::iterateModelExpansion(
         Mat param = modelPtr->ptr->shapeParam * scale + smat[i];
         ptrModel->setShapeParam(param);
         double e = ptrModel->measureError(sample);
-        buffer.push(ptrModel, e);
+        double e0 = ptrModel->measureError(zero);
+        if (e<e0) buffer.push(ptrModel, e);
         END_TRY
       }
       break;
@@ -119,7 +124,8 @@ void ModelFitter::iterateModelExpansion(
         Mat param = modelPtr->ptr->appearanceParam * scale + amat[i];
         ptrModel->setAppearanceParam(param);
         double e = ptrModel->measureError(sample);
-        buffer.push(ptrModel, e);
+        double e0 = ptrModel->measureError(zero);
+        if (e<e0) buffer.push(ptrModel, e);
         END_TRY
       }
       break;
@@ -181,7 +187,11 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
   // Adjust model parameters until converges
   int iter = 0;
   double scale = 1;
-  deque<SearchWith> ACTIONS = {TRANSLATION, SCALING, RESHAPING, REAPPEARANCING};
+  deque<SearchWith> ACTIONS = {
+    TRANSLATION, SCALING, 
+    TRANSLATION, SCALING, 
+    RESHAPING, REAPPEARANCING
+  };
   
   while (iter < crit.numMaxIter)
   {
@@ -193,7 +203,6 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     this->buffer.clear();
 
     #ifdef DEBUG
-    cout << "... Num models so far : " << models.size() << endl;
     models.printValueList("... Errors : ");
     #endif
 
@@ -220,7 +229,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
       // Shrink scale
       if (scale > 0.125)
       {
-        scale *= 0.5;
+        scale *= 0.8;
         #ifdef DEBUG
         cout << "... Steady error, shrinking scale to " << scale << endl;
         #endif
