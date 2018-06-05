@@ -29,27 +29,16 @@ Appearance* FittedAAM::toAppearance() const
   assert(this->origin.x >= 0);
   assert(this->origin.y >= 0);
 
-  cout << "toShape..." << endl; // TAODEBUG:
   auto shape = toShape();
-  cout << "toAppearance..." << endl; // TAODEBUG:
   auto appearance = this->pcaAppearance()
     .cloneWithNewScale(scale, origin)
     .toAppearance(appearanceParam);
 
   // TAODEBUG:
-  cout << "meanshape vertices count = " << appearance->getShape().getMat().size() << endl;
-
-  // Realign the appearance with the decoded shape
-  cout << "realignTo..." << endl; // TAODEBUG:
-  cout << "old bound : " << appearance->getSpannedSize() << endl;
-  cout << "new bound : " << shape->getSpannedSize() << endl;
-
-  cout << "old graphic size : " << appearance->getGraphic().size() << endl;
-
-  cout << "old vertices : "
-        << appearance->getShape().getMat() << endl;
-  cout << "new vertices : "
-        << shape->getMat() << endl; 
+  // cout << "old vertices : "
+  //       << appearance->getShape().getMat() << endl;
+  // cout << "new vertices : "
+  //       << shape->getMat() << endl; 
 
   appearance->realignTo(*shape);
   return appearance;
@@ -72,6 +61,13 @@ MeshShape* FittedAAM::toShape() const
 
   auto shape = this->pcaShape().toShape(this->shapeParam);
   auto shape_ = shape->recentreAndScale(origin, scale);
+
+  // TAODEBUG:
+  // cout << "PCA->toShape" << endl;
+  // cout << "before scaling : " << shape->getMat() << endl;
+  // cout << "after scaling : " << shape_.getMat() << endl;
+  // cout << "PCA->toShape [END]" << endl;
+
   return new MeshShape(shape_);
 }
 

@@ -137,7 +137,6 @@ void Appearance::realignTo(MeshShape& newShape)
   Mat warped = Mat::zeros(newSize.height + span, newSize.width + span, CV_8UC3);
   for (int ti=0; ti<targetTriangles.size(); ti++)
   {
-    cout << "... realigning triangle #" << ti << endl; // TAODEBUG:
     this->textureList[ti].realignTo(targetTriangles[ti], &newShape.mat, &warped);
   }
 
@@ -148,7 +147,7 @@ void Appearance::realignTo(MeshShape& newShape)
     this->mesh.moveVertex(n, displacement);
   }
 
-  // TAOTODO: Crop the excessive whitespace (spanned) from [warped]
+  // TAOTOREVIEW: Crop the excessive whitespace (spanned) from [warped]
   
   // Replace the graphic with the warped one
   this->graphic = warped;

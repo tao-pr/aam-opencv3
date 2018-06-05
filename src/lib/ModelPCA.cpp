@@ -167,6 +167,7 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
   auto bound = meanShape.getBound();
   auto N = bound.width * bound.height;
   auto K = pca.mean.cols/3;
+  auto margin = bound.tl();
 
   Mat modelInitGraphic;
 
@@ -187,25 +188,32 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
   }
   merge(bpjChannels, modelInitGraphic);
 
+  // Add shape margin
+  Mat modelInitGraphicWithMargin = Mat::zeros(
+    modelInitGraphic.rows + margin.y,
+    modelInitGraphic.cols + margin.x,
+    CV_8UC3);
+  modelInitGraphic.copyTo(modelInitGraphicWithMargin(Rect(margin.x, margin.y, modelInitGraphic.cols, modelInitGraphic.rows)));
+
   // Rescale and re-position the graphic
   int tx = translation.x;
   int ty = translation.y;
-  int w0 = (int)ceil(modelInitGraphic.cols*scale);
-  int h0 = (int)ceil(modelInitGraphic.rows*scale);
+  int w0 = (int)ceil(modelInitGraphicWithMargin.cols*scale);
+  int h0 = (int)ceil(modelInitGraphicWithMargin.rows*scale);
   int w = w0 + tx;
   int h = h0 + ty;
   Mat modelGraphic = Mat::zeros(h, w, CV_8UC3);
   resize( 
-    modelInitGraphic,
+    modelInitGraphicWithMargin,
     modelGraphic(Rect(tx, ty, w0, h0)),
     Size(w0, h0));
 
   // TAODEBUG:
-  cout << "PCA->toAppearance" << endl;
-  cout << "old size : " << modelInitGraphic.size() << endl;
-  cout << "new size : " << Rect(tx, ty, w0, h0) << endl;
-  cout << "scale : " << scale << endl;
-  cout << "PCA->toAppearance [END]" << endl;
+  // cout << "PCA->toAppearance" << endl;
+  // cout << "old size : " << modelInitGraphic.size() << endl;
+  // cout << "new size : " << Rect(tx, ty, w0, h0) << endl;
+  // cout << "scale : " << scale << endl;
+  // cout << "PCA->toAppearance [END]" << endl;
 
   // Rescale and re-position the shape
   auto modelShape = MeshShape(meanShape);
