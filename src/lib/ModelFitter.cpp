@@ -72,7 +72,7 @@ void ModelFitter::iterateModelExpansion(
         TRY
         auto ptrModel = modelPtr->ptr->clone();
         double newScale = s * modelPtr->ptr->scale * scale;
-        if (newScale > 0)
+        if (newScale > 0 && newScale >= crit.minScale && newScale <= crit.maxScale)
         {
           ptrModel->setScale(newScale);
           double e = ptrModel->measureError(sample);

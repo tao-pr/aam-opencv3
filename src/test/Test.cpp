@@ -397,12 +397,15 @@ void testAAMFitting()
   int numModelsToGeneratePerIter = 3;
   double minImprovement = 1e-5;
   double initScale = 1;
+  double minScale = 0.25;
+  double maxScale = 2.5;
   double initError = numeric_limits<double>::max();
   Point2d initCentre(10, 20);
   auto crit = FittingCriteria { 
     maxIters, maxTreeSize, 
     numModelsToGeneratePerIter, 
-    minImprovement, initScale, initCentre };
+    minImprovement, initScale, initCentre,
+    minScale, maxScale };
   
   unique_ptr<ModelFitter> fitter{ new ModelFitter(
     aamPCA,

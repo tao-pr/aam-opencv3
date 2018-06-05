@@ -29,10 +29,12 @@ struct FittingCriteria
   double minErrorImprovement;
   double initScale;
   Point2d initPos; // Coordinate of the upper-left origin
+  double minScale;
+  double maxScale;
 
   static FittingCriteria getDefault()
   {
-    return FittingCriteria{ 10, 16, 8, 1e-4, 100, Point2d(0,0) };
+    return FittingCriteria{ 10, 16, 8, 1e-4, 100, Point2d(0,0), 0.33, 3 };
   };
 };
 
