@@ -29,18 +29,6 @@ void ModelFitter::iterateModelExpansion(
   SearchWith action,
   double scale)
 {
-  #ifdef DEBUG
-  string actionStr = "";
-  switch (action)
-  {
-    case TRANSLATION: actionStr = "translation"; break;
-    case SCALING:     actionStr = "scaling"; break;
-    case RESHAPING:   actionStr = "reshaping"; break;
-    case REAPPEARANCING: actionStr = "reappearancing"; break;
-  }
-  cout << "... Generating new models with " << actionStr << endl;
-  #endif
-
   assert(modelPtr != nullptr);
   assert(modelPtr->ptr != nullptr);
 
@@ -204,6 +192,15 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
 
     #ifdef DEBUG
     models.printValueList("... Errors : ");
+    string actionStr = "";
+    switch (ACTIONS[0])
+    {
+      case TRANSLATION: actionStr = "translation"; break;
+      case SCALING:     actionStr = "scaling"; break;
+      case RESHAPING:   actionStr = "reshaping"; break;
+      case REAPPEARANCING: actionStr = "reappearancing"; break;
+    }
+    cout << "... Generating new models with " << actionStr << endl;
     #endif
 
     iterateModelExpansion(&this->models, ACTIONS[0], scale);
@@ -229,7 +226,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
       // Shrink scale
       if (scale > 0.125)
       {
-        scale *= 0.8;
+        scale *= 0.67; // TAOTOREVIEW: Use different decay ratios as per action
         #ifdef DEBUG
         cout << "... Steady error, shrinking scale to " << scale << endl;
         #endif

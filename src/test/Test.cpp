@@ -385,7 +385,6 @@ void testAAMFitting()
   sampleAppearance->render(&ioSample, Mat::zeros(sizeSample, CV_8UC3), false, true);
   Mat sampleMat = ioSample.get();
   Rect sampleBound = sampleModel->getBound();
-  rectangle(sampleMat, sampleBound, Scalar(200,0,0), 1, CV_AA);
   namedWindow("generated sample");
   moveWindow("generated sample", CANVAS_SIZE, CANVAS_SIZE);
   imshow("generated sample", sampleMat);
@@ -393,9 +392,9 @@ void testAAMFitting()
 
   // Try fitting the model onto an unknown sample
   int maxIters = 20;
-  int maxTreeSize = 16;
+  int maxTreeSize = 8;
   int numModelsToGeneratePerIter = 4;
-  double minImprovement = 1e-5;
+  double minImprovement = 5;
   double initScale = 1;
   double minScale = 0.25;
   double maxScale = 2.5;
@@ -448,7 +447,6 @@ void testAAMFitting()
   alignedAAM->render(&ioAligned, Mat::zeros(sizeAligned, CV_8UC3), false, true);
   Mat alignedMat = ioAligned.get();
   Rect alignedBound = alignedModel->getBound();
-  rectangle(alignedMat, alignedBound, Scalar(200,0,0), 1, CV_AA);
   imshow("aligned", alignedMat);
   moveWindow("aligned", CANVAS_SIZE*2 + sizeSample.width, CANVAS_SIZE);
   waitKey(5000);

@@ -96,23 +96,34 @@ double FittedAAM::measureError(const Mat& sample)
   // - Measure aggregated error of intensity
 
   Rect bound = getBound();
+  auto shape = toShape();
+  Mat shapeConvexOriginal = shape->convexFill();
 
-  // Find overlapping bound between the shape and the sample
-  int minX = max(0, bound.x);
-  int minY = max(0, bound.y);
+  // Find the biggest possible rectangle which is capable of containing the following:
+  // - The convex fill of the shape
+  // - The sample boundary
+  // - The model boundary
+  int minX = max(0, min(bound.x, sample.cols-1));
+  int minY = max(0, min(bound.y, sample.rows-1));
   int maxX = min(sample.cols-1, bound.x+bound.width);
   int maxY = min(sample.rows-1, bound.y+bound.height);
+  maxX = min(shapeConvexOriginal.cols-1, maxX);
+  maxY = min(shapeConvexOriginal.rows-1, maxY);
   Rect obound(minX, minY, maxX-minX, maxY-minY);  
+
+  cout << "bound ~ " << obound << endl; // TAODEBUG:
 
   Mat canvas = Mat::zeros(Size(bound.x + bound.width + 1, bound.y + bound.height + 1), CV_8UC3);
   Mat overlay = drawOverlay(canvas)(obound);
   Mat sampleCrop = sample(obound);
 
-  // Draw contour of appearance as boundary of computation
-  auto shape = toShape();
-  Mat shapeConvex = shape->convexFill()(obound);
+  Mat shapeConvex = shapeConvexOriginal(obound);
+  cout << "cropped shape convex ..." << endl; // TAODEBUG:
+
   Mat shapeConvexBGR(obound.height, obound.width, CV_8UC3);
   cvtColor(shapeConvex, shapeConvexBGR, CV_GRAY2BGR);
+
+  cout << "convex : " << shapeConvex.size() << endl; // TAODEBUG:
 
   Mat diff(obound.height, obound.width, CV_8UC3);
 
