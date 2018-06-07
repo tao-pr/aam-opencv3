@@ -371,8 +371,8 @@ void testAAMFitting()
   // Generate unknown sample out of the trained PCA
   unique_ptr<AAMPCA> aamPCA{ new AAMPCA(*pcaShape, *pcaAppearance) };
   unique_ptr<BaseFittedModel> sampleModel{ new FittedAAM(aamPCA) };
-  Mat initShapeParam = Aux::randomMat(sampleModel->shapeParam.size(), 0, 8.5);
-  Mat initAppParam = Aux::randomMat(sampleModel->appearanceParam.size(), 0, 6.35);
+  Mat initShapeParam = Aux::randomMat(sampleModel->shapeParam.size(), 0, 5.5);
+  Mat initAppParam = Aux::randomMat(sampleModel->appearanceParam.size(), 0, 25);
   sampleModel->setScale(0.60);
   sampleModel->setOrigin(25, 34.4);
   sampleModel->setAppearanceParam(initAppParam);
