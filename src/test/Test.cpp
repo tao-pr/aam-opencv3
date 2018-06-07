@@ -372,7 +372,7 @@ void testAAMFitting()
   unique_ptr<AAMPCA> aamPCA{ new AAMPCA(*pcaShape, *pcaAppearance) };
   unique_ptr<BaseFittedModel> sampleModel{ new FittedAAM(aamPCA) };
   Mat initShapeParam = Aux::randomMat(sampleModel->shapeParam.size(), 0, 8.5);
-  Mat initAppParam = Aux::randomMat(sampleModel->appearanceParam.size(), 0, 2.5);
+  Mat initAppParam = Aux::randomMat(sampleModel->appearanceParam.size(), 0, 6.35);
   sampleModel->setScale(0.60);
   sampleModel->setOrigin(25, 34.4);
   sampleModel->setAppearanceParam(initAppParam);
@@ -391,7 +391,7 @@ void testAAMFitting()
   waitKey(1000);
 
   // Try fitting the model onto an unknown sample
-  int maxIters = 30;
+  int maxIters = 40;
   int maxTreeSize = 8;
   int numModelsToGeneratePerIter = 4;
   double minImprovement = 5;
@@ -399,7 +399,7 @@ void testAAMFitting()
   double minScale = 0.5;
   double maxScale = 1.5;
   double initError = numeric_limits<double>::max();
-  Point2d initCentre(10, 20);
+  Point2d initCentre(10, 10);
   auto crit = FittingCriteria { 
     maxIters, maxTreeSize, 
     numModelsToGeneratePerIter, 

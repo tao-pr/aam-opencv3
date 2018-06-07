@@ -152,7 +152,6 @@ Rect AppearanceModelPCA::getBound() const
 
 AppearanceModelPCA AppearanceModelPCA::cloneWithNewScale(double newScale, const Point2d& newTranslation) const
 {
-  // TAOTODO: Resize and translate the associated graphic
   AppearanceModelPCA neue(*this);
   neue.setTranslation(newTranslation);
   neue.setScale(newScale);

@@ -34,12 +34,6 @@ Appearance* FittedAAM::toAppearance() const
     .cloneWithNewScale(scale, origin)
     .toAppearance(appearanceParam);
 
-  // TAODEBUG:
-  // cout << "old vertices : "
-  //       << appearance->getShape().getMat() << endl;
-  // cout << "new vertices : "
-  //       << shape->getMat() << endl; 
-
   appearance->realignTo(*shape);
   return appearance;
 }
@@ -61,12 +55,6 @@ MeshShape* FittedAAM::toShape() const
 
   auto shape = this->pcaShape().toShape(this->shapeParam);
   auto shape_ = shape->recentreAndScale(origin, scale);
-
-  // TAODEBUG:
-  // cout << "PCA->toShape" << endl;
-  // cout << "before scaling : " << shape->getMat() << endl;
-  // cout << "after scaling : " << shape_.getMat() << endl;
-  // cout << "PCA->toShape [END]" << endl;
 
   return new MeshShape(shape_);
 }
