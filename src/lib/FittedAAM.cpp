@@ -111,19 +111,13 @@ double FittedAAM::measureError(const Mat& sample)
   maxY = min(shapeConvexOriginal.rows-1, maxY);
   Rect obound(minX, minY, maxX-minX, maxY-minY);  
 
-  cout << "bound ~ " << obound << endl; // TAODEBUG:
-
   Mat canvas = Mat::zeros(Size(bound.x + bound.width + 1, bound.y + bound.height + 1), CV_8UC3);
   Mat overlay = drawOverlay(canvas)(obound);
   Mat sampleCrop = sample(obound);
 
   Mat shapeConvex = shapeConvexOriginal(obound);
-  cout << "cropped shape convex ..." << endl; // TAODEBUG:
-
   Mat shapeConvexBGR(obound.height, obound.width, CV_8UC3);
   cvtColor(shapeConvex, shapeConvexBGR, CV_GRAY2BGR);
-
-  cout << "convex : " << shapeConvex.size() << endl; // TAODEBUG:
 
   Mat diff(obound.height, obound.width, CV_8UC3);
 
