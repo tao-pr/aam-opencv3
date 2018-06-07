@@ -391,13 +391,13 @@ void testAAMFitting()
   waitKey(1000);
 
   // Try fitting the model onto an unknown sample
-  int maxIters = 20;
+  int maxIters = 30;
   int maxTreeSize = 8;
   int numModelsToGeneratePerIter = 4;
   double minImprovement = 5;
   double initScale = 1;
-  double minScale = 0.25;
-  double maxScale = 2.5;
+  double minScale = 0.5;
+  double maxScale = 1.5;
   double initError = numeric_limits<double>::max();
   Point2d initCentre(10, 20);
   auto crit = FittingCriteria { 
