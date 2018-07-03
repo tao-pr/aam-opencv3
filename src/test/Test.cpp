@@ -392,7 +392,7 @@ void testAAMFitting()
 
   // Try fitting the model onto an unknown sample
   int maxIters = 40;
-  int maxTreeSize = 8;
+  int maxTreeSize = 4;
   int numModelsToGeneratePerIter = 4;
   double minImprovement = 5;
   double initScale = 1;
