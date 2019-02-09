@@ -127,13 +127,6 @@ double FittedAAM::measureError(const Mat& sample)
       }
     }
   e = (n == 0) ? numeric_limits<double>::max() : Aux::sqrt(e/n);
-
-  // TAODEBUG:
-  // destroyAllWindows();
-  // imshow("overlay", overlay);
-  // imshow("sample", sample);
-  // imshow("diff", diff);
-
   return e;
 }
 

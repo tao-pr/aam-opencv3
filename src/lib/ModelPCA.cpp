@@ -207,13 +207,6 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
     modelGraphic(Rect(tx, ty, w0, h0)),
     Size(w0, h0));
 
-  // TAODEBUG:
-  // cout << "PCA->toAppearance" << endl;
-  // cout << "old size : " << modelInitGraphic.size() << endl;
-  // cout << "new size : " << Rect(tx, ty, w0, h0) << endl;
-  // cout << "scale : " << scale << endl;
-  // cout << "PCA->toAppearance [END]" << endl;
-
   // Rescale and re-position the shape
   auto modelShape = MeshShape(meanShape);
   auto modelShape_ = modelShape.recentreAndScale(translation, scale);
