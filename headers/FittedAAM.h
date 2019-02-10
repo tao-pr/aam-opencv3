@@ -31,6 +31,7 @@ public:
   const AppearanceModelPCA pcaAppearance() const { return aamPCA->getAppearancePCA(); };
   const double getMeanShapeScale() const;
   Rect getBound() const;
+  Size getSpannedSize() const;
 
   BaseFittedModel* setOrigin(const Point2d& p);
   inline BaseFittedModel* setScale(const double s) { this->scale = s; return this; };
@@ -41,7 +42,7 @@ public:
   MeshShape* toShape() const;
   unique_ptr<BaseFittedModel> clone() const;
 
-  double measureError(const Mat& sample);
+  double measureError(const Mat& sample, int skipPixels=0);
   Mat drawOverlay(Mat& canvas, bool withEdges = false);
 };
 

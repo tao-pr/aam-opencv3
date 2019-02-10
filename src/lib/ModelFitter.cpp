@@ -13,211 +13,257 @@ ostream &operator<<(ostream &os, SearchWith const &s)
   return os << str;
 }
 
-unique_ptr<BaseFittedModel> ModelFitter::generateNextBestModel(double prevError, unique_ptr<BaseFittedModel> const& model, const Mat& sample, double* bestError, SearchWith* action) const
+ostream &operator<<(ostream &os, FittingCriteria const &c)
 {
-  vector<SearchWith> actions = {SCALING, TRANSLATION, RESHAPING, REAPPEARANCING};
-  vector<unique_ptr<BaseFittedModel>> candidates;
-  vector<SearchWith> candidateActions;
+  return os << "Fitting criteria :" << endl
+    << "...num Max iter = " << c.numMaxIter << endl
+    << "...max Tree size = " << c.maxTreeSize << endl 
+    << "...num models to gen = " << c.numModelsToGeneratePerIter << endl
+    << "...min err diff = " << c.minErrorImprovement << endl
+    << "...init scale = " << c.initScale << endl
+    << "...init pos = " << c.initPos << endl;
+}
 
-  #ifdef DEBUG
-  cout << CYAN << "Fitter : Generating next best model" << RESET << endl;
-  #endif
+void ModelFitter::iterateModelExpansion(
+  ModelList* const modelPtr,
+  SearchWith action,
+  double scale)
+{
+  assert(modelPtr != nullptr);
+  assert(modelPtr->ptr != nullptr);
 
   // Generate action params
   auto pcaShape      = aamPCA->getShapePCA();
   auto pcaAppearance = aamPCA->getAppearancePCA();
-  double scales[]    = {1.01, 0.99, 
-                        1.5, 0.5, 
-                        1.33, 0.67,
-                        2.5, 0.4};
-  Point2d trans[]    = {//Point2d(-1,0), Point2d(0,-1), Point2d(1,0), Point2d(0,1),
-                        Point2d(-5,0), Point2d(0,-5), Point2d(5,0), Point2d(0,5),
-                        Point2d(-10,0), Point2d(0,-10), Point2d(10,0), Point2d(0,10),
-                        Point2d(-25,0), Point2d(0,-25), Point2d(25,0), Point2d(0,25)};
-  auto smat          = pcaShape.permutationOfParams();
-  auto amat          = pcaAppearance.permutationOfParams();
+  double scales[]    = {1.01, 0.99, 1.0, 1.5, 0.5};
+  Point2d trans[]    = {Point2d(-1,0), Point2d(0,-1), 
+                        Point2d(1,0), Point2d(0,1),
+                        Point2d(1,1), Point2d(1,-1),
+                        Point2d(-1,1), Point2d(-1,-1),
+                        Point2d(0,0)
+                      };
+  
+  int smatSize = pcaShape.getSizeOfPermutationOfParams();
+  int amatSize = pcaAppearance.getSizeOfPermutationOfParams();
+  Mat *smat = new Mat[smatSize]; 
+  Mat *amat = new Mat[amatSize];
+  for (int i=0; i<smatSize; i++) smat[i] = Mat::zeros(1, pcaShape.dimension(), CV_64FC1);
+  for (int i=0; i<amatSize; i++) amat[i] = Mat::zeros(1, pcaAppearance.dimension(), CV_64FC1);
+  pcaShape.permutationOfParams(smat);
+  pcaAppearance.permutationOfParams(amat);
 
-  for (auto& a : actions)
+  const int SKIP_SIZE = 2;
+  #define IN_RANGE(v,_min,_max) (v>_min && v<_max)
+
+  // Generate new model by varying the parameter
+  // NOTE: A new model may be ignored if it does not produce smaller error than base minimum.
+  switch (action)
   {
-    switch (a)
-    {
-      case SCALING:
-        for (auto& s : scales) 
+    case SCALING:
+      for (auto& s : scales) 
+      {
+        TRY
+        auto ptrModel = modelPtr->ptr->clone();
+        double newScale = s * modelPtr->ptr->scale * scale;
+        if (newScale > 0 && newScale >= crit.minScale 
+          && newScale <= crit.maxScale
+          && IN_RANGE(newScale, SCALING_MIN, SCALING_MAX))
         {
-          auto ptrModel = model->clone();
-          ptrModel->setScale(s * model->scale);
-          candidates.push_back(move(ptrModel));
-          candidateActions.push_back(a);
+          ptrModel->setScale(newScale);
+          double e = ptrModel->measureError(sample, SKIP_SIZE);
+          double e0 = ptrModel->measureError(zero, SKIP_SIZE);
+          if (e<e0) buffer.push(ptrModel, e);
         }
-        break;
+        END_TRY
+      }
+      break;
 
-      case TRANSLATION:
-        for (auto& t : trans)
+    case TRANSLATION:
+      for (auto& t : trans)
+      {
+        TRY
+        auto ptrModel = modelPtr->ptr->clone();
+        auto newOrigin = modelPtr->ptr->origin + t * scale;
+        if (newOrigin.x >= 0 && newOrigin.y >= 0 
+          && IN_RANGE(t.x * scale, TRANSLATION_MIN, TRANSLATION_MAX))
         {
-          auto ptrModel = model->clone();
-          ptrModel->setOrigin(model->origin + t);
-          candidates.push_back(move(ptrModel));
-          candidateActions.push_back(a);
+          ptrModel->setOrigin(newOrigin);
+          double e = ptrModel->measureError(sample, SKIP_SIZE);
+          double e0 = ptrModel->measureError(zero, SKIP_SIZE);
+          if (e<e0) buffer.push(ptrModel, e);
         }
-        break;
+        END_TRY
+      }
+      break;
 
-      case RESHAPING:
-        for (auto param : smat)
+    case RESHAPING:
+      for (int i=0; i<smatSize; i++)
+      {
+        TRY
+        auto ptrModel = modelPtr->ptr->clone();
+        Mat param = modelPtr->ptr->shapeParam * scale + smat[i];
+        double _mi, _mx;
+        minMaxLoc(param, &_mi, &_mx);
+        if (_mi > RESHAPING_MIN && _mx < RESHAPING_MAX)
         {
-          auto ptrModel = model->clone();
-          ptrModel->setShapeParam(model->shapeParam + *param);
-          candidates.push_back(move(ptrModel));
-          candidateActions.push_back(a);
+          ptrModel->setShapeParam(param);
+          double e = ptrModel->measureError(sample, SKIP_SIZE);
+          double e0 = ptrModel->measureError(zero, SKIP_SIZE);
+          if (e<e0) buffer.push(ptrModel, e);
         }
-        smat.clear();
-        break;
+        END_TRY
+      }
+      break;
 
-      case REAPPEARANCING:
-        for (auto param : amat)
+    case REAPPEARANCING:
+      for (int i=0; i<amatSize; i++)
+      {
+        TRY
+        auto ptrModel = modelPtr->ptr->clone();
+        Mat param = modelPtr->ptr->appearanceParam * scale + amat[i];
+        double _mi, _mx;
+        minMaxLoc(param, &_mi, &_mx);
+        if (_mi > REAPPEARANCING_MIN && _mx < REAPPEARANCING_MAX)
         {
-          auto ptrModel = model->clone();
-          ptrModel->setAppearanceParam(model->appearanceParam + *param);
-          candidates.push_back(move(ptrModel));
-          candidateActions.push_back(a);
+          ptrModel->setAppearanceParam(param);
+          double e = ptrModel->measureError(sample, SKIP_SIZE);
+          double e0 = ptrModel->measureError(zero, SKIP_SIZE);
+          if (e<e0) buffer.push(ptrModel, e);
         }
-        amat.clear();
-        break;
-    }
+        END_TRY
+      }
+      break;
   }
 
-  #ifdef DEBUG
-  cout << "Candidates size : " << candidates.size() << endl;
-  #endif
+  delete[] smat;
+  delete[] amat;
 
-  // Identify the best model
-  *bestError = numeric_limits<double>::max();
-  int bestId = 0;
-
-  int i = 0;
-  for (auto& c : candidates)
-  {
-    #ifdef DEBUG
-    cout << YELLOW << "Assessing candidate ..." << RESET << endl;
-    #endif
-
-    double e = c->measureError(sample);
-    if (e <= *bestError && e != prevError)
-    {
-      *bestError = e;
-      bestId = i;
-    }
-    ++i;
-  }
-
-  if (i > 0)
-  {
-    auto p = candidates[bestId]->clone();
-    #ifdef DEBUG
-    cout << "best candidate index = " << bestId << endl;
-    #endif
-    
-    if (action)
-    {
-      *action = candidateActions[bestId];
-    }
-    return move(p);
-  }
-  else return nullptr;
+  // Repeat until the model pointer reaches the end
+  if (modelPtr->next != nullptr && modelPtr->next->ptr != nullptr)
+    iterateModelExpansion(modelPtr->next.get(), action, scale);
 }
 
-unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initModel, const Mat& sample, const FittingCriteria& crit) const 
+void ModelFitter::transferFromBuffer(int nLeft)
 {
-  double errorDiff = numeric_limits<double>::max();
-  int iter = 0;
-  double prevError;
-  vector<SearchWith> recordedActions;
+  if (nLeft <= 0 || buffer.ptr == nullptr) return;
+  models.push(buffer.ptr, buffer.v);
+  if (buffer.next != nullptr)
+  {
+    // Replace self with next element
+    buffer.ptr = move(buffer.next->ptr);
+    buffer.v = buffer.next->v;
+    if (buffer.next->next != nullptr)
+      buffer.next = move(buffer.next->next);
+    else 
+      buffer.next = nullptr;
 
-  vector<unique_ptr<BaseFittedModel>> prevModels;
+    transferFromBuffer(nLeft-1);
+  }
+}
+
+unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initModel, int skipPixels)
+{
+  assert(initModel != nullptr);
+  double errorDiff = numeric_limits<double>::max();
+  double prevError;
+
+  // Clear all previous fitting states
+  #ifdef DEBUG
+  cout << "Initialising fitting states." << endl;
+  #endif
+  this->models.clear();
+  this->buffer.clear();
 
   // Start with the given initial model
-  prevModels.push_back(move(initModel->clone()));
-  prevModels.back()->setOrigin(crit.initPos);
-  prevModels.back()->setScale(crit.initScale);
+  prevError = initModel->measureError(sample, skipPixels);
+  auto cloneInitModel = initModel->clone();
+  models.push(cloneInitModel, prevError);
+  models.ptr->setOrigin(crit.initPos);
+  models.ptr->setScale(crit.initScale);
 
   #ifdef DEBUG
   cout << GREEN << "[Model fitting started]" << RESET << endl;
+  cout << crit << endl;
   cout << "[Init model]" << endl;
-  cout << *prevModels.back() << endl;
+  cout << *models.ptr << endl;
   #endif
 
-  prevError = prevModels.back()->measureError(sample);
-
-  // TAOTODO: Generate tree search with taboo path
-
   // Adjust model parameters until converges
-  while (iter < crit.numMaxIter && errorDiff > crit.eps)
+  int iter = 0;
+  double scale = 1;
+  deque<SearchWith> ACTIONS = {
+    TRANSLATION, SCALING, 
+    TRANSLATION, SCALING, 
+    RESHAPING, REAPPEARANCING
+  };
+  
+  while (iter < crit.numMaxIter)
   {
     #ifdef DEBUG
     cout << CYAN << "Fitting model #" << iter << RESET << endl;
+    cout << YELLOW << "... Best error so far : " << models.v << RESET << endl;
     #endif
 
-    if (prevError == 0)
-    {
-      #ifdef DEBUG
-      cout << RED << "-- stopping, fitting error already is zero." << RESET << endl;
-      #endif
-      break;
-    }
+    this->buffer.clear();
 
     #ifdef DEBUG
-    cout << YELLOW << "... Error so far : " << prevError << RESET << endl;
+    models.printValueList("... Errors : ");
+    string actionStr = "";
+    switch (ACTIONS[0])
+    {
+      case TRANSLATION: actionStr = "translation"; break;
+      case SCALING:     actionStr = "scaling"; break;
+      case RESHAPING:   actionStr = "reshaping"; break;
+      case REAPPEARANCING: actionStr = "reappearancing"; break;
+    }
+    cout << "... Generating new models with " << actionStr << endl;
     #endif
 
-    double error;
-    auto& prevModel = prevModels.back();
-    SearchWith action;
-    auto newModel = generateNextBestModel(prevError, prevModel, sample, &error, &action);
-
-    recordedActions.push_back(action);
-
-    if (error == 0)
-    {
-      #ifdef DEBUG
-      cout << CYAN << "... Fitting error approaches ZERO" << RESET << endl;
-      #endif
-      prevModels.push_back(move(newModel));
-      prevError = 0;
-      break;
-    }
-    else if (error == prevError)
-    {
-      errorDiff = 0;
-    }
-    else if (isinf(prevError))
-    {
-      errorDiff = 1;
-    }
-    else errorDiff = (prevError - error)/prevError;
+    iterateModelExpansion(&this->models, ACTIONS[0], scale);
 
     #ifdef DEBUG
-    cout << RED << "... Error diff : " << errorDiff << RESET << endl;
-    cout << YELLOW << "... Last Error : " << prevError << RESET << endl;
-    cout << YELLOW << "... Error so far : " << error << RESET << endl;
+    cout << "... New models generated : " << min(buffer.size(), crit.numModelsToGeneratePerIter) << endl;
+    cout << "... Best error this iter : " << buffer.v << endl;
     #endif
+
+    double bestPrevError = models.v;
+    double bestNewError = buffer.v;
+
+    // Take best K buffered models into [models]
+    transferFromBuffer(crit.numModelsToGeneratePerIter);
+    models.take(crit.maxTreeSize);
+
+    #ifdef DEBUG
+    cout << "... Tree size : " << models.size() << endl;
+    #endif
+
+    if (bestPrevError - bestNewError < crit.minErrorImprovement)
+    {
+      // Shrink scale
+      if (scale > 0.125)
+      {
+        scale *= 0.67; // TAOTOREVIEW: Use different decay ratios as per action
+        #ifdef DEBUG
+        cout << "... Steady error, shrinking scale to " << scale << endl;
+        #endif
+      }
+      else
+      {
+        // Iterate to the next action
+        if (ACTIONS.size()>0)
+        {
+          #ifdef DEBUG
+          cout << "... Steady error, iterate to next action" << endl;
+          #endif
+          ACTIONS.pop_front();
+          scale = 1;
+        }
+        else break;
+      }
+    }
 
     iter++;
-    prevModels.push_back(move(newModel));
-    prevError = error;
   };
 
-  #ifdef DEBUG
-  cout << GREEN << "[Model fitting finished]" << endl;
-  cout << "... " << iter << " iteration(s)" << endl;
-  cout << "... best error : " << prevError << endl;
-  cout << "... actions : ";
-  for (auto& a : recordedActions)
-  {
-    cout << a << " -> ";
-  }
-  cout << "end" << endl;
-  cout << *prevModels.back() << RESET << endl;
-  #endif
-
-  auto selectedModel = move(prevModels.back());
-  return selectedModel;
+  return move(models.ptr);
 }

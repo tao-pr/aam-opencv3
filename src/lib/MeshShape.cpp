@@ -43,10 +43,6 @@ void MeshShape::resubdiv()
     (int)ceil(maxX-minX+margin*2), 
     (int)ceil(maxY-minY+margin*2));
 
-  #ifdef DEBUG
-  cout << "MeshShape::resubdiv ~ " << this->bound << endl;
-  #endif
-
   this->subdiv = Subdiv2D(bound);
 
   const int N = this->mat.rows;

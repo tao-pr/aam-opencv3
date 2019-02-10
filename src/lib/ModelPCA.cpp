@@ -30,32 +30,37 @@ ShapeModelPCA ShapeModelPCA::cloneWithNewScale(double newScale, const Point2d& n
   return neue;
 }
 
-vector<Mat*>& ShapeModelPCA::permutationOfParams() const
+int ShapeModelPCA::getSizeOfPermutationOfParams() const
 {
-  double steps[] = {0.01, -0.01, 0.1, -0.1, 1, -1};
-  int K = dimension()*2;
-  vector<Mat*> perm;
+  int K = dimension();
+  int M = 16 * K;
+  return M;
+}
+
+void ShapeModelPCA::permutationOfParams(Mat* out) const
+{
+  double steps[] = {0.01, -0.01, 0.1, -0.1, 1, -1, 10, -10};
+  int K = dimension();
+  int M = 16 * K;
+  int n = 0;
   for (auto step : steps)
   {
-    for (int i=0; i<K; i++)
+    for (int i=0; i<K*2; i++)
     {
       if (i%2 == 0)
       {
-        Mat* p = new Mat(1, dimension(), CV_64FC1);
-        *p = Mat::zeros(1, dimension(), CV_64FC1);
-        p->at<double>(0, i) = step;
-        perm.push_back(p);
+        out[n] = Mat::zeros(1, K, CV_64FC1);
+        out[n].at<double>(0, i/2) = step;
       }
       else
       {
-        Mat* p = new Mat(1, dimension(), CV_64FC1);
-        *p = Mat::zeros(1, dimension(), CV_64FC1);
-        p->at<double>(0, i) = -step;
-        perm.push_back(p);
+        out[n] = Mat::zeros(1, K, CV_64FC1);
+        out[n].at<double>(0, (i-1)/2) = -step;
       }
+      ++n;
     }
   }
-  return perm;
+  assert(M == n);
 }
 
 BaseModel* AppearanceModelPCA::mean() const
@@ -102,31 +107,37 @@ void AppearanceModelPCA::overrideMeanShape(const MeshShape& newMeanShape)
   this->meanShape = newMeanShape;
 }
 
-vector<Mat*>& AppearanceModelPCA::permutationOfParams() const
+int AppearanceModelPCA::getSizeOfPermutationOfParams() const
 {
-  double steps[] = {0.1, -0.1, 0.01, -0.01, 1, -1};
-  vector<Mat*> perm;
+  int K = dimension();
+  int M = 8 * K * 2;
+  return M;
+}
+
+void AppearanceModelPCA::permutationOfParams(Mat* out) const
+{
+  double steps[] = {0.1, -0.1, 0.01, -0.01, 1, -1, 10, -10};
+  int K = dimension();
+  int M = 8 * K * 2;
+  int n = 0;
   for (auto step : steps)
   {
-    for (int i=0; i<dimension()*2; i++)
+    for (int i=0; i<K*2; i++)
     {
       if (i%2 == 0)
       {
-        Mat* p = new Mat(1, dimension(), CV_64FC1);
-        *p = Mat::zeros(1, dimension(), CV_64FC1);
-        p->at<double>(0, i) = step;
-        perm.push_back(p);
+        out[n] = Mat::zeros(1, K, CV_64FC1);
+        out[n].at<double>(0, i/2) = step;
       }
       else
       {
-        Mat* p = new Mat(1, dimension(), CV_64FC1);
-        *p = Mat::zeros(1, dimension(), CV_64FC1);
-        p->at<double>(0, i) = -step;
-        perm.push_back(p);
+        out[n] = Mat::zeros(1, K, CV_64FC1);
+        out[n].at<double>(0, (i-1)/2) = -step;
       }
+      ++n;
     }
   }
-  return perm;
+  assert(M == n);
 }
 
 Rect AppearanceModelPCA::getBound() const
@@ -142,43 +153,29 @@ Rect AppearanceModelPCA::getBound() const
 AppearanceModelPCA AppearanceModelPCA::cloneWithNewScale(double newScale, const Point2d& newTranslation) const
 {
   AppearanceModelPCA neue(*this);
-  neue.setScale(newScale);
   neue.setTranslation(newTranslation);
+  neue.setScale(newScale);
   return neue;
 }
 
 Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
 {
-  auto meanShapeOffset = MeshShape(this->meanShape.recentreAndScale(translation, scale));
+  // Generate a mean appearance model
+  // then apply translation, scaling, and parameters later
+
   auto bound = meanShape.getBound();
-  auto offsetBound = this->getBound();
   auto N = bound.width * bound.height;
   auto K = pca.mean.cols/3;
+  auto margin = bound.tl();
 
-  // TAOTODO: This doesn't support scaling
-  // which makes size of [bound] != [offsetbound]
+  Mat modelInitGraphic;
 
-  #ifdef DEBUG
-  cout << "Converting PCA -> Appearance Model" << endl;
-  cout << "-> bound        : " << bound << endl;
-  cout << "-> offset bound : " << offsetBound << endl;
-  cout << "-> pca mean     : " << this->pca.mean.size() << endl;
-  cout << "-> eigenvectors : " << this->pca.eigenvectors.size() << endl;
-  cout << "-> params       : " << param.size() << endl;
-  #endif
-
-  // Backprojection of appearance params
+  // Backprojection from PCA parameters to image
   Mat backPrj = this->pca.backProject(param);
-
-  // Reshape the row vector into a spatial graphic for the appearance
-  Mat graphic = Mat(
-    offsetBound.height + offsetBound.y, 
-    offsetBound.width + offsetBound.x, 
-    CV_8UC3, Scalar(0,0,0));
   
   // Split backprojected vector into 3 channels, scale them to the expected size
   vector<Mat> bpjChannels;
-  Mat bpjGraphic;
+
   for (int i=0; i<3; i++)
   {
     Mat m = backPrj(Rect(i*K, 0, K, 1)).clone();
@@ -188,26 +185,35 @@ Appearance* AppearanceModelPCA::toAppearance(const Mat& param) const
     c.convertTo(meanCh, CV_8UC1);
     bpjChannels.push_back(meanCh.reshape(1, bound.height));
   }
-  merge(bpjChannels, bpjGraphic);
-  if (offsetBound.size() != bound.size())
-  {
-    resize(bpjGraphic, graphic(offsetBound), offsetBound.size());
-  }
-  else
-    bpjGraphic.copyTo(graphic(Rect(offsetBound)));
+  merge(bpjChannels, modelInitGraphic);
 
-  if (scale == 1 && translation == Point2d(0,0))
-    return new Appearance(meanShapeOffset, graphic);
-  else
-  {
-    #ifdef DEBUG
-    cout << "-> scaling     : " << scale << endl;
-    cout << "-> translation : " << translation << endl;
-    #endif
+  // Add shape margin
+  Mat modelInitGraphicWithMargin = Mat::zeros(
+    modelInitGraphic.rows + margin.y,
+    modelInitGraphic.cols + margin.x,
+    CV_8UC3);
+  modelInitGraphic.copyTo(modelInitGraphicWithMargin(Rect(margin.x, margin.y, modelInitGraphic.cols, modelInitGraphic.rows)));
 
-    MeshShape meanOffsetShape(meanShape.recentreAndScale(translation, scale));  
-    return new Appearance(meanOffsetShape, graphic);
-  }
+  // Rescale and re-position the graphic
+  int tx = translation.x;
+  int ty = translation.y;
+  int w0 = (int)ceil(modelInitGraphicWithMargin.cols*scale);
+  int h0 = (int)ceil(modelInitGraphicWithMargin.rows*scale);
+  int w = w0 + tx;
+  int h = h0 + ty;
+  Mat modelGraphic = Mat::zeros(h, w, CV_8UC3);
+  resize( 
+    modelInitGraphicWithMargin,
+    modelGraphic(Rect(tx, ty, w0, h0)),
+    Size(w0, h0));
+
+  // Rescale and re-position the shape
+  auto modelShape = MeshShape(meanShape);
+  auto modelShape_ = modelShape.recentreAndScale(translation, scale);
+
+  // Create an appearance out of the rescaled and translated shapes & graphic
+  auto appearance = new Appearance(modelShape_, modelGraphic);
+  return appearance;
 }
 
 

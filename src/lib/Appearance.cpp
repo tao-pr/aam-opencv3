@@ -129,7 +129,13 @@ void Appearance::realignTo(MeshShape& newShape)
   auto targetVertices = newShape.toPoints();
   auto targetTriangles = newShape.getTriangles();
 
-  assert(this->textureList.size() == targetTriangles.size());
+  if (this->textureList.size() != targetTriangles.size())
+  {
+    #ifdef DEBUG
+    cout << YELLOW << "WARNING> " << RESET << "Unequal number of triangles, skip realignment" << endl;
+    #endif
+    return;
+  }
 
   // Warp the attached graphic onto the target
   const int span = 16;
@@ -146,6 +152,8 @@ void Appearance::realignTo(MeshShape& newShape)
     auto displacement = targetVertices[n] - originalVertices[n];
     this->mesh.moveVertex(n, displacement);
   }
+
+  // TAOTOREVIEW: Crop the excessive whitespace (spanned) from [warped]
   
   // Replace the graphic with the warped one
   this->graphic = warped;

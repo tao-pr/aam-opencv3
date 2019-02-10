@@ -15,6 +15,12 @@ Active Appearance Model for OpenCV3. No other dependencies required.
 
 > NOTE: Even though the project is implemented with C++11, you don't have to install OpenCV3 with C++11 compatibility at all.
 
+On OSX, you can install OpenCV with Homebrew with following command:
+
+```bash
+$ brew install opencv --with-ffmpeg --without-numpy --without-test --with-contrib --with-python3
+```
+
 ---
 
 ## Making

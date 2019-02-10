@@ -1,5 +1,33 @@
 #include "Test.h"
 
+struct F
+{ 
+  string s; 
+  F(const string& s) : s(s) {};
+};
+
+template class PriorityLinkedList<F>;
+
+void testPriorityList()
+{
+  PriorityLinkedList<F> ls;
+  unique_ptr<F> a{new F("a")};
+  unique_ptr<F> b{new F("b")};
+  unique_ptr<F> c{new F("c")};
+  unique_ptr<F> d{new F("d")};
+  unique_ptr<F> e{new F("e")};
+  unique_ptr<F> f{new F("f")};
+  unique_ptr<F> g{new F("g")};
+  ls.push(a, 250);  ls.printValueList("Adding 250 : ");
+  ls.push(b, 0);    ls.printValueList("Adding 0   : ");
+  ls.push(c, 150);  ls.printValueList("Adding 150 : ");
+  ls.push(d, 30);   ls.printValueList("Adding 30  : ");
+  ls.push(e, 450);  ls.printValueList("Adding 450 : ");
+  ls.push(f, 240);  ls.printValueList("Adding 240 : ");
+  ls.push(g, 550);  ls.printValueList("Adding 550 : ");
+  ls.take(4);       ls.printValueList("Taking 4   : ");
+}
+
 void testMeshShape(char** argv)
 {
   const int NUM_VERTICES = 32;
@@ -11,7 +39,7 @@ void testMeshShape(char** argv)
 
   auto ioMesh = IO::WindowIO("mesh");
   mesh.render(&ioMesh, Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3));
-  waitKey(700);
+  waitKey(4000);
 }
 
 void testShape(char** argv)
@@ -37,13 +65,6 @@ void testShape(char** argv)
     Point2d(CANVAS_HALFSIZE, CANVAS_HALFSIZE));
   moveWindow("scaling + translated", CANVAS_SIZE+10, 0);
 
-  // cout << GREEN << "[Shapes without translation and scaling]" << RESET << endl;
-  // for (auto s : scaledSet.getItems())
-  // {
-  //   cout << YELLOW << "***********************" << RESET << endl;
-  //   cout << s.mat << endl;
-  // }
-
   // Remove rotations
   cout << CYAN << "[#] Shape rotation " << RESET << endl;
   auto ioPc = IO::WindowIO("rotated", Point(CANVAS_SIZE+20, 0));
@@ -53,13 +74,6 @@ void testShape(char** argv)
     Aux::square(CANVAS_HALFSIZE), // scale the distance
     Point2d(CANVAS_HALFSIZE, CANVAS_HALFSIZE));
   moveWindow("rotated", (CANVAS_SIZE+10)*2, 0);
-
-  // cout << GREEN << "[Shapes without rotation]" << RESET << endl;
-  // for (auto s : rotatedSet.getItems())
-  // {
-  //   cout << YELLOW << "***********************" << RESET << endl;
-  //   cout << s.mat << endl;
-  // }
 
   // Find the mean shape by Procrustes Analysis
   // and align all shapes to that mean
@@ -140,7 +154,7 @@ void testAAMCollection()
   {
     Appearance* app = static_cast<Appearance*>(m);
     app->render(&ioApp, Mat::zeros(app->getShape().getSpannedSize(), CV_8UC3));
-    waitKey(100);
+    waitKey(4000);
   }
 
   // Reducing the size
@@ -153,7 +167,7 @@ void testAAMCollection()
   auto ioMean = IO::WindowIO("mean");
   meanAppearance->render(&ioMean, Mat::zeros(CANVAS_SIZE, CANVAS_SIZE, CV_8UC3));
   moveWindow("mean", CANVAS_SIZE + 10, 0);
-  waitKey(400);
+  waitKey(4000);
 
   // Calculate covariance
   cout << CYAN << "[#] Appearance collection covariance " << RESET << endl;
@@ -186,7 +200,7 @@ void testAAMCollection()
     auto ioB = IO::WindowIO("encoded App");
     encodedAppearance->render(&ioB, Mat::zeros(encodedAppearance->getShape().getSpannedSize(), CV_8UC3));
     moveWindow("encoded App", 0, (CANVAS_SIZE+50));
-    waitKey(400);
+    waitKey(4000);
 
     double error = appearance->procrustesDistance(encodedAppearance);
     cout << "... Estimation error : " << error << endl;
@@ -338,50 +352,98 @@ void testAAMFitting()
   cout << "PCA dimension of shape      : " << pcaShape->dimension() << endl;
   cout << "PCA dimension of appearance : " << pcaAppearance->dimension() << endl;
 
-  // Generate unknown sample we want to try fitting the model on
-  double sampleScale = 512;
-  auto sampleCentre = Point2d(35, 36);
   cout << "Generating unknown sample ..." << endl;
-  auto sampleShape = MeshShape(*meanShape);
-  auto sampleAppearance = Appearance(*meanAppearance);
-  sampleShape.addRandomNoise(Point2d(8.5, 9.5));
-  cout << "Distorting unknown sample ..." << endl;
-  sampleAppearance.realignTo(sampleShape);
-  sampleAppearance.resizeTo(sampleScale);
-  sampleAppearance.recentre(sampleCentre);
+
+  // Generate unknown sample out of the trained PCA
+  unique_ptr<AAMPCA> aamPCA{ new AAMPCA(*pcaShape, *pcaAppearance) };
+  unique_ptr<BaseFittedModel> sampleModel{ new FittedAAM(aamPCA) };
+  Mat initShapeParam = Aux::randomMat(sampleModel->shapeParam.size(), 0, 5.5);
+  Mat initAppParam = Aux::randomMat(sampleModel->appearanceParam.size(), 0, 25);
+  sampleModel->setScale(0.88);
+  sampleModel->setOrigin(25, 34.4);
+  sampleModel->setAppearanceParam(initAppParam);
+  sampleModel->setShapeParam(initShapeParam);
+  auto sampleAppearance = sampleModel->toAppearance();
 
   // Render sample without vertices nor edges
   auto ioSample = IO::MatIO();
-  auto sizeSample = sampleAppearance.getSpannedSize();
-  sampleAppearance.render(&ioSample, Mat::zeros(sizeSample, CV_8UC3), false, false);
+  auto sizeSample = sampleAppearance->getSpannedSize();
+  sampleAppearance->render(&ioSample, Mat::zeros(sizeSample, CV_8UC3), false, true);
   Mat sampleMat = ioSample.get();
+  Rect sampleBound = sampleModel->getBound();
   namedWindow("generated sample");
   moveWindow("generated sample", CANVAS_SIZE, CANVAS_SIZE);
   imshow("generated sample", sampleMat);
   waitKey(1000);
 
   // Try fitting the model onto an unknown sample
-  int maxIters = 20;
-  double eps = 1e-3;
-  double initScale = 1;
-  unique_ptr<AAMPCA> aamPCA{ new AAMPCA(*pcaShape, *pcaAppearance) };
-  unique_ptr<ModelFitter> fitter{ new ModelFitter(aamPCA) };
+  const int maxIters = 50;
+  const int maxTreeSize = 4;
+  const int numModelsToGeneratePerIter = 4;
+  const double minImprovement = 5;
+  const double initScale = 1;
+  const double minScale = 0.76;
+  const double maxScale = 1.5;
+  const int SKIP_SIZE = 3;
+  double initError = numeric_limits<double>::max();
+  Point2d initCentre(10, 10);
+  auto crit = FittingCriteria { 
+    maxIters, maxTreeSize, 
+    numModelsToGeneratePerIter, 
+    minImprovement, initScale, initCentre,
+    minScale, maxScale };
+  
+  unique_ptr<ModelFitter> fitter{ new ModelFitter(
+    aamPCA,
+    crit,
+    sampleMat
+  )};
   unique_ptr<BaseFittedModel> initModel{ new FittedAAM(aamPCA) };
 
-  cout << "AAM model fitting started ..." << endl;
-  auto alignedModel = fitter->fit(initModel, sampleMat, FittingCriteria { maxIters, eps, initScale, sampleCentre });
+  cout << "Converting initial model to appearance..." << endl;
+  auto wndInitModel = IO::WindowIO("init model");
+  auto initAAM = initModel->toAppearance();
+  cout << "Rendering initial model ..." << endl;
+  initAAM->render(
+    &wndInitModel,
+    Mat::zeros(initModel->getSpannedSize(), CV_8UC3),
+    false, true
+  );
+  moveWindow("init model", CANVAS_SIZE*2, CANVAS_SIZE);
+
+  cout << GREEN << "Basic AAM model fitting started ..." << RESET << endl;
+  auto alignedModel = fitter->fit(initModel, SKIP_SIZE);
   auto alignedAAM = alignedModel->toAppearance();
 
-  auto ioAligned = IO::WindowIO("aligned");
-  alignedAAM->render(&ioAligned, Mat::zeros(alignedAAM->getSpannedSize(), CV_8UC3), false, false);
-  moveWindow("aligned", CANVAS_SIZE + sizeSample.width, CANVAS_SIZE);
-  waitKey(0);
+  cout << GREEN << "[Sample Parameters]" << RESET << endl;
+  cout << "Coordinate  : " << sampleModel->origin << endl;
+  cout << "Scale       : " << sampleModel->scale << endl;
+  cout << "Shape Param : " << sampleModel->shapeParam << endl;
+  cout << "App Param   : " << sampleModel->appearanceParam << endl;
+
+  cout << GREEN << "[Fitted Parameters]" << RESET << endl;
+  cout << "Coordinate  : " << alignedModel->origin << endl;
+  cout << "Scale       : " << alignedModel->scale << endl;
+  cout << "Shape Param : " << alignedModel->shapeParam << endl;
+  cout << "App Param   : " << alignedModel->appearanceParam << endl;
+
+  auto ioAligned = IO::MatIO();
+  auto sizeAligned = alignedModel->getSpannedSize();
+
+  alignedAAM->render(&ioAligned, Mat::zeros(sizeAligned, CV_8UC3), false, true);
+  Mat alignedMat = ioAligned.get();
+  Rect alignedBound = alignedModel->getBound();
+  imshow("aligned", alignedMat);
+  moveWindow("aligned", CANVAS_SIZE*2 + sizeSample.width, CANVAS_SIZE);
+  waitKey(5000);
 }
 
 int main(int argc, char** argv)
 {
   signal(SIGSEGV, segFaultHandler);
   adjustStackSize();
+
+  testPriorityList();
 
   // cout << MAGENTA << "**********************" << RESET << endl;
   // cout << MAGENTA << " Mesh shape testing  "  << RESET << endl;

@@ -11,6 +11,7 @@
 #include "Texture.h"
 #include "FittedAAM.h"
 #include "ModelFitter.h"
+#include "PriorityLinkedList.h"
 
 const double CANVAS_SIZE     = 300.0;
 const double CANVAS_HALFSIZE = CANVAS_SIZE / 2.0;
@@ -60,10 +61,25 @@ inline unique_ptr<ShapeCollection> initialShapeCollection(int num, int shapeSize
 inline Mat chessPattern(int stepSize, Size size)
 {
   Mat mat = Mat::zeros(size, CV_8UC3);
+  for (int j=0; j<size.height-stepSize; j+=stepSize)
+    for (int i=0; i<size.width-stepSize; i+=stepSize)
+    {
+      float ix = (float)i;
+      float jx = (float)j;
+      int r = (int)min(255.0f, 255*ix/size.width);
+      int g = (int)min(255.0f, abs(150.0f - 255*(ix+jx)/(size.width+size.height)));
+      int b = (int)min(255.0f, abs(255.0f - 255*jx/size.height));
+      rectangle(
+        mat, 
+        Point2d(i,j), Point2d(i+stepSize,j+stepSize),
+        Scalar(b,g,r), 
+        CV_FILLED
+      );
+    }
   for (int j=0; j<size.height; j+=stepSize)
-    line(mat, Point(0, j), Point(size.width-1,j), Scalar(0,100,255), 1, CV_AA);
+    line(mat, Point(0, j), Point(size.width-1,j), Scalar(0,0,30), 1, CV_AA);
   for (int i=0; i<size.width; i+=stepSize)
-    line(mat, Point(i, 0), Point(i, size.height-1), Scalar(255,100,0), 1, CV_AA);
+    line(mat, Point(i, 0), Point(i, size.height-1), Scalar(0,0,30), 1, CV_AA);
   return mat;
 }
 

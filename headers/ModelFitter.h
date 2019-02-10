@@ -2,12 +2,15 @@
 #define MODEL_FITTER
 
 #include "master.h"
+#include "Try.h"
 #include "BaseModel.h"
 #include "Shape.h"
 #include "MeshShape.h"
 #include "Appearance.h"
 #include "ModelPCA.h"
-#include "BaseFittedModel.h"
+#include "PriorityLinkedList.h"
+
+typedef PriorityLinkedList<BaseFittedModel> ModelList;
 
 enum SearchWith
 {
@@ -18,16 +21,29 @@ enum SearchWith
   // TAOTOREVIEW: Rotation?
 };
 
+const double SCALING_MIN = 0.677;
+const double SCALING_MAX = 3;
+const double TRANSLATION_MIN = -250;
+const double TRANSLATION_MAX = 250;
+const double RESHAPING_MIN = -50;
+const double RESHAPING_MAX = 50;
+const double REAPPEARANCING_MIN = -50;
+const double REAPPEARANCING_MAX = 50;
+
 struct FittingCriteria
 {
   int numMaxIter;
-  double eps;
+  int maxTreeSize;
+  int numModelsToGeneratePerIter;
+  double minErrorImprovement;
   double initScale;
   Point2d initPos; // Coordinate of the upper-left origin
+  double minScale;
+  double maxScale;
 
   static FittingCriteria getDefault()
   {
-    return FittingCriteria{ 10, 1e-3, 100, Point2d(0,0) };
+    return FittingCriteria{ 10, 16, 8, 1e-4, 100, Point2d(0,0), 0.33, 3 };
   };
 };
 
@@ -38,24 +54,53 @@ private:
 
 protected:
   // Static PCA of Shape and Appearance components
+  FittingCriteria crit;
   unique_ptr<AAMPCA> aamPCA;
-  unique_ptr<BaseFittedModel> generateNextBestModel(double prevError, unique_ptr<BaseFittedModel> const& model, const Mat& sample, double* bestError, SearchWith* action = nullptr) const;
+  ModelList models;
+  ModelList buffer;
+  Mat sample;
+  Mat zero;
+
+  void iterateModelExpansion(
+    ModelList* const modelPtr,
+    SearchWith action = TRANSLATION,
+    double scale = 1.0);
+  
+  void transferFromBuffer(int nLeft);
 
 public:
-  inline ModelFitter(unique_ptr<AAMPCA> const & aamPCA)
-  {
-    this->aamPCA = aamPCA->clone();
-  };
+  inline ModelFitter(
+    unique_ptr<AAMPCA> const & aamPCA,
+    FittingCriteria const& crit,
+    Mat& sample) 
+    : crit(crit)
+    {
+      this->aamPCA = aamPCA->clone();
+      sample.copyTo(this->sample);
+      zero = Mat::zeros(sample.size(), CV_8UC3);
+    };
   
   virtual inline ~ModelFitter()
   {
     this->aamPCA.reset();
   };
 
-  const ShapeModelPCA& getShapePCA() { return aamPCA->getShapePCA(); } const;
-  const AppearanceModelPCA& getAppearancePCA() { return aamPCA->getAppearancePCA(); } const;
+  void setSample(Mat& sample)
+  {
+    sample.copyTo(this->sample);
+    zero = Mat::zeros(sample.size(), CV_8UC3);
+  };
 
-  virtual unique_ptr<BaseFittedModel> fit(unique_ptr<BaseFittedModel>& initModel, const Mat& sample, const FittingCriteria& crit = FittingCriteria::getDefault()) const;
+  void setCriteria(FittingCriteria& crit)
+  {
+    this->crit = crit;
+  };
+
+  const ShapeModelPCA& getShapePCA() const { return aamPCA->getShapePCA(); };
+  const AppearanceModelPCA& getAppearancePCA() const { return aamPCA->getAppearancePCA(); };
+
+  virtual unique_ptr<BaseFittedModel> fit(unique_ptr<BaseFittedModel>& initModel, int skipPixels);
 };
+
 
 #endif
