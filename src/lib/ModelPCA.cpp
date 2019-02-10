@@ -33,15 +33,15 @@ ShapeModelPCA ShapeModelPCA::cloneWithNewScale(double newScale, const Point2d& n
 int ShapeModelPCA::getSizeOfPermutationOfParams() const
 {
   int K = dimension();
-  int M = 12 * K;
+  int M = 16 * K;
   return M;
 }
 
 void ShapeModelPCA::permutationOfParams(Mat* out) const
 {
-  double steps[] = {0.01, -0.01, 0.1, -0.1, 1, -1};
+  double steps[] = {0.01, -0.01, 0.1, -0.1, 1, -1, 10, -10};
   int K = dimension();
-  int M = 12 * K;
+  int M = 16 * K;
   int n = 0;
   for (auto step : steps)
   {
@@ -110,15 +110,15 @@ void AppearanceModelPCA::overrideMeanShape(const MeshShape& newMeanShape)
 int AppearanceModelPCA::getSizeOfPermutationOfParams() const
 {
   int K = dimension();
-  int M = 6 * K * 2;
+  int M = 8 * K * 2;
   return M;
 }
 
 void AppearanceModelPCA::permutationOfParams(Mat* out) const
 {
-  double steps[] = {0.1, -0.1, 0.01, -0.01, 1, -1};
+  double steps[] = {0.1, -0.1, 0.01, -0.01, 1, -1, 10, -10};
   int K = dimension();
-  int M = 6 * K * 2;
+  int M = 8 * K * 2;
   int n = 0;
   for (auto step : steps)
   {

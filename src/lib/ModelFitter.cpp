@@ -58,7 +58,6 @@ void ModelFitter::iterateModelExpansion(
   // NOTE: A new model may be ignored if it does not produce smaller error than base minimum.
   switch (action)
   {
-    // TAOTODO: Make sure the parameters wont go beyond the maximum magnitudes
     case SCALING:
       for (auto& s : scales) 
       {

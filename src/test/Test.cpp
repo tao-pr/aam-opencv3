@@ -65,13 +65,6 @@ void testShape(char** argv)
     Point2d(CANVAS_HALFSIZE, CANVAS_HALFSIZE));
   moveWindow("scaling + translated", CANVAS_SIZE+10, 0);
 
-  // cout << GREEN << "[Shapes without translation and scaling]" << RESET << endl;
-  // for (auto s : scaledSet.getItems())
-  // {
-  //   cout << YELLOW << "***********************" << RESET << endl;
-  //   cout << s.mat << endl;
-  // }
-
   // Remove rotations
   cout << CYAN << "[#] Shape rotation " << RESET << endl;
   auto ioPc = IO::WindowIO("rotated", Point(CANVAS_SIZE+20, 0));
@@ -81,13 +74,6 @@ void testShape(char** argv)
     Aux::square(CANVAS_HALFSIZE), // scale the distance
     Point2d(CANVAS_HALFSIZE, CANVAS_HALFSIZE));
   moveWindow("rotated", (CANVAS_SIZE+10)*2, 0);
-
-  // cout << GREEN << "[Shapes without rotation]" << RESET << endl;
-  // for (auto s : rotatedSet.getItems())
-  // {
-  //   cout << YELLOW << "***********************" << RESET << endl;
-  //   cout << s.mat << endl;
-  // }
 
   // Find the mean shape by Procrustes Analysis
   // and align all shapes to that mean
@@ -373,7 +359,7 @@ void testAAMFitting()
   unique_ptr<BaseFittedModel> sampleModel{ new FittedAAM(aamPCA) };
   Mat initShapeParam = Aux::randomMat(sampleModel->shapeParam.size(), 0, 5.5);
   Mat initAppParam = Aux::randomMat(sampleModel->appearanceParam.size(), 0, 25);
-  sampleModel->setScale(0.60);
+  sampleModel->setScale(0.88);
   sampleModel->setOrigin(25, 34.4);
   sampleModel->setAppearanceParam(initAppParam);
   sampleModel->setShapeParam(initShapeParam);
@@ -396,7 +382,7 @@ void testAAMFitting()
   int numModelsToGeneratePerIter = 4;
   double minImprovement = 5;
   double initScale = 1;
-  double minScale = 0.5;
+  double minScale = 0.76;
   double maxScale = 1.5;
   double initError = numeric_limits<double>::max();
   Point2d initCentre(10, 10);

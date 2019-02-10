@@ -25,10 +25,10 @@ const double SCALING_MIN = 0.677;
 const double SCALING_MAX = 3;
 const double TRANSLATION_MIN = -250;
 const double TRANSLATION_MAX = 250;
-const double RESHAPING_MIN = -1;
-const double RESHAPING_MAX = 1;
-const double REAPPEARANCING_MIN = -1;
-const double REAPPEARANCING_MAX = 1;
+const double RESHAPING_MIN = -50;
+const double RESHAPING_MAX = 50;
+const double REAPPEARANCING_MIN = -50;
+const double REAPPEARANCING_MAX = 50;
 
 struct FittingCriteria
 {
