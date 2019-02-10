@@ -379,12 +379,12 @@ void testAAMFitting()
   // Try fitting the model onto an unknown sample
   const int maxIters = 50;
   const int maxTreeSize = 4;
-  const int numModelsToGeneratePerIter = 5;
-  const double minImprovement = 10; // 5
+  const int numModelsToGeneratePerIter = 4;
+  const double minImprovement = 5;
   const double initScale = 1;
   const double minScale = 0.76;
   const double maxScale = 1.5;
-  const int SKIP_SIZE = 4;
+  const int SKIP_SIZE = 3;
   double initError = numeric_limits<double>::max();
   Point2d initCentre(10, 10);
   auto crit = FittingCriteria { 
