@@ -42,7 +42,7 @@ public:
   MeshShape* toShape() const;
   unique_ptr<BaseFittedModel> clone() const;
 
-  double measureError(const Mat& sample);
+  double measureError(const Mat& sample, int skipPixels=0);
   Mat drawOverlay(Mat& canvas, bool withEdges = false);
 };
 

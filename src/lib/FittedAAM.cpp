@@ -76,7 +76,7 @@ Rect FittedAAM::getBound() const
   return b;
 }
 
-double FittedAAM::measureError(const Mat& sample)
+double FittedAAM::measureError(const Mat& sample, int skipPixels)
 {
   // - Draw the model as overlay on black canvas
   // - Offset and rescale the overlay
@@ -116,8 +116,8 @@ double FittedAAM::measureError(const Mat& sample)
   // Find RMSE error
   double e = 0;
   double n = 0;
-  for (int i=0; i<obound.width; i++)
-    for (int j=0; j<obound.height; j++)
+  for (int i=0; i<obound.width; i += skipPixels + 1)
+    for (int j=0; j<obound.height; j += skipPixels + 1)
     {
       if (shapeConvex.at<unsigned char>(j,i) > 0)
       {

@@ -99,7 +99,7 @@ public:
   const ShapeModelPCA& getShapePCA() const { return aamPCA->getShapePCA(); };
   const AppearanceModelPCA& getAppearancePCA() const { return aamPCA->getAppearancePCA(); };
 
-  virtual unique_ptr<BaseFittedModel> fit(unique_ptr<BaseFittedModel>& initModel);
+  virtual unique_ptr<BaseFittedModel> fit(unique_ptr<BaseFittedModel>& initModel, int skipPixels);
 };
 
 

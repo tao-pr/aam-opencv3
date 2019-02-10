@@ -61,7 +61,7 @@ public:
   virtual Rect getBound() const = 0;
   virtual Size getSpannedSize() const = 0;
 
-  virtual double measureError(const Mat& sample) = 0;
+  virtual double measureError(const Mat& sample, int skipPixels) = 0;
   virtual Mat drawOverlay(Mat& canvas, bool withEdges = false) = 0;
 };
 

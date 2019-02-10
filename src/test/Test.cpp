@@ -377,13 +377,14 @@ void testAAMFitting()
   waitKey(1000);
 
   // Try fitting the model onto an unknown sample
-  int maxIters = 40;
-  int maxTreeSize = 4;
-  int numModelsToGeneratePerIter = 4;
-  double minImprovement = 5;
-  double initScale = 1;
-  double minScale = 0.76;
-  double maxScale = 1.5;
+  const int maxIters = 50;
+  const int maxTreeSize = 4;
+  const int numModelsToGeneratePerIter = 5;
+  const double minImprovement = 10; // 5
+  const double initScale = 1;
+  const double minScale = 0.76;
+  const double maxScale = 1.5;
+  const int SKIP_SIZE = 4;
   double initError = numeric_limits<double>::max();
   Point2d initCentre(10, 10);
   auto crit = FittingCriteria { 
@@ -411,8 +412,7 @@ void testAAMFitting()
   moveWindow("init model", CANVAS_SIZE*2, CANVAS_SIZE);
 
   cout << GREEN << "Basic AAM model fitting started ..." << RESET << endl;
-
-  auto alignedModel = fitter->fit(initModel);
+  auto alignedModel = fitter->fit(initModel, SKIP_SIZE);
   auto alignedAAM = alignedModel->toAppearance();
 
   cout << GREEN << "[Sample Parameters]" << RESET << endl;

@@ -52,6 +52,7 @@ void ModelFitter::iterateModelExpansion(
   pcaShape.permutationOfParams(smat);
   pcaAppearance.permutationOfParams(amat);
 
+  const int SKIP_SIZE = 2;
   #define IN_RANGE(v,_min,_max) (v>_min && v<_max)
 
   // Generate new model by varying the parameter
@@ -69,8 +70,8 @@ void ModelFitter::iterateModelExpansion(
           && IN_RANGE(newScale, SCALING_MIN, SCALING_MAX))
         {
           ptrModel->setScale(newScale);
-          double e = ptrModel->measureError(sample);
-          double e0 = ptrModel->measureError(zero);
+          double e = ptrModel->measureError(sample, SKIP_SIZE);
+          double e0 = ptrModel->measureError(zero, SKIP_SIZE);
           if (e<e0) buffer.push(ptrModel, e);
         }
         END_TRY
@@ -87,8 +88,8 @@ void ModelFitter::iterateModelExpansion(
           && IN_RANGE(t.x * scale, TRANSLATION_MIN, TRANSLATION_MAX))
         {
           ptrModel->setOrigin(newOrigin);
-          double e = ptrModel->measureError(sample);
-          double e0 = ptrModel->measureError(zero);
+          double e = ptrModel->measureError(sample, SKIP_SIZE);
+          double e0 = ptrModel->measureError(zero, SKIP_SIZE);
           if (e<e0) buffer.push(ptrModel, e);
         }
         END_TRY
@@ -106,8 +107,8 @@ void ModelFitter::iterateModelExpansion(
         if (_mi > RESHAPING_MIN && _mx < RESHAPING_MAX)
         {
           ptrModel->setShapeParam(param);
-          double e = ptrModel->measureError(sample);
-          double e0 = ptrModel->measureError(zero);
+          double e = ptrModel->measureError(sample, SKIP_SIZE);
+          double e0 = ptrModel->measureError(zero, SKIP_SIZE);
           if (e<e0) buffer.push(ptrModel, e);
         }
         END_TRY
@@ -125,8 +126,8 @@ void ModelFitter::iterateModelExpansion(
         if (_mi > REAPPEARANCING_MIN && _mx < REAPPEARANCING_MAX)
         {
           ptrModel->setAppearanceParam(param);
-          double e = ptrModel->measureError(sample);
-          double e0 = ptrModel->measureError(zero);
+          double e = ptrModel->measureError(sample, SKIP_SIZE);
+          double e0 = ptrModel->measureError(zero, SKIP_SIZE);
           if (e<e0) buffer.push(ptrModel, e);
         }
         END_TRY
@@ -160,7 +161,7 @@ void ModelFitter::transferFromBuffer(int nLeft)
   }
 }
 
-unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initModel)
+unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initModel, int skipPixels)
 {
   assert(initModel != nullptr);
   double errorDiff = numeric_limits<double>::max();
@@ -174,7 +175,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
   this->buffer.clear();
 
   // Start with the given initial model
-  prevError = initModel->measureError(sample);
+  prevError = initModel->measureError(sample, skipPixels);
   auto cloneInitModel = initModel->clone();
   models.push(cloneInitModel, prevError);
   models.ptr->setOrigin(crit.initPos);
