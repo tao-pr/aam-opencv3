@@ -52,17 +52,22 @@ void ModelFitter::iterateModelExpansion(
   pcaShape.permutationOfParams(smat);
   pcaAppearance.permutationOfParams(amat);
 
+  #define IN_RANGE(v,_min,_max) (v>_min && v<_max)
+
   // Generate new model by varying the parameter
   // NOTE: A new model may be ignored if it does not produce smaller error than base minimum.
   switch (action)
   {
+    // TAOTODO: Make sure the parameters wont go beyond the maximum magnitudes
     case SCALING:
       for (auto& s : scales) 
       {
         TRY
         auto ptrModel = modelPtr->ptr->clone();
         double newScale = s * modelPtr->ptr->scale * scale;
-        if (newScale > 0 && newScale >= crit.minScale && newScale <= crit.maxScale)
+        if (newScale > 0 && newScale >= crit.minScale 
+          && newScale <= crit.maxScale
+          && IN_RANGE(newScale, SCALING_MIN, SCALING_MAX))
         {
           ptrModel->setScale(newScale);
           double e = ptrModel->measureError(sample);
@@ -79,7 +84,8 @@ void ModelFitter::iterateModelExpansion(
         TRY
         auto ptrModel = modelPtr->ptr->clone();
         auto newOrigin = modelPtr->ptr->origin + t * scale;
-        if (newOrigin.x >= 0 && newOrigin.y >= 0)
+        if (newOrigin.x >= 0 && newOrigin.y >= 0 
+          && IN_RANGE(t.x * scale, TRANSLATION_MIN, TRANSLATION_MAX))
         {
           ptrModel->setOrigin(newOrigin);
           double e = ptrModel->measureError(sample);
@@ -96,10 +102,15 @@ void ModelFitter::iterateModelExpansion(
         TRY
         auto ptrModel = modelPtr->ptr->clone();
         Mat param = modelPtr->ptr->shapeParam * scale + smat[i];
-        ptrModel->setShapeParam(param);
-        double e = ptrModel->measureError(sample);
-        double e0 = ptrModel->measureError(zero);
-        if (e<e0) buffer.push(ptrModel, e);
+        double _mi, _mx;
+        minMaxLoc(param, &_mi, &_mx);
+        if (_mi > RESHAPING_MIN && _mx < RESHAPING_MAX)
+        {
+          ptrModel->setShapeParam(param);
+          double e = ptrModel->measureError(sample);
+          double e0 = ptrModel->measureError(zero);
+          if (e<e0) buffer.push(ptrModel, e);
+        }
         END_TRY
       }
       break;
@@ -110,10 +121,15 @@ void ModelFitter::iterateModelExpansion(
         TRY
         auto ptrModel = modelPtr->ptr->clone();
         Mat param = modelPtr->ptr->appearanceParam * scale + amat[i];
-        ptrModel->setAppearanceParam(param);
-        double e = ptrModel->measureError(sample);
-        double e0 = ptrModel->measureError(zero);
-        if (e<e0) buffer.push(ptrModel, e);
+        double _mi, _mx;
+        minMaxLoc(param, &_mi, &_mx);
+        if (_mi > REAPPEARANCING_MIN && _mx < REAPPEARANCING_MAX)
+        {
+          ptrModel->setAppearanceParam(param);
+          double e = ptrModel->measureError(sample);
+          double e0 = ptrModel->measureError(zero);
+          if (e<e0) buffer.push(ptrModel, e);
+        }
         END_TRY
       }
       break;
