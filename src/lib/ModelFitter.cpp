@@ -1,5 +1,14 @@
 #include "ModelFitter.h"
 
+const double ModelFitter::scales[5] = {1.01, 0.99, 1.0, 1.5, 0.5};
+const Point2d ModelFitter::trans[9] = {
+  Point2d(-1,0), Point2d(0,-1), 
+  Point2d(1,0), Point2d(0,1),
+  Point2d(1,1), Point2d(1,-1),
+  Point2d(-1,1), Point2d(-1,-1),
+  Point2d(0,0)
+};
+
 ostream &operator<<(ostream &os, SearchWith const &s)
 {
   string str;
@@ -24,6 +33,20 @@ ostream &operator<<(ostream &os, FittingCriteria const &c)
     << "...init pos = " << c.initPos << endl;
 }
 
+void ModelFitter::buildCache()
+{
+  this->pcaShape      = aamPCA->getShapePCA();
+  this->pcaAppearance = aamPCA->getAppearancePCA();
+  this->smatSize = pcaShape.getSizeOfPermutationOfParams();
+  this->amatSize = pcaAppearance.getSizeOfPermutationOfParams();
+  this->smat = new Mat[this->smatSize];
+  this->amat = new Mat[this->amatSize];
+  for (int i=0; i<smatSize; i++) smat[i] = Mat::zeros(1, pcaShape.dimension(), CV_64FC1);
+  for (int i=0; i<amatSize; i++) amat[i] = Mat::zeros(1, pcaAppearance.dimension(), CV_64FC1);
+  pcaShape.permutationOfParams(smat);
+  pcaAppearance.permutationOfParams(amat);
+}
+
 void ModelFitter::iterateModelExpansion(
   ModelList* const modelPtr,
   SearchWith action,
@@ -32,28 +55,10 @@ void ModelFitter::iterateModelExpansion(
   assert(modelPtr != nullptr);
   assert(modelPtr->ptr != nullptr);
 
-  // Generate action params
-  auto pcaShape      = aamPCA->getShapePCA();
-  auto pcaAppearance = aamPCA->getAppearancePCA();
-  double scales[]    = {1.01, 0.99, 1.0, 1.5, 0.5};
-  Point2d trans[]    = {Point2d(-1,0), Point2d(0,-1), 
-                        Point2d(1,0), Point2d(0,1),
-                        Point2d(1,1), Point2d(1,-1),
-                        Point2d(-1,1), Point2d(-1,-1),
-                        Point2d(0,0)
-                      };
-  
-  int smatSize = pcaShape.getSizeOfPermutationOfParams();
-  int amatSize = pcaAppearance.getSizeOfPermutationOfParams();
-  Mat *smat = new Mat[smatSize]; 
-  Mat *amat = new Mat[amatSize];
-  for (int i=0; i<smatSize; i++) smat[i] = Mat::zeros(1, pcaShape.dimension(), CV_64FC1);
-  for (int i=0; i<amatSize; i++) amat[i] = Mat::zeros(1, pcaAppearance.dimension(), CV_64FC1);
-  pcaShape.permutationOfParams(smat);
-  pcaAppearance.permutationOfParams(amat);
-
   const int SKIP_SIZE = 2;
   #define IN_RANGE(v,_min,_max) (v>_min && v<_max)
+
+  // TAOTODO: Parallelise this function
 
   // Generate new model by varying the parameter
   // NOTE: A new model may be ignored if it does not produce smaller error than base minimum.
@@ -135,9 +140,6 @@ void ModelFitter::iterateModelExpansion(
       break;
   }
 
-  delete[] smat;
-  delete[] amat;
-
   // Repeat until the model pointer reaches the end
   if (modelPtr->next != nullptr && modelPtr->next->ptr != nullptr)
     iterateModelExpansion(modelPtr->next.get(), action, scale);
@@ -161,6 +163,7 @@ void ModelFitter::transferFromBuffer(int nLeft)
   }
 }
 
+// TAOTODO: Parallelise this
 unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initModel, int skipPixels)
 {
   assert(initModel != nullptr);

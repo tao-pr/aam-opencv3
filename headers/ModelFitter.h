@@ -52,6 +52,15 @@ class ModelFitter
 private:
   ModelFitter(const ModelFitter& another);
 
+  Mat* smat;
+  Mat* amat;
+  int smatSize;
+  int amatSize;
+  ShapeModelPCA pcaShape;
+  AppearanceModelPCA pcaAppearance;
+  static const double scales[5];
+  static const Point2d trans[9];
+
 protected:
   // Static PCA of Shape and Appearance components
   FittingCriteria crit;
@@ -67,6 +76,7 @@ protected:
     double scale = 1.0);
   
   void transferFromBuffer(int nLeft);
+  void buildCache();
 
 public:
   inline ModelFitter(
@@ -78,11 +88,14 @@ public:
       this->aamPCA = aamPCA->clone();
       sample.copyTo(this->sample);
       zero = Mat::zeros(sample.size(), CV_8UC3);
+      buildCache();
     };
   
   virtual inline ~ModelFitter()
   {
     this->aamPCA.reset();
+    delete [] this->amat;
+    delete [] this->smat;
   };
 
   void setSample(Mat& sample)
