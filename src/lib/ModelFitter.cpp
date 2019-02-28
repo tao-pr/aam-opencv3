@@ -163,7 +163,6 @@ void ModelFitter::transferFromBuffer(int nLeft)
   }
 }
 
-// TAOTODO: Parallelise this
 unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initModel, int skipPixels)
 {
   assert(initModel != nullptr);
