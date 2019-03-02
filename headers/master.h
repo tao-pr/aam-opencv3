@@ -30,6 +30,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "tbb/tbb.h"
+
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
