@@ -10,7 +10,7 @@ Active Appearance Model for OpenCV3. No other dependencies required.
 
 - [x] OpenCV 3
 - [x] CMake 3.8+
-- [x] Intel Thread Building Block (TBB)
+- [x] [Intel Thread Building Block](https://software.intel.com/en-us/tbb-documentation) (TBB)
 - [x] [Fmt](http://fmtlib.net/latest/usage.html#building-the-library)
 - [x] [Backward CPP](https://github.com/bombela/backward-cpp) ~ in case of debugging mode
 
