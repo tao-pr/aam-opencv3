@@ -69,16 +69,17 @@ void ModelFitter::iterateModelExpansionParallel(
   while (modelPtr->next != nullptr && modelPtr->next->ptr != nullptr)
   {
     auto ptrModel = modelPtr->next.get()->ptr->clone();
-    // Spawn a thread wrapped inside a promise or future
-    thread expandModel(generateNextModel, ref(ptrModel), ref(buffer));
-    workers.push_back(expandModel);
+    
+    // thread expandModel(generateNextModel, ref(ptrModel), ref(buffer));
+    // workers.push_back(expandModel);
+    
     i++;
   }
 
   cout << i << " threads generated" << endl;
 
   // Wait for all threads to finish
-  for_each(workers.begin(), workers.end(), [](thread &t){ t.join() });
+  for_each(workers.begin(), workers.end(), [](thread &t){ t.join(); });
   
   cout << i << " threads done" << endl;
   // TAOTODO: Swap buffer

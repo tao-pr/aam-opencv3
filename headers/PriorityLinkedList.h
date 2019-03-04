@@ -24,6 +24,7 @@ public:
 
   virtual void push(unique_ptr<T>& n, double d)
   {
+    mx.lock();
     if (this->ptr == nullptr)
     {
       // Itself empty, assign in-place
@@ -54,17 +55,21 @@ public:
         }
       }
     }
+    mx.unlock();
   };
 
   virtual bool clear()
   {
+    mx.lock();
     this->ptr = nullptr;
     if (this->next != nullptr)
       this->next->clear();
+    mx.unlock();
   };
 
   void take(int n)
   {
+    mx.lock();
     if (this->ptr == nullptr) return;
     else if (this->next != nullptr)
     {
@@ -81,6 +86,7 @@ public:
         this->next = nullptr;
       }
     }
+    mx.unlock();
   };
 
   int size() const
@@ -90,8 +96,9 @@ public:
     else return 1 + this->next->size();
   };
 
-  virtual void printValueList(string prefix) const
+  virtual void printValueList(string prefix)
   {
+    mx.unlock();
     cout << prefix;
     if (this->ptr)
       cout << this->v;
@@ -101,6 +108,7 @@ public:
       this->next->printValueList("");
     }
     else cout << endl;
+    mx.lock();
   };
 };
 
