@@ -33,6 +33,11 @@ ostream &operator<<(ostream &os, FittingCriteria const &c)
     << "...init pos = " << c.initPos << endl;
 }
 
+void ModelFitter::generateNextModel(ModelList* const head, ModelList* const outModelList)
+{
+  // TAOTODO:
+}
+
 void ModelFitter::buildCache()
 {
   this->pcaShape      = aamPCA->getShapePCA();
@@ -58,97 +63,26 @@ void ModelFitter::iterateModelExpansionParallel(
   const int SKIP_SIZE = 2;
   #define IN_RANGE(v,_min,_max) (v>_min && v<_max)
 
-  // TAOTODO: Parallelise this function
+  vector<thread> workers;
 
+  int i = 0;
   while (modelPtr->next != nullptr && modelPtr->next->ptr != nullptr)
   {
-    auto modl = modelPtr->next.get();
+    auto ptrModel = modelPtr->next.get()->ptr->clone();
+    // Spawn a thread wrapped inside a promise or future
+    thread expandModel(generateNextModel, ref(ptrModel), ref(buffer));
+    workers.push_back(expandModel);
+    i++;
   }
+
+  cout << i << " threads generated" << endl;
+
+  // Wait for all threads to finish
+  for_each(workers.begin(), workers.end(), [](thread &t){ t.join() });
   
-
-  // Generate new model by varying the parameter
-  // NOTE: A new model may be ignored if it does not produce smaller error than base minimum.
-  switch (action)
-  {
-    case SCALING:
-      for (auto& s : scales) 
-      {
-        TRY
-        auto ptrModel = modelPtr->ptr->clone();
-        double newScale = s * modelPtr->ptr->scale * scale;
-        if (newScale > 0 && newScale >= crit.minScale 
-          && newScale <= crit.maxScale
-          && IN_RANGE(newScale, SCALING_MIN, SCALING_MAX))
-        {
-          ptrModel->setScale(newScale);
-          double e = ptrModel->measureError(sample, SKIP_SIZE);
-          double e0 = ptrModel->measureError(zero, SKIP_SIZE);
-          if (e<e0) buffer.push(ptrModel, e);
-        }
-        END_TRY
-      }
-      break;
-
-    case TRANSLATION:
-      for (auto& t : trans)
-      {
-        TRY
-        auto ptrModel = modelPtr->ptr->clone();
-        auto newOrigin = modelPtr->ptr->origin + t * scale;
-        if (newOrigin.x >= 0 && newOrigin.y >= 0 
-          && IN_RANGE(t.x * scale, TRANSLATION_MIN, TRANSLATION_MAX))
-        {
-          ptrModel->setOrigin(newOrigin);
-          double e = ptrModel->measureError(sample, SKIP_SIZE);
-          double e0 = ptrModel->measureError(zero, SKIP_SIZE);
-          if (e<e0) buffer.push(ptrModel, e);
-        }
-        END_TRY
-      }
-      break;
-
-    case RESHAPING:
-      for (int i=0; i<smatSize; i++)
-      {
-        TRY
-        auto ptrModel = modelPtr->ptr->clone();
-        Mat param = modelPtr->ptr->shapeParam * scale + smat[i];
-        double _mi, _mx;
-        minMaxLoc(param, &_mi, &_mx);
-        if (_mi > RESHAPING_MIN && _mx < RESHAPING_MAX)
-        {
-          ptrModel->setShapeParam(param);
-          double e = ptrModel->measureError(sample, SKIP_SIZE);
-          double e0 = ptrModel->measureError(zero, SKIP_SIZE);
-          if (e<e0) buffer.push(ptrModel, e);
-        }
-        END_TRY
-      }
-      break;
-
-    case REAPPEARANCING:
-      for (int i=0; i<amatSize; i++)
-      {
-        TRY
-        auto ptrModel = modelPtr->ptr->clone();
-        Mat param = modelPtr->ptr->appearanceParam * scale + amat[i];
-        double _mi, _mx;
-        minMaxLoc(param, &_mi, &_mx);
-        if (_mi > REAPPEARANCING_MIN && _mx < REAPPEARANCING_MAX)
-        {
-          ptrModel->setAppearanceParam(param);
-          double e = ptrModel->measureError(sample, SKIP_SIZE);
-          double e0 = ptrModel->measureError(zero, SKIP_SIZE);
-          if (e<e0) buffer.push(ptrModel, e);
-        }
-        END_TRY
-      }
-      break;
-  }
-
-  // Repeat until the model pointer reaches the end
-  if (modelPtr->next != nullptr && modelPtr->next->ptr != nullptr)
-    iterateModelExpansion(modelPtr->next.get(), action, scale);
+  cout << i << " threads done" << endl;
+  // TAOTODO: Swap buffer
+  
 }
 
 void ModelFitter::iterateModelExpansion(

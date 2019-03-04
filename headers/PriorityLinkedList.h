@@ -4,9 +4,13 @@
 #include "master.h"
 #include "BaseFittedModel.h"
 
+// TAOTODO: Make this thread safe
+
 template <class T>
 class PriorityLinkedList
 {
+private:
+  mutex mx;
 public:
   inline PriorityLinkedList(const PriorityLinkedList<T>& ) = delete;
   inline PriorityLinkedList() : v(0), ptr(nullptr), next(nullptr) {};
@@ -98,8 +102,6 @@ public:
     }
     else cout << endl;
   };
-
-  // TAOTOREVIEW: add cout 
 };
 
 

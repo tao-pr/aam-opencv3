@@ -23,6 +23,9 @@
 #include <dirent.h>
 #include <chrono>
 #include <sys/resource.h>
+#include <future>
+#include <thread>
+#include <atomic>
 
 // Following imports are for stacktracing
 #include <execinfo.h>

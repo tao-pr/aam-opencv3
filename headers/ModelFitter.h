@@ -113,6 +113,8 @@ public:
     this->crit = crit;
   };
 
+  static void generateNextModel(ModelList* const head, ModelList* const outModelList);
+
   const ShapeModelPCA& getShapePCA() const { return aamPCA->getShapePCA(); };
   const AppearanceModelPCA& getAppearancePCA() const { return aamPCA->getAppearancePCA(); };
 
