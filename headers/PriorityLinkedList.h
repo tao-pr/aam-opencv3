@@ -9,8 +9,6 @@
 template <class T>
 class PriorityLinkedList
 {
-private:
-  mutex mx;
 public:
   inline PriorityLinkedList(const PriorityLinkedList<T>& ) = delete;
   inline PriorityLinkedList() : v(0), ptr(nullptr), next(nullptr) {};
@@ -18,13 +16,15 @@ public:
     : v(v), ptr(move(t)), next(nullptr) {};
   virtual inline ~PriorityLinkedList(){};
 
+  mutable mutex mx;
+  
   double v;
   unique_ptr<T> ptr;
   unique_ptr<PriorityLinkedList<T>> next;
 
   virtual void push(unique_ptr<T>& n, double d)
   {
-    mx.lock();
+    lock_guard<mutex> lock(this->mx);
     if (this->ptr == nullptr)
     {
       // Itself empty, assign in-place
@@ -55,21 +55,19 @@ public:
         }
       }
     }
-    mx.unlock();
   };
 
   virtual bool clear()
   {
-    mx.lock();
+    lock_guard<mutex> lock(this->mx);
     this->ptr = nullptr;
     if (this->next != nullptr)
       this->next->clear();
-    mx.unlock();
   };
 
   void take(int n)
   {
-    mx.lock();
+    lock_guard<mutex> lock(this->mx);
     if (this->ptr == nullptr) return;
     else if (this->next != nullptr)
     {
@@ -86,7 +84,6 @@ public:
         this->next = nullptr;
       }
     }
-    mx.unlock();
   };
 
   int size() const
@@ -98,7 +95,7 @@ public:
 
   virtual void printValueList(string prefix)
   {
-    mx.unlock();
+    lock_guard<mutex> lock(this->mx);
     cout << prefix;
     if (this->ptr)
       cout << this->v;
@@ -108,7 +105,6 @@ public:
       this->next->printValueList("");
     }
     else cout << endl;
-    mx.lock();
   };
 };
 

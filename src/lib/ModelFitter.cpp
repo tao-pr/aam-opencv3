@@ -70,8 +70,8 @@ void ModelFitter::iterateModelExpansionParallel(
   {
     auto ptrModel = modelPtr->next.get()->ptr->clone();
     
-    // thread expandModel(generateNextModel, ref(ptrModel), ref(buffer));
-    // workers.push_back(expandModel);
+    thread expandModel(generateNextModel, ref(ptrModel), ref(buffer));
+    workers.push_back(expandModel);
     
     i++;
   }
