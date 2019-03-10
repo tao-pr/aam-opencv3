@@ -33,7 +33,7 @@ ostream &operator<<(ostream &os, FittingCriteria const &c)
     << "...init pos = " << c.initPos << endl;
 }
 
-void ModelFitter::generateNextModel(ModelList* const head, ModelList* const outModelList)
+void ModelFitter::generateNextModel()
 {
   // TAOTODO:
 }
@@ -70,8 +70,8 @@ void ModelFitter::iterateModelExpansionParallel(
   {
     auto ptrModel = modelPtr->next.get()->ptr->clone();
     
-    thread expandModel(generateNextModel, ref(ptrModel), ref(buffer));
-    workers.push_back(expandModel);
+    thread expandModel(&ModelFitter::generateNextModel, this); //, ptrModel, buffer);
+    // workers.push_back(expandModel);
     
     i++;
   }

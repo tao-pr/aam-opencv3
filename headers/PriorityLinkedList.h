@@ -4,19 +4,16 @@
 #include "master.h"
 #include "BaseFittedModel.h"
 
-// TAOTODO: Make this thread safe
-
 template <class T>
 class PriorityLinkedList
 {
+  mutable mutex mx;
 public:
   inline PriorityLinkedList(const PriorityLinkedList<T>& ) = delete;
   inline PriorityLinkedList() : v(0), ptr(nullptr), next(nullptr) {};
   inline PriorityLinkedList(unique_ptr<T> t, double v) 
     : v(v), ptr(move(t)), next(nullptr) {};
   virtual inline ~PriorityLinkedList(){};
-
-  mutable mutex mx;
   
   double v;
   unique_ptr<T> ptr;
