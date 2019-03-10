@@ -74,10 +74,6 @@ protected:
     ModelList* const modelPtr,
     SearchWith action = TRANSLATION,
     double scale = 1.0);
-  void iterateModelExpansionParallel(
-    ModelList* const modelPtr,
-    SearchWith action = TRANSLATION,
-    double scale = 1.0);
   
   void transferFromBuffer(int nLeft);
   void buildCache();
@@ -112,8 +108,6 @@ public:
   {
     this->crit = crit;
   };
-
-  void generateNextModel();
 
   const ShapeModelPCA& getShapePCA() const { return aamPCA->getShapePCA(); };
   const AppearanceModelPCA& getAppearancePCA() const { return aamPCA->getAppearancePCA(); };

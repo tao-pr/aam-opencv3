@@ -33,11 +33,6 @@ ostream &operator<<(ostream &os, FittingCriteria const &c)
     << "...init pos = " << c.initPos << endl;
 }
 
-void ModelFitter::generateNextModel()
-{
-  // TAOTODO:
-}
-
 void ModelFitter::buildCache()
 {
   this->pcaShape      = aamPCA->getShapePCA();
@@ -50,40 +45,6 @@ void ModelFitter::buildCache()
   for (int i=0; i<amatSize; i++) amat[i] = Mat::zeros(1, pcaAppearance.dimension(), CV_64FC1);
   pcaShape.permutationOfParams(smat);
   pcaAppearance.permutationOfParams(amat);
-}
-
-void ModelFitter::iterateModelExpansionParallel(
-  ModelList* const modelPtr,
-  SearchWith action,
-  double scale)
-{
-  assert(modelPtr != nullptr);
-  assert(modelPtr->ptr != nullptr);
-
-  const int SKIP_SIZE = 2;
-  #define IN_RANGE(v,_min,_max) (v>_min && v<_max)
-
-  vector<thread> workers;
-
-  int i = 0;
-  while (modelPtr->next != nullptr && modelPtr->next->ptr != nullptr)
-  {
-    auto ptrModel = modelPtr->next.get()->ptr->clone();
-    
-    thread expandModel(&ModelFitter::generateNextModel, this); //, ptrModel, buffer);
-    // workers.push_back(expandModel);
-    
-    i++;
-  }
-
-  cout << i << " threads generated" << endl;
-
-  // Wait for all threads to finish
-  for_each(workers.begin(), workers.end(), [](thread &t){ t.join(); });
-  
-  cout << i << " threads done" << endl;
-  // TAOTODO: Swap buffer
-  
 }
 
 void ModelFitter::iterateModelExpansion(
