@@ -109,6 +109,7 @@ public:
     this->crit = crit;
   };
 
+  void generateNewModelToBuffer(BaseFittedModel*& m);
   const ShapeModelPCA& getShapePCA() const { return aamPCA->getShapePCA(); };
   const AppearanceModelPCA& getAppearancePCA() const { return aamPCA->getAppearancePCA(); };
 

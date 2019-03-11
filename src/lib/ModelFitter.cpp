@@ -161,6 +161,11 @@ void ModelFitter::transferFromBuffer(int nLeft)
   }
 }
 
+void ModelFitter::generateNewModelToBuffer(BaseFittedModel*& m)
+{
+  // TAOTODO:
+}
+
 unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initModel, int skipPixels)
 {
   assert(initModel != nullptr);
@@ -197,6 +202,7 @@ unique_ptr<BaseFittedModel> ModelFitter::fit(unique_ptr<BaseFittedModel>& initMo
     RESHAPING, REAPPEARANCING
   };
   
+  // TAOTODO: These entire loop can be parallelized
   while (iter < crit.numMaxIter)
   {
     #ifdef DEBUG

@@ -103,6 +103,13 @@ public:
     }
     else cout << endl;
   };
+
+  vector<unique_ptr<T>>& flatMap(function<vector<unique_ptr<T>>(T*)> fmap) const
+  {
+    vector<unique_ptr<T>> v;
+    // TAOTODO:
+    return v;
+  };
 };
 
 
