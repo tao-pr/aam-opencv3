@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 
 # Fmt library, assumes installation via Homebrew
-set(FMT_LIB_DIR /usr/local/Cellar/fmt/4.0.0)
+set(FMT_LIB_DIR /usr/local/Cellar/fmt/5.3.0)
 
 # Dependencies
 include_directories(/usr/local/include)
