@@ -1,5 +1,9 @@
 #!/bin/bash
 
+export OPENCV_DIR=/usr/local/Cellar/opencv/4.1.0_2/
+export OPENCV_INCLUDE_DIR=$OPENCV_DIR/include/opencv4/
+export OPENCV_LIB_DIR=$OPENCV_DIR/lib/
+
 # Makefile builder script
 mkdir -p build 
 mkdir -p bin

@@ -5,11 +5,11 @@ set(FMT_LIB_DIR /usr/local/Cellar/fmt/4.0.0)
 
 # Dependencies
 include_directories(/usr/local/include)
-include_directories("$ENV{OPENCV_DIR}/include")
+include_directories("$ENV{OPENCV_INCLUDE_DIR}")
 include_directories("${FMT_LIB_DIR}/include")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/headers")
 link_directories(/usr/local/lib)
-link_directories("$ENV{OPENCV_DIR}/lib")
+link_directories("$ENV{OPENCV_LIB_DIR}")
 link_directories("${FMT_LIB_DIR}/lib")
 
 project("aam-opencv3" CXX C)
