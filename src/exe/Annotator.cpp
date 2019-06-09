@@ -25,7 +25,7 @@ void renderAnnotation()
   Mat canvas = currentImage.clone();
   for (auto v : currentAnnotation)
   {
-    circle(canvas, v, 3, Scalar(240,10,0), 1, CV_AA);
+    circle(canvas, v, 3, Scalar(240,10,0), 1, LINE_AA);
   }
   imshow("input", canvas);
   setMouseCallback("input", onAnnotation, nullptr);
@@ -70,9 +70,8 @@ int main(int argc, char** argv)
   glob(path, files);
 
   int n = 1;
-  for (auto file : files)
+  for (auto filepath : files)
   {
-    auto filepath = file.operator string();
     auto filename = filepath.substr(filepath.find_last_of("/") + 1);
     if (!supportedFileFormat(filename))
       continue;

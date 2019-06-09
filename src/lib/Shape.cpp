@@ -31,7 +31,7 @@ vector<Point2d> Shape::toPoints() const
 Point2d Shape::centroid() const
 {
   Mat m = Mat::zeros(1, 2, CV_64FC1);
-  reduce(this->mat, m, 0, CV_REDUCE_AVG); // Mean by row
+  reduce(this->mat, m, 0, REDUCE_AVG); // Mean by row
   return Point2d(m.at<double>(0,0), m.at<double>(0,1));
 }
 

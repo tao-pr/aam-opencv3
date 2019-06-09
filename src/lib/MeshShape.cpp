@@ -157,17 +157,17 @@ Mat MeshShape::render(IO::GenericIO* io, Mat background, double scaleFactor, Poi
     const auto a = vec[0];
     const auto b = vec[1];
     const auto c = vec[2];
-    Draw::drawTriangle(canvas, a,b,c, Scalar(0,0,200), 1, CV_AA);
+    Draw::drawTriangle(canvas, a,b,c, Scalar(0,0,200), 1, LINE_AA);
   }
 
   // Render convex hull
   Point prev = hull[0];
   for (auto next : hull)
   {
-    line(canvas, prev, next, Scalar(0,0, 255), 3, CV_AA);
+    line(canvas, prev, next, Scalar(0,0, 255), 3, LINE_AA);
     prev = next;
   }
-  line(canvas, prev, hull[0], Scalar(0,0, 255), 3, CV_AA);
+  line(canvas, prev, hull[0], Scalar(0,0, 255), 3, LINE_AA);
 
   // Render vertices
   Draw::drawSpots(canvas, this->toPoints(), Scalar(0,240,255));

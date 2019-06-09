@@ -73,13 +73,13 @@ inline Mat chessPattern(int stepSize, Size size)
         mat, 
         Point2d(i,j), Point2d(i+stepSize,j+stepSize),
         Scalar(b,g,r), 
-        CV_FILLED
+        FILLED
       );
     }
   for (int j=0; j<size.height; j+=stepSize)
-    line(mat, Point(0, j), Point(size.width-1,j), Scalar(0,0,30), 1, CV_AA);
+    line(mat, Point(0, j), Point(size.width-1,j), Scalar(0,0,30), 1, LINE_AA);
   for (int i=0; i<size.width; i+=stepSize)
-    line(mat, Point(i, 0), Point(i, size.height-1), Scalar(0,0,30), 1, CV_AA);
+    line(mat, Point(i, 0), Point(i, size.height-1), Scalar(0,0,30), 1, LINE_AA);
   return mat;
 }
 

@@ -110,7 +110,7 @@ ModelPCA* ModelCollection::pca(const BaseModel* mean, int maxDimension) const
   cout << "... data size       : " << data.size() << endl;
   #endif
 
-  auto pca = PCA(data, meanVector, CV_PCA_DATA_AS_ROW);
+  auto pca = PCA(data, meanVector, cv::PCA::DATA_AS_ROW);
 
   // Collect lambdas
   // TAOTOREVIEW: Take only highest K lambda where K<N

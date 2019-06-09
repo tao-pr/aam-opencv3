@@ -211,7 +211,7 @@ void testAAMCollection()
 void testTexture(char** argv)
 {
   cout << GREEN << "Loading sample image" << RESET << endl;
-  Mat original = imread("media/numbers.jpg", CV_LOAD_IMAGE_COLOR);
+  Mat original = imread("media/numbers.jpg", IMREAD_COLOR);
   Rect crop(20, 20, 160, 160);
   Mat plane = original(crop);
 

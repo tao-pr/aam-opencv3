@@ -105,7 +105,7 @@ double FittedAAM::measureError(const Mat& sample, int skipPixels)
 
   Mat shapeConvex = shapeConvexOriginal(obound);
   Mat shapeConvexBGR(obound.height, obound.width, CV_8UC3);
-  cvtColor(shapeConvex, shapeConvexBGR, CV_GRAY2BGR);
+  cvtColor(shapeConvex, shapeConvexBGR, COLOR_GRAY2BGR);
 
   Mat diff(obound.height, obound.width, CV_8UC3);
 

@@ -165,7 +165,7 @@ ModelPCA* AppearanceCollection::pca(const BaseModel* mean, int maxDimension) con
   cout << "... data size       : " << data.size() << endl;
   #endif
 
-  auto pca = PCA(data, meanVector, CV_PCA_DATA_AS_ROW);
+  auto pca = PCA(data, meanVector, cv::PCA::DATA_AS_ROW);
   
   // Pad eigenvectors from [NxM] => [MxM]
   // Mat paddedEigenVectors = Mat::zeros(maxDimension, maxDimension, CV_64FC1);
