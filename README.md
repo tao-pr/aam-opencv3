@@ -8,8 +8,8 @@ Active Appearance Model for OpenCV3. No other dependencies required.
 
 ## Prerequisites
 
-- [x] OpenCV 3
-- [x] CMake 3.8+
+- [x] OpenCV 4
+- [x] CMake 3.14+
 - [x] [Fmt](http://fmtlib.net/latest/usage.html#building-the-library)
 - [x] [Backward CPP](https://github.com/bombela/backward-cpp) ~ in case of debugging mode
 
